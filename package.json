@@ -1,0 +1,11 @@
+{
+  "name": "bdx-bench",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node server/server.js",
+    "mock": "node runner/run.js --model mock-model --suite swe-mini --mode mock --out results/mock.json",
+    "aggregate": "node scripts/aggregate.js",
+    "seed": "node scripts/seed-demo.js",
+    "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "demo-gemini-swe",
+  "model": "bdx-ai/gemini-3.7-flash-tiered",
+  "suite": "swe-mini",
+  "mode": "mock",
+  "status": "completed",
+  "results": [
+    {
+      "taskId": "swe-01",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 711,
+      "log": "synthetic demo result — PASS swe-01 in demo-gemini-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-02",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 848,
+      "log": "synthetic demo result — PASS swe-02 in demo-gemini-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-03",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 985,
+      "log": "synthetic demo result — PASS swe-03 in demo-gemini-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-04",
+      "pass": false,
+      "score01": 0,
+      "durationMs": 1000,
+      "log": "synthetic demo result — FAIL swe-04 in demo-gemini-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-05",
+      "pass": false,
+      "score01": 0,
+      "durationMs": 1137,
+      "log": "synthetic demo result — FAIL swe-05 in demo-gemini-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-06",
+      "pass": false,
+      "score01": 0,
+      "durationMs": 1274,
+      "log": "synthetic demo result — FAIL swe-06 in demo-gemini-swe (mock, no real agent executed)"
+    }
+  ],
+  "avgScore": 0.5,
+  "passRate": 0.5,
+  "startedAt": "2026-09-16T11:15:42.635Z",
+  "finishedAt": "2026-09-16T11:15:42.635Z",
+  "demo": true
+}

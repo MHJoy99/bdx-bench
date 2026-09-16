@@ -1,0 +1,56 @@
+{
+  "id": "demo-luna-swe",
+  "model": "bdx-ai/gpt-5.6-luna",
+  "suite": "swe-mini",
+  "mode": "mock",
+  "status": "completed",
+  "results": [
+    {
+      "taskId": "swe-01",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 711,
+      "log": "synthetic demo result — PASS swe-01 in demo-luna-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-02",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 848,
+      "log": "synthetic demo result — PASS swe-02 in demo-luna-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-03",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 985,
+      "log": "synthetic demo result — PASS swe-03 in demo-luna-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-04",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 1122,
+      "log": "synthetic demo result — PASS swe-04 in demo-luna-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-05",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 1259,
+      "log": "synthetic demo result — PASS swe-05 in demo-luna-swe (mock, no real agent executed)"
+    },
+    {
+      "taskId": "swe-06",
+      "pass": false,
+      "score01": 0,
+      "durationMs": 1274,
+      "log": "synthetic demo result — FAIL swe-06 in demo-luna-swe (mock, no real agent executed)"
+    }
+  ],
+  "avgScore": 0.8333333333333334,
+  "passRate": 0.8333333333333334,
+  "startedAt": "2026-09-16T11:15:42.634Z",
+  "finishedAt": "2026-09-16T11:15:42.635Z",
+  "demo": true
+}

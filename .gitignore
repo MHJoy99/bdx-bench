@@ -1,0 +1,17 @@
+# BDX Bench ignores
+node_modules/
+work/
+*.tmp-test/
+results/.tmp-*
+*.log
+.DS_Store
+Thumbs.db
+*.orig
+*.rej
+# runtime data (local-only, keep .gitkeep)
+data/matches.json
+data/ratings.json
+data/prompts.json
+data/scores.json
+# local test runs (keep demo-*.json)
+results/run-*.json

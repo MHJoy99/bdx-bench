@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bdx.bench/results/schema.json",
+  "title": "BDX Bench run result",
+  "description": "Shape of a single BDX Bench run file (results/run-*.json, results/demo-*.json). Aggregated by scripts/aggregate.js.",
+  "type": "object",
+  "required": ["id", "model", "results", "avgScore", "passRate"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique run identifier (e.g. timestamp or uuid)."
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Model under test (aggregation key in leaderboard.json)."
+    },
+    "suite": {
+      "type": "string",
+      "description": "Benchmark suite name."
+    },
+    "mode": {
+      "type": "string",
+      "description": "Run mode (e.g. live, demo, replay)."
+    },
+    "results": {
+      "type": "array",
+      "description": "Per-task outcomes for this run.",
+      "items": {
+        "type": "object",
+        "required": ["taskId", "pass", "score01"],
+        "additionalProperties": true,
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "Task identifier within the suite."
+          },
+          "pass": {
+            "type": "boolean",
+            "description": "Whether the task passed."
+          },
+          "score01": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Normalized task score in [0,1]."
+          },
+          "durationMs": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Task duration in milliseconds."
+          },
+          "log": {
+            "type": "string",
+            "description": "Free-form log excerpt for the task."
+          }
+        }
+      }
+    },
+    "avgScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Mean of results[].score01 for this run."
+    },
+    "passRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Fraction of results[] with pass === true for this run."
+    },
+    "demo": {
+      "description": "Demo marker. Boolean flag, label, or detail object; null/absent when not a demo.",
+      "type": ["boolean", "string", "object", "null"]
+    }
+  }
+}

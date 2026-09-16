@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BDX Bench — Arena</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+nav a{color:var(--acc);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+nav a:hover{text-decoration:underline}
+footer a{color:var(--acc);text-decoration:none}
+footer a:hover{text-decoration:underline}
+form.stack{display:grid;gap:10px}
+input[type="text"],textarea,select{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:inherit;font-size:13px;width:100%}
+textarea{min-height:90px;resize:vertical;white-space:pre-wrap}
+select{width:auto;min-width:0}
+select.wide,form.stack select{width:100%}
+.body{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;margin:8px 0 0}
+.phases{list-style:none;margin:0 0 10px;padding:0;display:flex;gap:8px;flex-wrap:wrap}
+.phases li{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.phases li.done{color:var(--ok);border-color:var(--ok)}
+.phases li.now{color:var(--acc);border-color:var(--acc)}
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.ab{grid-template-columns:1fr}}
+.side{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px}
+.side h3{margin:0 0 6px;font-size:13px}
+.side .ans{white-space:pre-wrap;word-break:break-word;font-size:13px}
+.verdict{border:1px solid var(--ok);background:#0f2a18;border-radius:8px;padding:10px 12px;margin:0 0 10px;font-size:13px}
+.verdict.draw{border-color:var(--acc);background:#10233d}
+.meta{font-size:12px;display:flex;flex-wrap:wrap;gap:4px 12px;margin:6px 0}
+.hint{font-size:12px}
+</style>
+</head>
+<body>
+<header class="top">
+<h1>BDX Arena</h1>
+<nav><a href="index.html">← Leaderboard</a> <a href="prompts.html" style="margin-left:12px">Prompt bank →</a></nav>
+<div class="health"><span id="dot" class="dot" aria-hidden="true"></span><span id="health">connecting…</span></div>
+</header>
+<main>
+<div id="error" class="error" hidden></div>
+
+<section class="panel" aria-label="Arena ladder">
+<h2>Ladder</h2>
+<p id="ladder-note" class="muted">loading…</p>
+<table aria-label="Arena ladder">
+<thead><tr><th>#</th><th>Model</th><th>Elo / score</th><th>W / L / D</th></tr></thead>
+<tbody id="ladder-body"><tr><td colspan="4" class="muted">loading…</td></tr></tbody>
+</table>
+</section>
+
+<section class="panel" aria-label="New arena match">
+<h2>New match</h2>
+<form id="new-form" class="stack">
+<label>Prompt <select id="nm-prompt" class="wide"></select></label>
+<label>Task ref (free text, used when no prompt fits) <input id="nm-task" type="text" maxlength="500" placeholder="e.g. task-042 or describe the task…"></label>
+<div class="row">
+<label>Model A <select id="nm-a"></select></label>
+<label>Model B <select id="nm-b"></select></label>
+</div>
+<div class="row">
+<label>Custom A (overrides picker when filled) <input id="nm-a-custom" type="text" placeholder="e.g. bdx-ai/my-model"></label>
+<label>Custom B (overrides picker when filled) <input id="nm-b-custom" type="text" placeholder="e.g. bdx-ai/my-model"></label>
+</div>
+<div class="row">
+<label>Seed (optional) <input id="nm-seed" type="text" maxlength="100" placeholder="optional"></label>
+<button type="submit">Start match</button>
+<span id="nm-msg" class="muted" role="status"></span>
+</div>
+<p class="muted hint">Blind by default: the detail view hides which model is A / B until a verdict lands.</p>
+</form>
+</section>
+
+<section class="grid">
+<div class="panel" aria-label="Open matches">
+<h2>Open matches</h2>
+<p id="open-note" class="muted">loading…</p>
+<ul id="open" class="runs"></ul>
+</div>
+<div class="panel" aria-label="Match detail">
+<h2>Match detail</h2>
+<div id="mdetail" class="muted">Click an open match to see task → answers → verdict.</div>
+<div id="answer-wrap" hidden>
+<h2 style="margin-top:14px">Submit answer (per side)</h2>
+<form id="answer-form" class="stack">
+<label>Side <select id="an-side"><option value="A">Side A</option><option value="B">Side B</option></select></label>
+<label>Answer <textarea id="an-text" placeholder="Paste this side's answer…" required></textarea></label>
+<div class="row"><button type="submit">Save answer</button><span id="an-msg" class="muted" role="status"></span></div>
+</form>
+</div>
+<div id="vote-wrap" hidden>
+<h2 style="margin-top:14px">Vote</h2>
+<form id="vote-form" class="stack">
+<label>Judge name <input id="vt-judge" type="text" maxlength="120" placeholder="e.g. alice" required></label>
+<label>Pick <select id="vt-pick"><option value="A">Side A wins</option><option value="B">Side B wins</option><option value="draw">Draw</option></select></label>
+<div class="row"><button type="submit">Save vote</button><span id="vt-msg" class="muted" role="status"></span></div>
+</form>
+</div>
+</div>
+</section>
+</main>
+<footer class="muted"><a href="index.html">← Back to leaderboard</a> · <a href="prompts.html">Prompt bank →</a> · Local only · refreshes every 5s</footer>
+<script>
+"use strict";
+/* BDX Arena — vanilla JS, relative URLs, no deps. */
+var $ = function (id) { return document.getElementById(id); };
+var KNOWN_MODELS = [
+  "bdx-ai/gpt-5.6-luna",
+  "bdx-ai/go-muse-spark-1.3-contributor",
+  "bdx-ai/gemini-3.7-flash-tiered",
+  "bdx-ai/gemini-3.8-flash-tiered"
+];
+var state = { matchId: null, timer: null, prompts: [] };
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function showErr(msg) { var e = $("error"); if (!msg) { e.hidden = true; e.textContent = ""; return; } e.hidden = false; e.textContent = msg; }
+function setHealth(ok, txt) { $("health").textContent = txt; $("dot").className = "dot " + (ok ? "ok" : "bad"); }
+function get(url) { return fetch(url, { headers: { accept: "application/json" } }).then(function (r) { if (!r.ok) throw new Error(url + " → HTTP " + r.status); return r.json(); }); }
+function post(url, body) {
+  return fetch(url, { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify(body) })
+    .then(function (r) { if (!r.ok) throw new Error(url + " → HTTP " + r.status); return r.json().catch(function () { return {}; }); });
+}
+function is404(e) { return /HTTP 404/.test(String((e && e.message) || e)); }
+function asBoard(j) {
+  if (!j || typeof j !== "object") return { rows: [], src: "arena" };
+  if (Array.isArray(j)) return { rows: j, src: "arena" };
+  if (Array.isArray(j.arena)) return { rows: j.arena, src: "arena" };
+  if (Array.isArray(j.manual)) return { rows: j.manual, src: "manual" };
+  if (Array.isArray(j.entries)) return { rows: j.entries, src: "arena" };
+  if (Array.isArray(j.leaderboard)) return { rows: j.leaderboard, src: "arena" };
+  return { rows: [], src: "arena" };
+}
+function asList(j) {
+  if (Array.isArray(j)) return j;
+  if (j && Array.isArray(j.matches)) return j.matches;
+  if (j && Array.isArray(j.items)) return j.items;
+  if (j && Array.isArray(j.prompts)) return j.prompts;
+  return [];
+}
+function mid(m) { return m && (m.id || m._id || m.matchId) != null ? String(m.id || m._id || m.matchId) : ""; }
+function mstatus(m) { return String((m && (m.status || m.state)) || "").toLowerCase(); }
+function modelOf(r) { return (r && (r.model || r.modelId || r.id || r.name)) != null ? String(r.model || r.modelId || r.id || r.name) : "?"; }
+function eloOf(r) {
+  if (!r || typeof r !== "object") return null;
+  var cands = [r.elo, r.rating, r.score, r.avgScore, r.score01];
+  for (var i = 0; i < cands.length; i++) { var n = Number(cands[i]); if (isFinite(n)) return n; }
+  return null;
+}
+function eloBarW(r, elo) {
+  var s01 = Number(r && (r.score01 != null ? r.score01 : r.avgScore));
+  if (isFinite(s01) && s01 >= 0 && s01 <= 1 && (r.score01 != null || (r.avgScore != null && elo != null && elo <= 10))) return Math.max(0, Math.min(1, s01)) * 100;
+  if (elo == null || !isFinite(elo)) return 0;
+  if (elo >= 0 && elo <= 10) return Math.max(0, Math.min(1, elo / 10)) * 100;
+  if (elo > 10 && elo <= 100) return Math.max(0, Math.min(1, elo / 100)) * 100;
+  return Math.max(0, Math.min(1, (elo - 800) / 800)) * 100;
+}
+function wldOf(r) {
+  function num() { for (var i = 0; i < arguments.length; i++) { var n = Number(arguments[i]); if (isFinite(n)) return Math.round(n); } return 0; }
+  return { w: num(r.wins, r.w, r.win), l: num(r.losses, r.l, r.loss), d: num(r.draws, r.d, r.draw, r.ties) };
+}
+function bar(w) { return '<span class="bar"><i style="width:' + Number(w).toFixed(1) + '%"></i></span>'; }
+function fmtElo(n) { if (n == null || !isFinite(Number(n))) return "—"; var v = Number(n); return (v > 10 && v !== Math.round(v)) ? v.toFixed(1) : String(Math.round(v * 100) / 100); }
+
+/* ---- Ladder ---- */
+function loadLadder() {
+  return get("api/leaderboard").then(function (j) {
+    var b = asBoard(j), rows = b.rows.slice(), tb = $("ladder-body"), note = $("ladder-note");
+    rows.sort(function (x, y) { var a = eloOf(x), c = eloOf(y); return (c == null ? -1e9 : c) - (a == null ? -1e9 : a); });
+    if (!rows.length) { note.textContent = "No ladder entries yet — start a match below."; tb.innerHTML = '<tr><td colspan="4" class="muted">no entries.</td></tr>'; return; }
+    note.textContent = rows.length + (rows.length === 1 ? " model" : " models") + " · source: " + b.src + (b.src === "manual" ? " (arena not published yet — manual fallback)" : "");
+    tb.innerHTML = rows.map(function (r, i) {
+      var elo = eloOf(r), wld = wldOf(r);
+      return "<tr><td>" + (i + 1) + "</td><td>" + esc(modelOf(r)) + "</td>" +
+        '<td><span class="cell">' + bar(eloBarW(r, elo)) + esc(fmtElo(elo)) + "</span></td>" +
+        "<td>" + esc(wld.w) + " / " + esc(wld.l) + " / " + esc(wld.d) + "</td></tr>";
+    }).join("");
+  }).catch(function (e) {
+    if (is404(e)) {
+      $("ladder-note").textContent = "Arena API not yet deployed — the ladder will appear here once GET /api/leaderboard serves an \"arena\" array.";
+      $("ladder-body").innerHTML = '<tr><td colspan="4" class="muted">arena API not yet deployed.</td></tr>';
+      return;
+    }
+    throw e;
+  });
+}
+
+/* ---- Open matches ---- */
+function loadMatches() {
+  return get("api/matches").then(function (j) {
+    var list = asList(j).filter(function (m) { var s = mstatus(m); return s === "" || s === "open"; });
+    var ul = $("open"), note = $("open-note");
+    if (!list.length) { note.textContent = "No open matches — start one below."; ul.textContent = ""; return; }
+    note.textContent = list.length + (list.length === 1 ? " open match" : " open matches") + " — click one for detail.";
+    ul.textContent = "";
+    list.forEach(function (m) {
+      var id = mid(m); if (!id) return;
+      var li = document.createElement("li"), b = document.createElement("button");
+      b.type = "button"; if (id === state.matchId) b.className = "sel";
+      var t = m.taskRef || m.task || m.title || m.promptTitle || "";
+      var ab = esc(m.modelA || m.a || "?") + " vs " + esc(m.modelB || m.b || "?");
+      b.innerHTML = "<strong>" + esc(id) + "</strong> <small>" + esc(t || (m.promptId != null ? "prompt " + m.promptId : "arena match")) + " · blind A vs B</small>";
+      b.title = ab;
+      b.onclick = function () {
+        state.matchId = id; loadDetail();
+        Array.prototype.forEach.call(ul.querySelectorAll("button"), function (x) { x.classList.remove("sel"); });
+        b.classList.add("sel");
+      };
+      li.appendChild(b); ul.appendChild(li);
+    });
+  }).catch(function (e) {
+    if (is404(e)) {
+      $("open-note").textContent = "Arena API not yet deployed — open matches will appear here once GET /api/matches is live.";
+      $("open").textContent = "";
+      return;
+    }
+    throw e;
+  });
+}
+
+/* ---- Prompt picker ---- */
+function pid(p) { return p && (p.id || p._id || p.promptId) != null ? String(p.id || p._id || p.promptId) : ""; }
+function loadPromptPicker() {
+  return get("api/prompts").then(function (j) {
+    var list = asList(j); state.prompts = list;
+    var sel = $("nm-prompt"); sel.textContent = "";
+    sel.appendChild(new Option("(no prompt — taskRef only)", ""));
+    list.forEach(function (p) {
+      var id = pid(p); if (!id) return;
+      sel.appendChild(new Option((p.title || "(untitled)") + " (" + id + ")", id));
+    });
+  }).catch(function (e) {
+    if (is404(e)) { state.prompts = []; $("nm-prompt").textContent = ""; $("nm-prompt").appendChild(new Option("(prompt API not yet deployed — use taskRef)", "")); return; }
+    throw e;
+  });
+}
+function promptById(id) {
+  for (var i = 0; i < state.prompts.length; i++) if (pid(state.prompts[i]) === id) return state.prompts[i];
+  return null;
+}
+
+/* ---- Model pickers ---- */
+function initModelPickers() {
+  ["nm-a", "nm-b"].forEach(function (id, i) {
+    var sel = $(id); sel.textContent = "";
+    KNOWN_MODELS.forEach(function (m) { sel.appendChild(new Option(m, m)); });
+    sel.appendChild(new Option("custom…", "custom"));
+    sel.value = KNOWN_MODELS[i % KNOWN_MODELS.length];
+  });
+}
+function pickerModel(selId, customId) {
+  var custom = $(customId).value.trim();
+  if ($(selId).value === "custom" || custom) return custom || "";
+  return $(selId).value;
+}
+
+/* ---- Match detail ---- */
+function unwrapMatch(j) {
+  if (j && typeof j === "object" && j.match && typeof j.match === "object") return j.match;
+  return (j && typeof j === "object") ? j : {};
+}
+function answersOf(m) {
+  var out = { A: "", B: "" };
+  if (!m || typeof m !== "object") return out;
+  var a = m.answers;
+  if (a && typeof a === "object" && !Array.isArray(a)) {
+    if (a.A != null || a.B != null) { out.A = a.A == null ? "" : String(a.A); out.B = a.B == null ? "" : String(a.B); return out; }
+    if (a.a != null || a.b != null) { out.A = a.a == null ? "" : String(a.a); out.B = a.b == null ? "" : String(a.b); return out; }
+    if (a.sideA != null || a.sideB != null) { out.A = String(a.sideA || ""); out.B = String(a.sideB || ""); return out; }
+  }
+  var arr = Array.isArray(a) ? a : (Array.isArray(m.sides) ? m.sides : (Array.isArray(m.responses) ? m.responses : []));
+  arr.forEach(function (x) {
+    if (x == null) return;
+    if (typeof x === "string") return;
+    var side = String(x.side || x.label || x.slot || "").toUpperCase();
+    var txt = x.answer != null ? x.answer : (x.text != null ? x.text : (x.body != null ? x.body : (x.content || "")));
+    if (side === "A" || side === "B") out[side] = String(txt || "");
+  });
+  if (!out.A && m.answerA != null) out.A = String(m.answerA);
+  if (!out.B && m.answerB != null) out.B = String(m.answerB);
+  return out;
+}
+function votesOf(m) {
+  if (!m || typeof m !== "object") return [];
+  if (Array.isArray(m.votes)) return m.votes;
+  if (Array.isArray(m.ratings)) return m.ratings;
+  return [];
+}
+function verdictOf(m) {
+  if (!m || typeof m !== "object") return null;
+  if (m.verdict && typeof m.verdict === "object") return m.verdict;
+  if (m.result && typeof m.result === "object") return m.result;
+  if (m.winner != null || m.eloDelta != null) return { winner: m.winner, eloDelta: m.eloDelta };
+  return null;
+}
+function winnerOf(m, v) {
+  var w = v ? (v.winner != null ? v.winner : (v.pick != null ? v.pick : (v.choice != null ? v.choice : v.decision))) : null;
+  if (w == null && m) w = m.winner != null ? m.winner : m.decision;
+  var s = String(w == null ? "" : w).trim();
+  if (/^a$/i.test(s) || /side\s*a/i.test(s)) return "A";
+  if (/^b$/i.test(s) || /side\s*b/i.test(s)) return "B";
+  if (/draw/i.test(s) || /tie/i.test(s)) return "draw";
+  if (s && m && (s === m.modelA || s === m.modelB)) return s === m.modelA ? "A" : "B";
+  return s || "";
+}
+function eloDeltaText(v) {
+  if (!v || v.eloDelta == null) return "";
+  var d = v.eloDelta;
+  if (typeof d === "object") {
+    var parts = [];
+    if (d.A != null) parts.push("A " + (Number(d.A) >= 0 ? "+" : "") + d.A);
+    if (d.B != null) parts.push("B " + (Number(d.B) >= 0 ? "+" : "") + d.B);
+    if (d.a != null && d.A == null) parts.push("A " + d.a);
+    if (d.b != null && d.B == null) parts.push("B " + d.b);
+    return parts.join(" · ") || JSON.stringify(d);
+  }
+  return String(d);
+}
+function loadDetail() {
+  if (!state.matchId) return Promise.resolve();
+  var box = $("mdetail");
+  box.innerHTML = '<p class="muted">loading…</p>';
+  return get("api/matches/" + encodeURIComponent(state.matchId)).then(function (j) {
+    var m = unwrapMatch(j);
+    var status = mstatus(m) || "open", done = status === "completed" || status === "closed" || status === "done" || !!verdictOf(m);
+    var ans = answersOf(m), votes = votesOf(m), v = verdictOf(m), winner = winnerOf(m, v);
+    var promptId = m.promptId != null ? String(m.promptId) : (m.prompt != null && typeof m.prompt === "object" ? pid(m.prompt) : "");
+    var taskRef = m.taskRef || m.task || "";
+    var p = promptId ? promptById(promptId) : null;
+    var taskBody = (p && (p.body || p.text || p.content)) || (m.promptBody || m.taskBody || m.promptText || "");
+    var hasTask = !!(taskRef || promptId || taskBody);
+    var hasBoth = !!(String(ans.A).trim() && String(ans.B).trim());
+    var stTask = hasTask ? "done" : "now", stAns = hasTask ? (hasBoth ? "done" : "now") : "", stVer = done ? "done" : (hasBoth ? "now" : "");
+    var reveal = done;
+    var labelA = reveal ? ("Side A — " + (m.modelA || m.a || "?")) : "Side A (blind)";
+    var labelB = reveal ? ("Side B — " + (m.modelB || m.b || "?")) : "Side B (blind)";
+    var html = "";
+    if (winner) {
+      var wtxt = winner === "draw" ? "Draw" : ("Winner: Side " + winner);
+      var delta = eloDeltaText(v);
+      html += '<div class="verdict' + (winner === "draw" ? " draw" : "") + '"><strong>' + esc(wtxt) + "</strong>" +
+        (delta ? ' <span class="muted">· Elo delta ' + esc(delta) + "</span>" : "") + "</div>";
+    }
+    html += '<ol class="phases"><li class="' + stTask + '">1 · task</li><li class="' + stAns + '">2 · answers</li><li class="' + stVer + '">3 · verdict</li></ol>';
+    html += '<div class="meta"><span class="muted">' + esc(status) + "</span><span>" + esc(state.matchId) + "</span>" +
+      (promptId ? "<span>prompt " + esc(promptId) + "</span>" : "") + (taskRef ? "<span>" + esc(taskRef) + "</span>" : "") + "</div>";
+    if (!reveal) html += '<p class="muted hint">Models hidden (blind A/B) until a verdict lands. ' + esc([m.modelA, m.modelB].filter(Boolean).length ? "" : "") + "</p>";
+    if (taskBody) html += '<div class="body">' + esc(taskBody) + "</div>";
+    else if (taskRef) html += '<div class="body">' + esc(taskRef) + "</div>";
+    else html += '<p class="muted">no task text on this match.</p>';
+    html += '<div class="ab" style="margin-top:10px">' +
+      '<div class="side"><h3>' + esc(labelA) + "</h3>" + '<div class="ans">' + (String(ans.A).trim() ? esc(ans.A) : '<span class="muted">awaiting answer…</span>') + "</div></div>" +
+      '<div class="side"><h3>' + esc(labelB) + "</h3>" + '<div class="ans">' + (String(ans.B).trim() ? esc(ans.B) : '<span class="muted">awaiting answer…</span>') + "</div></div></div>";
+    if (votes.length) {
+      html += '<table style="margin-top:10px"><thead><tr><th>Judge</th><th>Pick</th><th>Date</th></tr></thead><tbody>' +
+        votes.map(function (x) {
+          var judge = (x && (x.judge || x.judgeName || x.by || x.voter)) || "?", pick = (x && (x.pick || x.winner || x.vote || x.choice)) || "?";
+          var dt = (x && (x.createdAt || x.created_at || x.date)) || "";
+          return "<tr><td>" + esc(judge) + "</td><td>" + esc(pick) + "</td><td>" + esc(dt ? new Date(dt).toLocaleString() : "—") + "</td></tr>";
+        }).join("") + "</tbody></table>";
+    } else {
+      html += '<p class="muted hint">no votes yet.</p>';
+    }
+    box.innerHTML = html;
+    $("answer-wrap").hidden = false;
+    $("vote-wrap").hidden = false;
+  }).catch(function (e) {
+    if (is404(e)) { box.innerHTML = '<p class="muted">Arena API not yet deployed — match detail will appear here once GET /api/matches/:id is live.</p>'; return; }
+    throw e;
+  });
+}
+
+/* ---- Forms ---- */
+$("new-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var msg = $("nm-msg");
+  var modelA = pickerModel("nm-a", "nm-a-custom"), modelB = pickerModel("nm-b", "nm-b-custom");
+  var promptId = $("nm-prompt").value, taskRef = $("nm-task").value.trim(), seed = $("nm-seed").value.trim();
+  if (!modelA || !modelB) { msg.textContent = "pick or type both model ids"; return; }
+  if (!promptId && !taskRef) { msg.textContent = "pick a prompt or type a taskRef"; return; }
+  msg.textContent = "starting…";
+  var body = { promptId: promptId || undefined, taskRef: taskRef || undefined, modelA: modelA, modelB: modelB };
+  if (seed) body.seed = seed;
+  post("api/matches", body).then(function (r) {
+    var m = unwrapMatch(r), id = mid(m) || mid(r);
+    msg.textContent = "started" + (id ? " (" + id + ")" : "");
+    if (id) state.matchId = id;
+    $("nm-task").value = ""; $("nm-seed").value = "";
+    return loadMatches().then(function () { if (state.matchId) loadDetail(); });
+  }).catch(function (e) { msg.textContent = "start failed"; showErr("Start match failed: " + e.message); });
+});
+$("answer-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var msg = $("an-msg");
+  if (!state.matchId) { msg.textContent = "pick a match first"; return; }
+  var side = $("an-side").value, answer = $("an-text").value.trim();
+  if (!answer) { msg.textContent = "answer is required"; return; }
+  msg.textContent = "saving…";
+  post("api/matches/" + encodeURIComponent(state.matchId) + "/answers", { side: side, answer: answer })
+    .then(function () { msg.textContent = "saved"; $("an-text").value = ""; return loadDetail().then(loadMatches); })
+    .catch(function (e) { msg.textContent = "save failed"; showErr("Save answer failed: " + e.message); });
+});
+$("vote-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var msg = $("vt-msg");
+  if (!state.matchId) { msg.textContent = "pick a match first"; return; }
+  var judge = $("vt-judge").value.trim(), pick = $("vt-pick").value;
+  if (!judge) { msg.textContent = "judge name is required"; return; }
+  msg.textContent = "saving…";
+  post("api/matches/" + encodeURIComponent(state.matchId) + "/votes", { judge: judge, pick: pick })
+    .then(function () { msg.textContent = "saved"; $("vt-judge").value = ""; return loadDetail().then(function () { return loadLadder(); }).then(loadMatches); })
+    .catch(function (e) { msg.textContent = "save failed"; showErr("Save vote failed: " + e.message); });
+});
+
+function refresh(quiet) {
+  return Promise.all([loadLadder(), loadMatches(), loadPromptPicker(), loadDetail()]).then(function () {
+    showErr(null); setHealth(true, "api ok");
+  }).catch(function (e) {
+    if (!quiet || $("error").hidden) showErr("API unreachable: " + e.message + " — start server, then open the served origin.");
+    setHealth(false, "api down");
+  });
+}
+initModelPickers();
+refresh(false);
+state.timer = setInterval(function () { refresh(true); }, 5000);
+</script>
+</body>
+</html>

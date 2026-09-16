@@ -1,0 +1,56 @@
+{
+  "id": "demo-spark-term",
+  "model": "bdx-ai/go-muse-spark-1.3-contributor",
+  "suite": "terminal-mini",
+  "mode": "mock",
+  "status": "completed",
+  "results": [
+    {
+      "taskId": "term-01",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 711,
+      "log": "synthetic demo result — PASS term-01 in demo-spark-term (mock, no real agent executed)"
+    },
+    {
+      "taskId": "term-02",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 848,
+      "log": "synthetic demo result — PASS term-02 in demo-spark-term (mock, no real agent executed)"
+    },
+    {
+      "taskId": "term-03",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 985,
+      "log": "synthetic demo result — PASS term-03 in demo-spark-term (mock, no real agent executed)"
+    },
+    {
+      "taskId": "term-04",
+      "pass": true,
+      "score01": 1,
+      "durationMs": 1122,
+      "log": "synthetic demo result — PASS term-04 in demo-spark-term (mock, no real agent executed)"
+    },
+    {
+      "taskId": "term-05",
+      "pass": false,
+      "score01": 0,
+      "durationMs": 1137,
+      "log": "synthetic demo result — FAIL term-05 in demo-spark-term (mock, no real agent executed)"
+    },
+    {
+      "taskId": "term-06",
+      "pass": false,
+      "score01": 0,
+      "durationMs": 1274,
+      "log": "synthetic demo result — FAIL term-06 in demo-spark-term (mock, no real agent executed)"
+    }
+  ],
+  "avgScore": 0.6666666666666666,
+  "passRate": 0.6666666666666666,
+  "startedAt": "2026-09-16T11:15:42.635Z",
+  "finishedAt": "2026-09-16T11:15:42.635Z",
+  "demo": true
+}

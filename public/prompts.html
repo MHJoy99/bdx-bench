@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BDX Bench — Prompt bank</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+nav a{color:var(--acc);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+nav a:hover{text-decoration:underline}
+footer a{color:var(--acc);text-decoration:none}
+footer a:hover{text-decoration:underline}
+form.stack{display:grid;gap:10px}
+input[type="text"],textarea{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:inherit;font-size:13px;width:100%}
+textarea{min-height:90px;resize:vertical;white-space:pre-wrap}
+.body{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;margin:8px 0 0}
+.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mut);margin:0 4px 2px 0}
+.score-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.score-row output{font-variant-numeric:tabular-nums;min-width:92px}
+input[type="range"]{accent-color:var(--acc);flex:1;min-width:160px}
+.hint{font-size:12px}
+.meta{font-size:12px;display:flex;flex-wrap:wrap;gap:4px 12px;margin:6px 0}
+</style>
+</head>
+<body>
+<header class="top">
+<h1>BDX Bench — Prompt bank</h1>
+<nav><a href="index.html">← Leaderboard</a> <a href="arena.html" style="margin-left:12px">Arena →</a></nav>
+</header>
+<main>
+<div id="error" class="error" hidden></div>
+
+<section class="panel" aria-label="Prompt bank">
+<h2>Prompt bank</h2>
+<p id="bank-note" class="muted">loading…</p>
+<ul id="bank" class="runs"></ul>
+</section>
+
+<section class="panel" aria-label="New prompt">
+<h2>New prompt</h2>
+<form id="new-form" class="stack">
+<label>Title <input id="np-title" type="text" maxlength="200" placeholder="e.g. Summarize a diff" required></label>
+<label>Body <textarea id="np-body" placeholder="Paste the exact prompt text to benchmark…" required></textarea></label>
+<label>Tags (comma-separated) <input id="np-tags" type="text" placeholder="e.g. reasoning, code"></label>
+<div class="row"><button type="submit">Save prompt</button><span id="np-msg" class="muted" role="status"></span></div>
+</form>
+</section>
+
+<section class="panel" aria-label="Prompt detail">
+<h2>Detail</h2>
+<div id="detail" class="muted">Click a prompt above to see its full body and scores.</div>
+<div id="score-wrap" hidden>
+<h2 style="margin-top:14px">Add score</h2>
+<form id="score-form" class="stack">
+<label>Model
+<select id="sc-model"></select>
+</label>
+<label>Custom model id (used when “custom…” is picked, or overrides the picker when filled)
+<input id="sc-custom" type="text" placeholder="e.g. bdx-ai/my-model">
+</label>
+<label>Answer <textarea id="sc-answer" placeholder="Paste the model's answer…" required></textarea></label>
+<label>Score (0–10)
+<span class="score-row"><input id="sc-score" type="range" min="0" max="10" step="0.5" value="7"><output id="sc-out" for="sc-score">7 / 10 · 0.70</output></span>
+</label>
+<label>Notes <input id="sc-notes" type="text" maxlength="500" placeholder="optional notes"></label>
+<div class="row"><button type="submit">Save score</button><span id="sc-msg" class="muted" role="status"></span></div>
+</form>
+</div>
+</section>
+</main>
+<footer class="muted"><a href="index.html">← Back to leaderboard</a> · Local only · manual prompt benchmarking</footer>
+<script>
+"use strict";
+/* Prompt bank — vanilla JS, relative URLs, no deps. */
+var $ = function (id) { return document.getElementById(id); };
+var KNOWN_MODELS = [
+  "bdx-ai/gpt-5.6-luna",
+  "bdx-ai/go-muse-spark-1.3-contributor",
+  "bdx-ai/gemini-3.7-flash-tiered",
+  "bdx-ai/gemini-3.8-flash-tiered"
+];
+var state = { promptId: null };
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function showErr(msg) { var e = $("error"); if (!msg) { e.hidden = true; e.textContent = ""; return; } e.hidden = false; e.textContent = msg; }
+function get(url) { return fetch(url, { headers: { accept: "application/json" } }).then(function (r) { if (!r.ok) throw new Error(url + " → HTTP " + r.status); return r.json(); }); }
+function post(url, body) {
+  return fetch(url, { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify(body) })
+    .then(function (r) { if (!r.ok) throw new Error(url + " → HTTP " + r.status); return r.json().catch(function () { return {}; }); });
+}
+function asList(j) { if (Array.isArray(j)) return j; if (j && Array.isArray(j.prompts)) return j.prompts; if (j && Array.isArray(j.items)) return j.items; return []; }
+function pid(p) { return p && (p.id || p._id || p.promptId) != null ? String(p.id || p._id || p.promptId) : ""; }
+function tagsOf(p) {
+  var t = p ? p.tags : null;
+  if (Array.isArray(t)) return t.map(String);
+  if (typeof t === "string" && t) return t.split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+  return [];
+}
+function scoreCount(p) {
+  if (!p) return 0;
+  if (typeof p.scoreCount === "number") return p.scoreCount;
+  if (typeof p.scoresCount === "number") return p.scoresCount;
+  if (Array.isArray(p.scores)) return p.scores.length;
+  return 0;
+}
+function fmtDate(v) { if (!v) return "—"; var d = new Date(v); return isNaN(d.getTime()) ? String(v) : d.toLocaleString(); }
+function bar(v01) { var n = Number(v01), w = isFinite(n) ? Math.max(0, Math.min(1, n)) * 100 : 0; return '<span class="bar"><i style="width:' + w.toFixed(1) + '%"></i></span>'; }
+function score01Of(s) {
+  if (s == null || typeof s !== "object") return 0;
+  if (isFinite(Number(s.score01))) return Math.max(0, Math.min(1, Number(s.score01)));
+  if (isFinite(Number(s.score))) { var n = Number(s.score); return n > 1 ? Math.max(0, Math.min(1, n / 10)) : Math.max(0, Math.min(1, n)); }
+  return 0;
+}
+function loadBank() {
+  return get("api/prompts").then(function (j) {
+    var list = asList(j), ul = $("bank"), note = $("bank-note");
+    showErr(null);
+    if (!list.length) { note.textContent = "No prompts yet — add the first one below."; ul.textContent = ""; return; }
+    note.textContent = list.length + (list.length === 1 ? " prompt" : " prompts") + " — click one for detail.";
+    ul.textContent = "";
+    list.forEach(function (p) {
+      var id = pid(p); if (!id) return;
+      var li = document.createElement("li"), b = document.createElement("button");
+      b.type = "button"; if (id === state.promptId) b.className = "sel";
+      b.innerHTML = "<strong>" + esc(p.title || "(untitled)") + "</strong> " +
+        "<small>" + esc(tagsOf(p).join(", ") || "no tags") + " · " + esc(fmtDate(p.createdAt || p.created_at || p.date)) +
+        " · " + esc(scoreCount(p)) + " score" + (scoreCount(p) === 1 ? "" : "s") + "</small>";
+      b.onclick = function () { state.promptId = id; loadDetail(); Array.prototype.forEach.call(ul.querySelectorAll("button"), function (x) { x.classList.remove("sel"); }); b.classList.add("sel"); };
+      li.appendChild(b); ul.appendChild(li);
+    });
+  }).catch(function (e) {
+    if (/HTTP 404/.test(e.message)) {
+      $("bank-note").textContent = "Bank API not yet deployed — you can still use the “New prompt” form once the server supports it.";
+      $("bank").textContent = "";
+      return;
+    }
+    showErr("Prompt bank failed: " + e.message + " — is the server on http://127.0.0.1:8765?");
+  });
+}
+function unwrapPrompt(j) { return (j && typeof j === "object" && j.prompt && typeof j.prompt === "object") ? j.prompt : (j || {}); }
+function scoresOf(j, p) {
+  if (Array.isArray(j.scores)) return j.scores;
+  if (Array.isArray(p.scores)) return p.scores;
+  if (Array.isArray(p.ratings)) return p.ratings;
+  return [];
+}
+function loadDetail() {
+  if (!state.promptId) return Promise.resolve();
+  var d = $("detail");
+  d.innerHTML = '<p class="muted">loading…</p>';
+  return get("api/prompts/" + encodeURIComponent(state.promptId)).then(function (j) {
+    showErr(null);
+    var p = unwrapPrompt(j), scores = scoresOf(j, p);
+    var tags = tagsOf(p).map(function (t) { return '<span class="tag">' + esc(t) + "</span>"; }).join("") || '<span class="muted">no tags</span>';
+    var rows = scores.length ? scores.map(function (s) {
+      var v = score01Of(s), raw = (s.score != null ? s.score : (v * 10).toFixed(1));
+      return "<tr><td>" + esc(s.model || s.modelId || "?") + "</td>" +
+        '<td><span class="cell">' + bar(v) + esc(String(raw)) + "</span></td>" +
+        "<td>" + esc(s.notes || "") + "</td><td>" + esc(fmtDate(s.createdAt || s.created_at || s.date)) + "</td></tr>";
+    }).join("") : '<tr><td colspan="4" class="muted">no scores yet — add the first one below.</td></tr>';
+    d.innerHTML =
+      "<h3 style=\"margin:0 0 4px\">" + esc(p.title || "(untitled)") + "</h3>" +
+      '<div class="meta"><span class="muted">' + esc(fmtDate(p.createdAt || p.created_at || p.date)) + "</span><span>" + tags + "</span></div>" +
+      '<div class="body">' + esc(p.body || p.text || p.content || "") + "</div>" +
+      '<table style="margin-top:10px"><thead><tr><th>Model</th><th>Score</th><th>Notes</th><th>Date</th></tr></thead><tbody>' + rows + "</tbody></table>";
+    $("score-wrap").hidden = false;
+  }).catch(function (e) { showErr("Prompt detail failed: " + e.message); });
+}
+function initModelPicker() {
+  var sel = $("sc-model");
+  sel.textContent = "";
+  KNOWN_MODELS.forEach(function (m) { sel.appendChild(new Option(m, m)); });
+  sel.appendChild(new Option("custom…", "custom"));
+}
+function currentModel() {
+  var custom = $("sc-custom").value.trim();
+  if ($("sc-model").value === "custom" || custom) return custom || "";
+  return $("sc-model").value;
+}
+function syncScoreOut() {
+  var v = Number($("sc-score").value) || 0;
+  $("sc-out").textContent = v + " / 10 · " + (v / 10).toFixed(2);
+}
+$("new-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var msg = $("np-msg"), title = $("np-title").value.trim(), body = $("np-body").value.trim();
+  var tags = $("np-tags").value.split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+  if (!title || !body) { msg.textContent = "title and body are required"; return; }
+  msg.textContent = "saving…";
+  post("api/prompts", { title: title, body: body, tags: tags }).then(function (r) {
+    var p = unwrapPrompt(r), id = pid(p) || pid(r);
+    msg.textContent = "saved" + (id ? " (" + id + ")" : "");
+    $("np-title").value = ""; $("np-body").value = ""; $("np-tags").value = "";
+    if (id) state.promptId = id;
+    return loadBank().then(function () { if (state.promptId) loadDetail(); });
+  }).catch(function (e) { msg.textContent = "save failed"; showErr("Save prompt failed: " + e.message); });
+});
+$("score-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var msg = $("sc-msg");
+  if (!state.promptId) { msg.textContent = "pick a prompt first"; return; }
+  var model = currentModel(), answer = $("sc-answer").value.trim(), s10 = Number($("sc-score").value) || 0;
+  var notes = $("sc-notes").value.trim();
+  if (!model) { msg.textContent = "pick or type a model id"; return; }
+  if (!answer) { msg.textContent = "answer is required"; return; }
+  msg.textContent = "saving…";
+  post("api/scores", { promptId: state.promptId, model: model, answer: answer, score: s10, score01: s10 / 10, notes: notes })
+    .then(function () {
+      msg.textContent = "saved";
+      $("sc-answer").value = ""; $("sc-notes").value = "";
+      return loadDetail().then(loadBank);
+    })
+    .catch(function (e) { msg.textContent = "save failed"; showErr("Save score failed: " + e.message); });
+});
+$("sc-score").addEventListener("input", syncScoreOut);
+initModelPicker();
+syncScoreOut();
+loadBank();
+</script>
+</body>
+</html>
