@@ -228,8 +228,8 @@ check(lb.length === 2, "leaderboard covers both models");
 check(lb[0]?.modelSlug === MUSE && lb[1]?.modelSlug === GEMINI, "leaderboard order muse > gemini");
 check(lb.every((r, i) => r.rank === i + 1), "leaderboard ranks sequential");
 check(
-  lb.every((r) => Number.isNaN(r.pricePer1MBlended)),
-  "leaderboard blended price NaN (Not measured)",
+  demoLeaderboard.every((row) => row.pricePer1MBlended === null),
+  "leaderboard blended price null (Not measured)",
 );
 check(
   JSON.stringify(lb.map((r) => r.modelSlug)) ===
