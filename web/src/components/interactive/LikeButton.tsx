@@ -5,6 +5,7 @@
 // aria-live count. Copy: "Community likes — stored on this server".
 
 import { useCallback, useEffect, useState } from "react";
+import { Heart } from "lucide-react";
 
 export interface LikeButtonProps {
   modelSlug: string;
@@ -123,11 +124,20 @@ export default function LikeButton({
         disabled={pending}
         aria-pressed={liked}
         aria-label={`${liked ? "Unlike" : "Like"} ${modelSlug}`}
-        className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+        className={`group inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-[background-color,border-color,transform,box-shadow] duration-150 active:scale-[0.96] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
+          liked
+            ? "border-rose-500/40 bg-rose-500/10 text-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.15)]"
+            : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:bg-[var(--elevated)] hover:text-[var(--text)]"
+        }`}
       >
-        <span aria-hidden="true">{liked ? "♥" : "♡"}</span>
+        <Heart
+          className={`size-4 transition-[transform,color] duration-200 group-hover:scale-110 motion-reduce:transform-none ${
+            liked ? "fill-rose-500 text-rose-500 animate-in zoom-in-75 duration-200" : "text-[var(--text-tertiary)]"
+          }`}
+          aria-hidden="true"
+        />
         <span>{liked ? "Liked" : "Like"}</span>
-        <span aria-live="polite" aria-label={`${count} community likes`}>
+        <span aria-live="polite" aria-label={`${count} community likes`} className="font-mono text-xs font-semibold tabular-nums">
           {count}
         </span>
       </button>

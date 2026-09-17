@@ -1,0 +1,6 @@
+# AGENT B interactive store — ignore runtime JSON + crash-safe tmp files.
+*.json
+*.tmp
+*.tmp-*
+!.gitkeep
+!.gitignore

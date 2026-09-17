@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { KeyboardEvent } from "react";
+import { Star } from "lucide-react";
 
 export interface StarRatingProps {
   modelSlug: string;
@@ -162,25 +163,36 @@ export default function StarRating({
         role="radiogroup"
         aria-label={`Rate ${modelSlug} from 1 to 5 stars`}
         onKeyDown={onKeyDown}
+        onMouseLeave={() => setFocusStar(userRating ?? 0)}
         className="inline-flex items-center gap-1"
       >
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button
-            key={n}
-            id={`star-${modelSlug}-${n}`}
-            type="button"
-            role="radio"
-            aria-checked={userRating === n}
-            aria-label={`${n} star${n > 1 ? "s" : ""}`}
-            disabled={pending}
-            onClick={() => void submit(n)}
-            onFocus={() => setFocusStar(n)}
-            onMouseEnter={() => setFocusStar(n)}
-            className="rounded p-1 text-xl leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
-          >
-            <span aria-hidden="true">{n <= display ? "★" : "☆"}</span>
-          </button>
-        ))}
+        {[1, 2, 3, 4, 5].map((n) => {
+          const isFilled = n <= display;
+          return (
+            <button
+              key={n}
+              id={`star-${modelSlug}-${n}`}
+              type="button"
+              role="radio"
+              aria-checked={userRating === n}
+              aria-label={`${n} star${n > 1 ? "s" : ""}`}
+              disabled={pending}
+              onClick={() => void submit(n)}
+              onFocus={() => setFocusStar(n)}
+              onMouseEnter={() => setFocusStar(n)}
+              className="group rounded-[4px] p-1 transition-transform duration-100 hover:scale-115 active:scale-95 motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:opacity-60"
+            >
+              <Star
+                className={`size-5 transition-[color,filter] duration-150 ${
+                  isFilled
+                    ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]"
+                    : "text-[var(--text-tertiary)] fill-transparent group-hover:text-amber-300"
+                }`}
+                aria-hidden="true"
+              />
+            </button>
+          );
+        })}
       </div>
       <p aria-live="polite" className="mt-1 text-sm text-muted-foreground">
         {count === 0

@@ -85,13 +85,17 @@ function isMissing(model: Model, key: CompareMetricDef["key"]): boolean {
 
 export function CompareTable({ models }: CompareTableProps) {
   return (
-    <section aria-labelledby="compare-table-heading" className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="flex flex-wrap items-center gap-2 border-b border-border p-4">
+    <section
+      data-testid="compare-table"
+      aria-labelledby="compare-table-heading"
+      className="overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
+    >
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] p-4">
         <h2 id="compare-table-heading" className="text-sm font-semibold">
           Side-by-side metrics
         </h2>
         <span className="flex-1" />
-        <p className="text-[11px] text-muted-foreground">Accent marks the stronger value per metric; tied values both highlight.</p>
+        <p className="text-[11px] text-[var(--text-secondary)]">Accent marks the stronger value per metric; tied values both highlight.</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -101,17 +105,17 @@ export function CompareTable({ models }: CompareTableProps) {
             Highlighted cells are stronger in that single metric only; no overall winner is declared.
           </caption>
           <thead>
-            <tr className="border-b border-border">
-              <th scope="col" className="sticky left-0 bg-card p-3 text-left align-bottom">
+            <tr className="border-b border-[var(--border)]">
+              <th scope="col" className="sticky left-0 bg-[var(--surface)] shadow-[1px_0_0_0_var(--border)] p-3 text-left align-bottom z-10">
                 <span className="sr-only">Metric</span>
               </th>
               {models.map((m) => (
                 <th key={m.slug} scope="col" className="min-w-[140px] p-3 text-left align-bottom">
-                  <span className="block font-semibold leading-tight">{m.name}</span>
-                  <span className="mt-0.5 block truncate font-mono text-[11px] font-normal text-muted-foreground">
+                  <span className="block font-semibold leading-tight text-[var(--text)]">{m.name}</span>
+                  <span className="mt-0.5 block truncate font-mono text-[11px] font-normal text-[var(--text-tertiary)]">
                     {m.slug}
                   </span>
-                  <span className="mt-0.5 block text-[11px] font-normal text-muted-foreground">
+                  <span className="mt-0.5 block text-[11px] font-normal text-[var(--text-secondary)]">
                     {m.family} · {m.provider}
                   </span>
                 </th>
@@ -128,14 +132,14 @@ export function CompareTable({ models }: CompareTableProps) {
               });
               const tied = best.size > 1;
               return (
-                <tr key={metric.key} className="border-b border-border last:border-b-0">
+                <tr key={metric.key} className="border-b border-[var(--border)]/70 last:border-b-0 even:bg-[var(--surface)] odd:bg-[var(--elevated)]/25">
                   <th
                     scope="row"
-                    className="sticky left-0 max-w-[180px] bg-card p-3 text-left align-top font-medium"
+                    className="sticky left-0 max-w-[180px] bg-[var(--surface)] shadow-[1px_0_0_0_var(--border)] p-3 text-left align-top font-medium z-10"
                     title={metric.hint}
                   >
                     <span className="block text-[13px]">{metric.label}</span>
-                    <span className="mt-0.5 hidden text-[11px] font-normal text-muted-foreground lg:block">
+                    <span className="mt-0.5 hidden text-[11px] font-normal text-[var(--text-secondary)] lg:block">
                       {metric.hint}
                     </span>
                   </th>
@@ -150,21 +154,14 @@ export function CompareTable({ models }: CompareTableProps) {
                         title={stronger ? `Stronger in ${metric.label} (this metric only)${tied ? ", tied" : ""}` : undefined}
                         className={cn(
                           "p-3 align-top",
-                          stronger &&
-                            "bg-[#B8FF5A]/10 shadow-[inset_0_2px_0_0_#3F7A00] dark:shadow-[inset_0_2px_0_0_#B8FF5A]",
+                          stronger && "bg-[var(--accent-muted)]/20",
                         )}
                       >
-                        <span className={cn("inline-flex items-center gap-1.5", stronger && "font-semibold")}>
-                          {stronger ? (
-                            <span
-                              aria-hidden="true"
-                              className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#3F7A00] dark:bg-[#B8FF5A]"
-                            />
-                          ) : null}
+                        <span className={cn("inline-flex items-center gap-1.5", stronger && "rounded-[4px] bg-[var(--accent-muted)] border border-[var(--accent-border)] px-1.5 py-0.5 text-[var(--accent-ink)] font-semibold font-mono")}>
                           {text}
                           {stronger ? <span className="sr-only"> (stronger in {metric.label}{tied ? ", tied" : ""})</span> : null}
                         </span>
-                        {sub ? <span className="mt-0.5 block text-[11px] text-muted-foreground">{sub}</span> : null}
+                        {sub ? <span className="mt-0.5 block text-[11px] text-[var(--text-secondary)]">{sub}</span> : null}
                       </td>
                     );
                   })}
@@ -175,7 +172,7 @@ export function CompareTable({ models }: CompareTableProps) {
         </table>
       </div>
 
-      <p className="border-t border-border p-3 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="border-t border-[var(--border)] p-3 text-[11px] leading-relaxed text-[var(--text-secondary)]">
         Per-metric highlights only — no overall winner is declared. Scores 0–100 (higher is better); price and time to
         first token highlight the lower value; release highlights the newest date. Tied values both highlight.
       </p>

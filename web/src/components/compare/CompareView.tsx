@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Check, Copy } from "lucide-react";
 import { MODELS } from "@/lib/data";
 import type { Model } from "@/lib/types";
 import {
@@ -150,9 +151,10 @@ export function CompareView({ initialModels }: CompareViewProps) {
           onClick={copyLink}
           disabled={selected.length === 0}
           aria-live="polite"
-          className="rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F7A00] disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:outline-[#B8FF5A]"
+          className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium transition-[background-color,border-color,transform] active:scale-[0.98] hover:bg-[var(--elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {copied ? "Link copied ✓" : "Copy share link"}
+          {copied ? <Check className="size-4 text-[var(--accent-ink)]" /> : <Copy className="size-4 text-[var(--text-secondary)]" />}
+          <span>{copied ? "Link copied ✓" : "Copy share link"}</span>
         </button>
         <span className="truncate font-mono text-xs text-muted-foreground">{shareHref}</span>
       </div>
@@ -181,8 +183,9 @@ export function CompareView({ initialModels }: CompareViewProps) {
         <CompareSkeleton />
       ) : showEmpty ? (
         <section
+          data-testid="empty-state"
           aria-labelledby="compare-empty-heading"
-          className="rounded-lg border border-dashed border-border bg-card p-8 text-center"
+          className="rounded-[10px] border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-8 text-center"
         >
           <h2 id="compare-empty-heading" className="text-base font-semibold">
             Select at least two models

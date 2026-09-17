@@ -6,6 +6,7 @@
 // counts. Copy: "Showdown vote — match m-001, open".
 
 import { useCallback, useEffect, useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 
 export interface VotePanelProps {
   matchId?: string;
@@ -133,7 +134,7 @@ export default function VotePanel({ matchId = DEFAULT_MATCH_ID, className }: Vot
     <section aria-label={`Showdown vote ${match.id}`} className={className}>
       <div className="flex items-center gap-2">
         <h2 className="text-base font-semibold">Showdown vote</h2>
-        <span className="rounded-full border px-2 py-0.5 text-xs">
+        <span className="font-mono text-[11px] rounded-full border border-[var(--border-strong)] bg-[var(--elevated)] px-2 py-0.5 text-[var(--text-secondary)]">
           match {match.id} · {match.status}
         </span>
       </div>
@@ -144,15 +145,22 @@ export default function VotePanel({ matchId = DEFAULT_MATCH_ID, className }: Vot
             { side: "B" as Side, slug: match.sideB, count: match.counts.B, pct: pctB },
           ]
         ).map((row) => (
-          <div key={row.side} className="rounded-lg border p-3">
+          <div
+            key={row.side}
+            className={`relative rounded-[10px] border p-3.5 transition-[border-color,background-color] duration-200 ${
+              match.userVote === row.side
+                ? "border-[var(--accent)] bg-[var(--accent-muted)]/15 shadow-[0_0_12px_rgba(184,255,90,0.1)]"
+                : "border-[var(--border)] bg-[var(--surface)]"
+            }`}
+          >
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium">
-                <span className="mr-2 rounded border px-1 text-xs text-muted-foreground">
+                <span className="mr-2 font-mono rounded-[4px] border border-[var(--border-strong)] bg-[var(--elevated)] px-1.5 py-0.5 text-xs font-bold text-[var(--text)]">
                   Side {row.side}
                 </span>
                 {row.slug}
               </p>
-              <p className="text-sm tabular-nums">
+              <p className="font-mono text-sm tabular-nums font-semibold text-[var(--text)]">
                 {row.count} ({row.pct}%)
               </p>
             </div>
@@ -162,9 +170,12 @@ export default function VotePanel({ matchId = DEFAULT_MATCH_ID, className }: Vot
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label={`Side ${row.side} vote share`}
-              className="mt-2 h-2 overflow-hidden rounded bg-muted"
+              className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--elevated)] border border-[var(--border)]"
             >
-              <div className="h-full bg-primary" style={{ width: `${row.pct}%` }} />
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[#8be320] transition-[width] duration-500 ease-out shadow-[0_0_8px_rgba(184,255,90,0.4)]"
+                style={{ width: `${row.pct}%` }}
+              />
             </div>
             <button
               type="button"
@@ -172,13 +183,25 @@ export default function VotePanel({ matchId = DEFAULT_MATCH_ID, className }: Vot
               disabled={pendingSide !== null}
               aria-pressed={match.userVote === row.side}
               aria-label={`Vote for side ${row.side} (${row.slug})`}
-              className="mt-2 w-full rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+              className={`mt-3 inline-flex items-center justify-center gap-1.5 w-full rounded-[6px] border px-3 py-1.5 text-sm font-semibold transition-[background-color,border-color,transform] active:scale-[0.98] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
+                match.userVote === row.side
+                  ? "border-[var(--accent-border)] bg-[var(--accent)] text-[var(--accent-foreground)] shadow-sm"
+                  : "border-[var(--border-strong)] bg-[var(--elevated)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--elevated)]/80"
+              }`}
             >
-              {match.userVote === row.side
-                ? "Your pick ✓"
-                : pendingSide === row.side
-                  ? "Voting…"
-                  : `Vote ${row.side}`}
+              {match.userVote === row.side ? (
+                <>
+                  <Check className="size-4" aria-hidden="true" />
+                  <span>Your pick ✓</span>
+                </>
+              ) : pendingSide === row.side ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                  <span>Voting…</span>
+                </>
+              ) : (
+                `Vote ${row.side}`
+              )}
             </button>
           </div>
         ))}

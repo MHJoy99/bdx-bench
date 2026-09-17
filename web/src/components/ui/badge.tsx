@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { methodologyVersion } from "@/lib/tokens";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 whitespace-nowrap rounded-[6px] border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.04em] leading-4 transition-colors",
+  "inline-flex items-center gap-1 whitespace-nowrap rounded-[6px] border px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider leading-4 transition-colors",
   {
     variants: {
       variant: {
@@ -14,10 +14,13 @@ const badgeVariants = cva(
         accent:
           "border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-ink)]",
         pass: "border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-ink)]",
-        fail: "border-transparent bg-[var(--danger-muted)] text-[var(--danger)]",
+        fail: "border-[var(--danger-muted)] bg-[var(--danger-muted)] text-[var(--danger)]",
         warn: "border-[var(--warning-border)] bg-[var(--warning-muted)] text-[var(--warning)]",
         info: "border-[var(--info-border)] bg-[var(--info-muted)] text-[var(--info)]",
         outline: "border-[var(--border-strong)] bg-transparent text-[var(--text-secondary)]",
+        gold: "border-amber-400/40 bg-amber-400/10 text-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.15)]",
+        silver: "border-slate-300/40 bg-slate-300/10 text-slate-200",
+        bronze: "border-amber-700/40 bg-amber-700/15 text-amber-400",
       },
     },
     defaultVariants: { variant: "default" },

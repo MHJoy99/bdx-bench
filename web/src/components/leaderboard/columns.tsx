@@ -95,10 +95,19 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       cell: ({ row }) => {
         const rank = row.original.rank ?? 0;
         const delta = row.original.rankDelta ?? null;
+        const rankBadgeStyle =
+          rank === 1
+            ? "border-amber-400/40 bg-amber-400/10 text-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.2)]"
+            : rank === 2
+              ? "border-slate-300/40 bg-slate-300/10 text-slate-200"
+              : rank === 3
+                ? "border-amber-700/40 bg-amber-700/15 text-amber-400"
+                : "border-[var(--border)] bg-[var(--elevated)] text-[var(--text-secondary)]";
+
         return (
-          <span className="inline-flex items-center gap-1.5 tnum">
+          <span className="inline-flex items-center gap-1.5 font-mono tnum">
             <span
-              className="inline-flex h-7 min-w-7 items-center justify-center rounded-[6px] bg-[var(--elevated)] px-1.5 text-[13px] font-semibold transition-transform duration-300"
+              className={`inline-flex h-7 min-w-7 items-center justify-center rounded-[6px] border px-1.5 text-[12px] font-bold ${rankBadgeStyle}`}
               aria-label={`Rank ${rank}`}
             >
               {rank || "—"}
@@ -109,8 +118,8 @@ export function getLeaderboardColumns(): LegacyColumnDef<
                 title={delta > 0 ? `Up ${delta}` : `Down ${Math.abs(delta)}`}
                 className={
                   delta > 0
-                    ? "text-[11px] font-medium text-[var(--success)] transition-opacity duration-300"
-                    : "text-[11px] font-medium text-[var(--danger)] transition-opacity duration-300"
+                    ? "text-[11px] font-semibold text-[var(--accent-ink)]"
+                    : "text-[11px] font-semibold text-[var(--danger)]"
                 }
               >
                 {delta > 0 ? `▲${delta}` : `▼${Math.abs(delta)}`}
@@ -132,8 +141,9 @@ export function getLeaderboardColumns(): LegacyColumnDef<
         return (
           <span className="flex min-w-0 flex-col">
             <Link
+              data-testid="model-link"
               href={`/models/${r.slug}`}
-              className="truncate font-medium text-[var(--text)] underline-offset-4 hover:underline"
+              className="truncate font-medium text-[var(--text)] underline-offset-4 hover:underline hover:text-[var(--accent)] transition-colors"
               title={r.name}
             >
               {r.name}

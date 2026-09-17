@@ -1,69 +1,101 @@
 import Link from "next/link";
+import { ArrowRight, Flame, Gamepad2, GitCompare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function Hero() {
   return (
     <section
       aria-labelledby="home-hero-heading"
-      className="relative overflow-hidden rounded-[10px] border border-bdx-border bg-bdx-surface px-6 py-12 sm:px-10 sm:py-16 lg:px-14"
+      className="relative overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-6 py-12 sm:px-10 sm:py-16 lg:px-12 shadow-[var(--shadow-card)]"
     >
+      {/* Ambient background glow & subtle technical grid */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-bdx-accent/10 blur-3xl"
+        className="pointer-events-none absolute -right-16 -top-24 h-80 w-80 rounded-full bg-[var(--accent-muted)] blur-[80px]"
       />
-      <div className="relative max-w-3xl">
-        <p className="text-xs text-bdx-muted">
-          Zombie Flamethrower Showdown · September 2026 round
-        </p>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(#222a33_1px,transparent_1px)] [background-size:24px_24px] opacity-25"
+      />
 
+      <div className="relative z-10 max-w-3xl">
+        {/* Top badge pill */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--elevated)]/80 px-3 py-1 text-xs text-[var(--text-secondary)] shadow-sm backdrop-blur-sm transition-colors hover:border-[var(--accent-border)]">
+          <span className="flex h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
+          <span className="font-semibold text-[var(--text)]">⚡ Independent AI Intelligence</span>
+          <span className="text-[var(--text-tertiary)]" aria-hidden="true">·</span>
+          <span className="text-[var(--text-secondary)]">Zombie Showdown Round (Sep 2026)</span>
+        </div>
+
+        {/* Headline */}
         <h1
           id="home-hero-heading"
-          className="mt-4 text-4xl font-bold tracking-tight text-bdx-ink sm:text-5xl lg:text-6xl"
+          className="mt-5 font-display text-4xl font-extrabold tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl text-balance leading-[1.08]"
         >
-          AI models, measured.
+          AI models,{" "}
+          <span className="text-[var(--accent-ink)]">measured.</span>
         </h1>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-bdx-muted sm:text-lg">
-          Independent benchmarks, pricing, speed, capability and model
+
+        {/* Subtitles with high readability */}
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
+          Independent benchmarks, pricing, speed, capability, and model
           intelligence in one place.
         </p>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-bdx-muted">
-          Current round: Muse Spark 1.3 scores 92 and Gemini 3.8 Flash scores
-          88 — Showdown Score (manual game-build evaluation). Play both builds
-          and compare.
-        </p>
 
+        <div className="mt-3.5 flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+          <Flame className="size-4 shrink-0 text-[#ffc53d]" aria-hidden="true" />
+          <span>
+            Latest Game-Build Showdown: <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (92)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (88)</strong>
+          </span>
+        </div>
+
+        {/* High-impact CTAs */}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Link
             href="/leaderboard"
-            className={buttonVariants({ size: "lg" })}
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "group relative overflow-hidden font-semibold shadow-[0_0_20px_-3px_rgba(184,255,90,0.35)] hover:shadow-[0_0_28px_-2px_rgba(184,255,90,0.5)] transition-all",
+            )}
           >
-            Explore Leaderboard
+            <span>Explore Leaderboard</span>
+            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
           </Link>
           <Link
             href="/compare?models=muse-spark-1-3,gemini-3-8-flash"
-            className={buttonVariants({ variant: "outline", size: "lg" })}
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "lg" }),
+              "border-[var(--border-strong)] hover:border-[var(--accent-border)] transition-colors",
+            )}
           >
-            Compare Models
+            <GitCompare className="size-4 text-[var(--text-tertiary)]" aria-hidden="true" />
+            <span>Compare Models</span>
           </Link>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+        {/* Playable builds micro-badges */}
+        <div className="mt-7 flex flex-wrap items-center gap-2 pt-2 text-xs">
+          <span className="font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Play Interactive Builds:</span>
           <Link
             href="/play/pyro-vs-zombies"
-            className="underline underline-offset-4"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
-            Play Muse build
+            <Gamepad2 className="size-3.5 text-[var(--accent)]" aria-hidden="true" />
+            <span>Pyro vs Zombies (Muse Spark · 92)</span>
           </Link>
           <Link
             href="/play/pyroclasm-inferno"
-            className="underline underline-offset-4"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
-            Play Gemini build
+            <Gamepad2 className="size-3.5 text-[#7dd3fc]" aria-hidden="true" />
+            <span>Pyroclasm Inferno (Gemini 3.8 · 88)</span>
           </Link>
         </div>
 
-        <p className="mt-6 text-xs tracking-wide text-bdx-muted">
-          Transparent methodology · Reproducible scoring · Playable builds
+        <p className="mt-6 text-[11px] font-mono tracking-wide text-[var(--text-tertiary)]">
+          TRANSPARENT METHODOLOGY · REPRODUCIBLE SCORING · PLAYABLE BUILDS
         </p>
       </div>
     </section>

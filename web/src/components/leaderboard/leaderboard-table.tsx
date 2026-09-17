@@ -345,11 +345,11 @@ export function LeaderboardTable() {
             aria-label="Leaderboard table, scrollable"
           >
             <table className="w-full min-w-[1180px] border-collapse text-left text-[13px]">
-              <thead className="sticky top-0 z-20">
+              <thead className="sticky top-0 z-20 backdrop-blur-md bg-[var(--surface)]/95 shadow-[0_1px_0_0_var(--border)]">
                 {table.getHeaderGroups().map((hg) => (
                   <tr
                     key={hg.id}
-                    className="border-b border-[var(--border)] bg-[var(--surface)]"
+                    className="border-b border-[var(--border)]"
                   >
                     {hg.headers.map((header) => {
                       const isModel = header.column.id === "model";
@@ -369,9 +369,9 @@ export function LeaderboardTable() {
                           }
                           className={
                             (isModel
-                              ? "sticky left-0 z-10 bg-[var(--surface)] shadow-[1px_0_0_0_var(--border)] "
+                              ? "sticky left-0 z-10 bg-[var(--surface)]/95 backdrop-blur-md shadow-[1px_0_0_0_var(--border)] "
                               : "") +
-                            "whitespace-nowrap px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--text-tertiary)]"
+                            "whitespace-nowrap px-3 py-2.5 text-[11px] font-mono font-semibold uppercase tracking-[0.05em] text-[var(--text-tertiary)]"
                           }
                         >
                           {header.isPlaceholder ? null : sortable ? (
@@ -386,7 +386,7 @@ export function LeaderboardTable() {
                               aria-label={`Sort by ${header.column.id}`}
                               className={`inline-flex items-center gap-1 rounded px-1 py-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] ${
                                 isSorted
-                                  ? "text-[var(--text)] underline decoration-[var(--accent)]/60 underline-offset-4"
+                                  ? "text-[var(--text)] underline decoration-[var(--accent)]/60 underline-offset-4 font-bold"
                                   : "hover:text-[var(--text)]"
                               }`}
                             >
@@ -408,8 +408,9 @@ export function LeaderboardTable() {
                 {pageRows.map((row) => (
                   <tr
                     key={row.id}
+                    data-testid="leaderboard-row"
                     aria-label={`Rank ${row.original.rank}: ${row.original.name}`}
-                    className="border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--elevated)]/60"
+                    className="group relative border-b border-[var(--border)]/70 transition-colors duration-150 last:border-0 even:bg-[var(--surface)] odd:bg-[var(--elevated)]/30 hover:!bg-[var(--elevated)]"
                   >
                     {row.getVisibleCells().map((cell) => {
                       const isModel = cell.column.id === "model";
@@ -418,8 +419,8 @@ export function LeaderboardTable() {
                           key={cell.id}
                           className={
                             (isModel
-                              ? "sticky left-0 z-10 bg-[var(--surface)] shadow-[1px_0_0_0_var(--border)] "
-                              : "") + "px-3 py-2 align-middle"
+                              ? "sticky left-0 z-10 bg-inherit shadow-[1px_0_0_0_var(--border)] "
+                              : "") + "px-3 py-2.5 align-middle"
                           }
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}

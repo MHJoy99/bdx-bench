@@ -1,59 +1,71 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222 47% 7%;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 7%;
-  --muted: 220 14% 96%;
-  --muted-foreground: 220 9% 40%;
-  --border: 220 13% 88%;
+  --card-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --border: 214 32% 91%;
   --radius: 0.625rem;
 }
 
 .dark {
-  --background: 222 20% 3%;
-  --foreground: 150 20% 96%;
-  --card: 222 18% 6%;
-  --card-foreground: 150 20% 96%;
-  --muted: 222 14% 10%;
-  --muted-foreground: 220 9% 62%;
-  --border: 222 14% 16%;
+  --background: 220 38% 6%;
+  --foreground: 210 40% 98%;
+  --card: 220 35% 9%;
+  --card-foreground: 210 40% 98%;
+  --muted: 220 28% 13%;
+  --muted-foreground: 217 19% 65%;
+  --border: 220 20% 18%;
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
     font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
   }
 }
 
 /*
- * BDX Bench contract tokens (SUB-AGENT 2/10 DESIGN SYSTEM).
- * Dark-first dashboard; light mode via next-themes `class` (.light on <html>).
- * Additive: does not touch the shadcn HSL vars above. UI primitives in
- * src/components/ui/* resolve these vars; baked rgba derivatives exist
- * because Tailwind v3 cannot apply /opacity modifiers to var() colors.
+ * BDX Bench contract tokens (AGENT 1: Typography & Design Tokens).
+ * Dark-first dashboard; light mode via next-themes `class` (.light on <html>)
+ * and [data-theme="light"].
  */
 :root,
 .dark {
   color-scheme: dark;
-  --bg: #080a0d;
-  --surface: #0f1217;
-  --elevated: #151920;
-  --overlay: rgba(4, 6, 8, 0.72);
-  --border: #222a33;
-  --border-strong: #333d47;
-  --text: #f2f5f7;
-  --text-secondary: #9aa4b2;
-  --text-tertiary: #6b7684;
+  --bg: #090d14;
+  --surface: #0f141f;
+  --elevated: #161c2b;
+  --overlay: rgba(5, 8, 14, 0.76);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
   --accent: #b8ff5a;
-  --accent-foreground: #101600;
+  --accent-foreground: #090d14;
   --accent-muted: rgba(184, 255, 90, 0.12);
   --accent-border: rgba(184, 255, 90, 0.35);
   --accent-ink: #b8ff5a;
@@ -68,26 +80,36 @@
   --info-border: rgba(125, 211, 252, 0.4);
   --ring: #b8ff5a;
   --ring-soft: rgba(184, 255, 90, 0.4);
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --radius: 10px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45);
+
+  /* Ambient radial hero gradients: Linear/Vercel style */
+  --hero-glow-1: radial-gradient(circle at 50% 0%, rgba(184, 255, 90, 0.07) 0%, transparent 70%);
+  --hero-glow-2: radial-gradient(circle at 100% 0%, rgba(125, 211, 252, 0.05) 0%, transparent 60%);
+  --hero-ambient-bg:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(184, 255, 90, 0.08), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 85% 10%, rgba(125, 211, 252, 0.05), transparent 60%),
+    #090d14;
 }
 
-.light {
+.light,
+[data-theme="light"] {
   color-scheme: light;
-  --bg: #f6f7f9;
+  --bg: #f8fafc;
   --surface: #ffffff;
   --elevated: #ffffff;
-  --overlay: rgba(12, 16, 21, 0.45);
-  --border: #e2e7ed;
-  --border-strong: #c9d1db;
-  --text: #0c1015;
-  --text-secondary: #5b6675;
-  --text-tertiary: #8a94a3;
-  --accent: #b8ff5a;
-  --accent-foreground: #101600;
-  --accent-muted: rgba(101, 163, 13, 0.1);
-  --accent-border: rgba(101, 163, 13, 0.35);
-  --accent-ink: #3f7a00;
-  --success: #2f7a0b;
+  --overlay: rgba(15, 23, 42, 0.45);
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --accent: #16a34a;
+  --accent-foreground: #ffffff;
+  --accent-muted: rgba(22, 163, 74, 0.10);
+  --accent-border: rgba(22, 163, 74, 0.35);
+  --accent-ink: #16a34a;
+  --success: #16a34a;
   --warning: #9a6200;
   --warning-muted: rgba(154, 98, 0, 0.12);
   --warning-border: rgba(154, 98, 0, 0.4);
@@ -96,9 +118,29 @@
   --info: #0369a1;
   --info-muted: rgba(3, 105, 161, 0.12);
   --info-border: rgba(3, 105, 161, 0.4);
-  --ring: #3f7a00;
-  --ring-soft: rgba(63, 122, 0, 0.35);
-  --shadow-card: 0 1px 2px rgba(12, 16, 21, 0.08);
+  --ring: #16a34a;
+  --ring-soft: rgba(22, 163, 74, 0.35);
+  --radius: 10px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06);
+
+  /* Ambient radial hero gradients for light mode */
+  --hero-glow-1: radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.05) 0%, transparent 70%);
+  --hero-glow-2: radial-gradient(circle at 100% 0%, rgba(3, 105, 161, 0.04) 0%, transparent 60%);
+  --hero-ambient-bg:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(22, 163, 74, 0.06), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 85% 10%, rgba(3, 105, 161, 0.04), transparent 60%),
+    #f8fafc;
+}
+
+@layer utilities {
+  .bg-hero-ambient {
+    background-color: var(--bg);
+    background-image: var(--hero-ambient-bg);
+  }
+
+  .glow-hero {
+    background-image: var(--hero-glow-1);
+  }
 }
 
 /* Tabular numbers for every score / rank / ms readout. */
