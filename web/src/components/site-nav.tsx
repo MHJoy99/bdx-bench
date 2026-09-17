@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/eval", label: "Live Eval", pulse: true },
   { href: "/models", label: "Models" },
   { href: "/benchmarks", label: "Benchmarks" },
   { href: "/compare", label: "Compare" },
@@ -84,13 +85,19 @@ export function SiteNav({ onSearch }: { onSearch?: () => void }) {
                 data-testid={item.href === "/leaderboard" ? "nav-leaderboard" : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative rounded-[6px] px-2.5 py-1 text-[13px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                  "relative inline-flex items-center gap-1.5 rounded-[6px] px-2.5 py-1 text-[13px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
                   active
                     ? "bg-[var(--elevated)] text-[var(--text)] border border-[var(--border-strong)] shadow-sm font-semibold"
                     : "text-[var(--text-secondary)] hover:bg-[var(--elevated)]/60 hover:text-[var(--text)] border border-transparent",
                 )}
               >
                 {item.label}
+                {item.pulse && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -160,7 +167,15 @@ export function SiteNav({ onSearch }: { onSearch?: () => void }) {
                       : "text-[var(--text-secondary)] hover:bg-[var(--elevated)]/60 hover:text-[var(--text)]",
                   )}
                 >
-                  <span>{item.label}</span>
+                  <span className="inline-flex items-center gap-2">
+                    {item.label}
+                    {item.pulse && (
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
+                      </span>
+                    )}
+                  </span>
                   {active && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />}
                 </Link>
               );

@@ -73,6 +73,16 @@ export function Hero() {
             <GitCompare className="size-4 text-[var(--text-tertiary)]" aria-hidden="true" />
             <span>Compare Models</span>
           </Link>
+          <Link
+            href="/eval"
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "lg" }),
+              "border-[var(--border-strong)] hover:border-[var(--accent-border)] transition-colors",
+            )}
+          >
+            <span className="h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
+            <span>Live Telemetry</span>
+          </Link>
         </div>
 
         {/* Playable builds micro-badges */}

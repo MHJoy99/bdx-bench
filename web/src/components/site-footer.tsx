@@ -40,6 +40,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/eval" className="text-[var(--text-secondary)] transition-colors hover:text-[var(--text)]">
+                Live Eval Telemetry
+              </Link>
+            </li>
+            <li>
               <Link href="/models" className="text-[var(--text-secondary)] transition-colors hover:text-[var(--text)]">
                 Models
               </Link>

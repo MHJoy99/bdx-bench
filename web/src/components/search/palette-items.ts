@@ -91,6 +91,12 @@ export const CANONICAL_PAGES: PalettePageDef[] = [
     href: "/leaderboard",
   },
   {
+    title: "Live Eval",
+    hint: "Realtime evaluation telemetry & double-blind benchmark",
+    keywords: "live eval telemetry real-time progress benchmark blind runner test",
+    href: "/eval",
+  },
+  {
     title: "Models",
     hint: "All models",
     keywords: "models list catalog",
