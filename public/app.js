@@ -11,6 +11,8 @@ function get(url) { return fetch(url, { headers: { accept: "application/json" } 
 function asModels(j) { if (Array.isArray(j)) return j; if (j && Array.isArray(j.models)) return j.models; return []; }
 function asRuns(j) { if (Array.isArray(j)) return j; if (j && Array.isArray(j.runs)) return j.runs; return []; }
 function asBoard(j) { if (Array.isArray(j)) return j; if (j && Array.isArray(j.leaderboard)) return j.leaderboard; if (j && Array.isArray(j.entries)) return j.entries; return []; }
+function asManual(j) { if (j && Array.isArray(j.manual)) return j.manual; return []; }
+function asArena(j) { if (j && Array.isArray(j.arena)) return j.arena; return []; }
 function loadModels() {
   return get("api/models").then(function (j) {
     var ms = asModels(j), sel = $("model"), cur = sel.value;
@@ -38,6 +40,42 @@ function loadBoard() {
         "<td>" + esc(pct(r.passRate != null ? r.passRate : r.avgScore)) + "</td><td>" + demo + "</td></tr>";
     }).join("");
   });
+}
+function loadManualArena() {
+  return get("api/leaderboard").then(function (j) {
+    var man = asManual(j), ar = asArena(j);
+    var mb = $("manual-body"), ab = $("arena-body");
+    if (mb) {
+      if (!man.length) mb.innerHTML = '<tr><td colspan="4" class="muted">no manual scores yet.</td></tr>';
+      else mb.innerHTML = man.map(function (r) {
+        return "<tr><td>" + esc(r.model || "?") + "</td><td>" + esc(r.entries != null ? r.entries : "—") + "</td>" +
+          '<td><span class="cell">' + bar(r.avgScore) + esc(fmt(r.avgScore)) + "</span></td>" +
+          "<td>" + esc(fmt(r.lastScore != null ? r.lastScore : r.avgScore)) + "</td></tr>";
+      }).join("");
+    }
+    if (ab) {
+      if (!ar.length) ab.innerHTML = '<tr><td colspan="4" class="muted">no arena verdicts yet — vote in Arena to build Elo.</td></tr>';
+      else {
+        var sorted = ar.slice().sort(function (a, b) { return (Number(b.elo) || 0) - (Number(a.elo) || 0); });
+        ab.innerHTML = sorted.map(function (r, i) {
+          var w = r.wins || 0, l = r.losses || 0, d = r.draws || 0;
+          return "<tr><td>" + (i + 1) + "</td><td>" + esc(r.model || "?") + "</td><td>" + esc(r.elo != null ? r.elo : "—") + "</td><td>" + esc(w) + " / " + esc(l) + " / " + esc(d) + "</td></tr>";
+        }).join("");
+      }
+    }
+  }).catch(function () {});
+}
+function loadFeatured() {
+  var box = $("featured");
+  if (!box) return Promise.resolve();
+  return get("api/matches").then(function (j) {
+    var list = (j && Array.isArray(j.matches)) ? j.matches : (Array.isArray(j) ? j : []);
+    if (!list.length) { box.innerHTML = 'No arena matches yet — <a href="arena.html">start one in Arena →</a>'; return; }
+    var m = list[0];
+    var id = m.id || m.matchId || "", title = m.promptTitle || m.title || m.taskRef || m.promptId || id;
+    var winner = m.winner || (m.verdict && m.verdict.winner) || "";
+    box.innerHTML = "<strong>" + esc(id) + "</strong> · " + esc(title) + ' · <span class="muted">' + esc(m.status || "open") + (winner ? " · winner " + esc(winner) : "") + '</span> <a href="arena.html">open in Arena →</a>';
+  }).catch(function () { box.innerHTML = 'Arena preview unavailable — <a href="arena.html">open Arena →</a>'; });
 }
 function loadRuns() {
   return get("api/runs").then(function (j) {
@@ -78,14 +116,14 @@ function queueRun() {
   fetch("api/runs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ model: m, suite: s, mode: "mock" }) })
     .then(function (r) { if (!r.ok) throw new Error("POST /api/runs → HTTP " + r.status); return r.json(); })
     .then(function (r) { msg.textContent = "queued " + (r.id || "(ok)"); if (r.id) state.runId = r.id; return refresh(true); })
-    .catch(function (e) { msg.textContent = "queue failed"; showErr("Queue failed: " + e.message + " — is the server on http://127.0.0.1:8765?"); })
+    .catch(function (e) { msg.textContent = "queue failed"; showErr("Queue failed: " + e.message + " — is the server reachable?"); })
     .then(function () { b.disabled = false; });
 }
 function refresh(quiet) {
-  return Promise.all([loadModels(), loadBoard(), loadRuns(), loadDetail()]).then(function () {
+  return Promise.all([loadModels(), loadBoard(), loadManualArena(), loadFeatured(), loadRuns(), loadDetail()]).then(function () {
     showErr(null); setHealth(true, "api ok");
   }).catch(function (e) {
-    if (!quiet || $("error").hidden) showErr("API unreachable: " + e.message + " — start server, then open http://127.0.0.1:8765/");
+    if (!quiet || $("error").hidden) showErr("API unreachable: " + e.message + " — start server, then open the served origin.");
     setHealth(false, "api down");
   });
 }

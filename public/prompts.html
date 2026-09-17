@@ -62,13 +62,13 @@ input[type="range"]{accent-color:var(--acc);flex:1;min-width:160px}
 <label>Score (0–10)
 <span class="score-row"><input id="sc-score" type="range" min="0" max="10" step="0.5" value="7"><output id="sc-out" for="sc-score">7 / 10 · 0.70</output></span>
 </label>
-<label>Notes <input id="sc-notes" type="text" maxlength="500" placeholder="optional notes"></label>
+<label>Notes / comment (shown publicly) <input id="sc-notes" type="text" maxlength="500" placeholder="comment or notes (shown publicly)…"></label>
 <div class="row"><button type="submit">Save score</button><span id="sc-msg" class="muted" role="status"></span></div>
 </form>
 </div>
 </section>
 </main>
-<footer class="muted"><a href="index.html">← Back to leaderboard</a> · Local only · manual prompt benchmarking</footer>
+<footer class="muted"><a href="index.html">← Back to leaderboard</a> · bench.bdx.market · manual prompt benchmarking — notes are public comments</footer>
 <script>
 "use strict";
 /* Prompt bank — vanilla JS, relative URLs, no deps. */
@@ -133,7 +133,7 @@ function loadBank() {
       $("bank").textContent = "";
       return;
     }
-    showErr("Prompt bank failed: " + e.message + " — is the server on http://127.0.0.1:8765?");
+    showErr("Prompt bank failed: " + e.message + " — is the server reachable? open the served origin.");
   });
 }
 function unwrapPrompt(j) { return (j && typeof j === "object" && j.prompt && typeof j.prompt === "object") ? j.prompt : (j || {}); }

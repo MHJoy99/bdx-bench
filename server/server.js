@@ -27,7 +27,7 @@ const path = require("node:path");
 const { URL } = require("node:url");
 
 const VERSION = "0.1.0";
-const HOST = "127.0.0.1";
+const HOST = process.env.BDX_BENCH_HOST || "127.0.0.1";
 const PORT = (() => {
   const raw = process.env.BDX_BENCH_PORT || "8765";
   const n = parseInt(String(raw), 10);
@@ -677,8 +677,7 @@ async function handle(req, res) {
     };
 
     try {
-      fs.mkdirSync(RESULTS_DIR, { recursive: true });
-      fs.writeFileSync(path.join(RESULTS_DIR, runId + ".json"), JSON.stringify(run, null, 2) + "\n", "utf8");
+      writeJsonAtomic(path.join(RESULTS_DIR, runId + ".json"), run);
     } catch (e) {
       return sendError(res, 500, "failed to persist run");
     }
@@ -909,8 +908,26 @@ async function handle(req, res) {
       const match = matches.find((m) => m && m.id === id);
       if (!match) return sendError(res, 404, "match not found");
       if (isMatchDecided(match)) return sendError(res, 409, "verdict already set");
-      const side = body && typeof body.side === "string" ? body.side : "";
-      const text = body && typeof body.text === "string" ? body.text : "";
+      const sideRaw =
+        body && typeof body.side === "string" && body.side
+          ? body.side
+          : body && typeof body.pick === "string" && body.pick
+            ? body.pick
+            : body && typeof body.choice === "string"
+              ? body.choice
+              : "";
+      const side = typeof sideRaw === "string" ? sideRaw : "";
+      const textRaw =
+        body && typeof body.text === "string" && body.text
+          ? body.text
+          : body && typeof body.answer === "string" && body.answer
+            ? body.answer
+            : body && typeof body.body === "string" && body.body
+              ? body.body
+              : body && typeof body.content === "string"
+                ? body.content
+                : "";
+      const text = typeof textRaw === "string" ? textRaw : "";
       if (side !== "A" && side !== "B") return sendError(res, 400, "side must be A or B");
       if (!text.trim()) return sendError(res, 400, "missing required field: text");
       if (!match.answers || typeof match.answers !== "object" || Array.isArray(match.answers)) {
@@ -938,7 +955,17 @@ async function handle(req, res) {
       if (!match) return sendError(res, 404, "match not found");
       if (isMatchDecided(match)) return sendError(res, 409, "verdict already set");
       const judge = body && typeof body.judge === "string" ? body.judge.trim() : "";
-      const side = body && typeof body.side === "string" ? body.side : "";
+      const voteSideRaw =
+        body && typeof body.side === "string" && body.side
+          ? body.side
+          : body && typeof body.pick === "string" && body.pick
+            ? body.pick
+            : body && typeof body.vote === "string" && body.vote
+              ? body.vote
+              : body && typeof body.choice === "string"
+                ? body.choice
+                : "";
+      const side = typeof voteSideRaw === "string" ? voteSideRaw : "";
       if (!judge) return sendError(res, 400, "missing required field: judge");
       if (side !== "A" && side !== "B" && side !== "draw") {
         return sendError(res, 400, "side must be A, B, or draw");

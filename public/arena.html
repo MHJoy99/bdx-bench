@@ -99,7 +99,7 @@ select.wide,form.stack select{width:100%}
 </div>
 </section>
 </main>
-<footer class="muted"><a href="index.html">← Back to leaderboard</a> · <a href="prompts.html">Prompt bank →</a> · Local only · refreshes every 5s</footer>
+<footer class="muted"><a href="index.html">← Back to leaderboard</a> · <a href="prompts.html">Prompt bank →</a> · bench.bdx.market · blind A/B · refreshes every 5s</footer>
 <script>
 "use strict";
 /* BDX Arena — vanilla JS, relative URLs, no deps. */
@@ -314,6 +314,12 @@ function eloDeltaText(v) {
   }
   return String(d);
 }
+var lastTaskBody = "";
+function copyTaskBody() {
+  var t = lastTaskBody || "";
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t);
+  else { var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (_) {} document.body.removeChild(ta); }
+}
 function loadDetail() {
   if (!state.matchId) return Promise.resolve();
   var box = $("mdetail");
@@ -343,7 +349,8 @@ function loadDetail() {
     html += '<div class="meta"><span class="muted">' + esc(status) + "</span><span>" + esc(state.matchId) + "</span>" +
       (promptId ? "<span>prompt " + esc(promptId) + "</span>" : "") + (taskRef ? "<span>" + esc(taskRef) + "</span>" : "") + "</div>";
     if (!reveal) html += '<p class="muted hint">Models hidden (blind A/B) until a verdict lands. ' + esc([m.modelA, m.modelB].filter(Boolean).length ? "" : "") + "</p>";
-    if (taskBody) html += '<div class="body">' + esc(taskBody) + "</div>";
+    lastTaskBody = taskBody || taskRef || "";
+    if (taskBody) html += '<div class="body">' + esc(taskBody) + '</div><div class="row" style="margin-top:8px"><button type="button" onclick="copyTaskBody()">Copy prompt</button>' + (promptId ? '<a href="prompts.html" style="font-size:12px">Discuss / comment in Prompt bank →</a>' : "") + "</div>";
     else if (taskRef) html += '<div class="body">' + esc(taskRef) + "</div>";
     else html += '<p class="muted">no task text on this match.</p>';
     html += '<div class="ab" style="margin-top:10px">' +
@@ -352,7 +359,7 @@ function loadDetail() {
     if (votes.length) {
       html += '<table style="margin-top:10px"><thead><tr><th>Judge</th><th>Pick</th><th>Date</th></tr></thead><tbody>' +
         votes.map(function (x) {
-          var judge = (x && (x.judge || x.judgeName || x.by || x.voter)) || "?", pick = (x && (x.pick || x.winner || x.vote || x.choice)) || "?";
+          var judge = (x && (x.judge || x.judgeName || x.by || x.voter)) || "?", pick = (x && (x.side || x.pick || x.winner || x.vote || x.choice)) || "?";
           var dt = (x && (x.createdAt || x.created_at || x.date)) || "";
           return "<tr><td>" + esc(judge) + "</td><td>" + esc(pick) + "</td><td>" + esc(dt ? new Date(dt).toLocaleString() : "—") + "</td></tr>";
         }).join("") + "</tbody></table>";
@@ -394,7 +401,7 @@ $("answer-form").addEventListener("submit", function (ev) {
   var side = $("an-side").value, answer = $("an-text").value.trim();
   if (!answer) { msg.textContent = "answer is required"; return; }
   msg.textContent = "saving…";
-  post("api/matches/" + encodeURIComponent(state.matchId) + "/answers", { side: side, answer: answer })
+  post("api/matches/" + encodeURIComponent(state.matchId) + "/answers", { side: side, text: answer })
     .then(function () { msg.textContent = "saved"; $("an-text").value = ""; return loadDetail().then(loadMatches); })
     .catch(function (e) { msg.textContent = "save failed"; showErr("Save answer failed: " + e.message); });
 });
@@ -405,7 +412,7 @@ $("vote-form").addEventListener("submit", function (ev) {
   var judge = $("vt-judge").value.trim(), pick = $("vt-pick").value;
   if (!judge) { msg.textContent = "judge name is required"; return; }
   msg.textContent = "saving…";
-  post("api/matches/" + encodeURIComponent(state.matchId) + "/votes", { judge: judge, pick: pick })
+  post("api/matches/" + encodeURIComponent(state.matchId) + "/votes", { judge: judge, side: pick })
     .then(function () { msg.textContent = "saved"; $("vt-judge").value = ""; return loadDetail().then(function () { return loadLadder(); }).then(loadMatches); })
     .catch(function (e) { msg.textContent = "save failed"; showErr("Save vote failed: " + e.message); });
 });
