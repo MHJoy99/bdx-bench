@@ -1,15 +1,17 @@
 [Unit]
-Description=BDX Bench (bench.bdx.market) - zero-dep node server
+Description=BDX Bench Next.js (bench.bdx.market)
 After=network.target
 
 [Service]
 Type=simple
 User=bench
 Group=bench
-WorkingDirectory=/srv/bot-storage/sites/bench.bdx.market
-ExecStart=/usr/bin/node server/server.js
+WorkingDirectory=/srv/bot-storage/sites/bench.bdx.market/web/.next/standalone
+ExecStart=/usr/bin/node server.js
 Environment=NODE_ENV=production
-Environment=BDX_BENCH_PORT=8766
+Environment=PORT=8766
+Environment=HOSTNAME=127.0.0.1
+Environment=NEXT_PUBLIC_SITE_URL=https://bench.bdx.market
 Restart=always
 RestartSec=3
 StandardOutput=journal
@@ -20,3 +22,4 @@ PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
+
