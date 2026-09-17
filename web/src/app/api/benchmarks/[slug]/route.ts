@@ -12,7 +12,7 @@ import { jsonError, jsonOk, SlugSchema } from "@/lib/http";
 /**
  * GET /api/benchmarks/[slug] — benchmark meta + per-model scores with
  * uncertainty (CI, runs) + fleet stats + provenance.
- * DEMO DATA. Cached at the edge (dataset profile). 404 for unknown slugs.
+ * 404 for unknown slugs.
  */
 export async function GET(
   _req: Request,

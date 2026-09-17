@@ -3,9 +3,9 @@ import { getDatasetMeta, getTrends, type TrendRange } from "@/lib/data";
 import { jsonError, jsonOk, parseQuery } from "@/lib/http";
 
 /**
- * GET /api/trends — monthly avg-BDX-Score trajectory (demo, illustrative).
+ * GET /api/trends — showdown snapshot trajectory (single point until more
+ * evaluation rounds land).
  * Query: range = 30d | 90d | 1y | all (default all).
- * DEMO DATA. Cached at the edge (aggregate profile).
  */
 const TrendsQuerySchema = z.object({
   range: z.enum(["30d", "90d", "1y", "all"]).optional(),

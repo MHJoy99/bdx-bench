@@ -5,21 +5,15 @@ import { CompareView } from "@/components/compare/CompareView";
 import { CompareSkeleton } from "@/components/compare/CompareSkeleton";
 
 export const metadata: Metadata = {
-  title: "Compare models — BDX Bench",
+  title: "Compare Models",
   description:
-    "Side-by-side model comparison: quality, price, speed, and capabilities for up to 4 models. Shareable URL state (demo data).",
+    "Side-by-side view of Muse Spark 1.3 and Gemini 3.8 Flash on Zombie Flamethrower Showdown with shareable links.",
 };
 
 export const dynamic = "force-dynamic";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-/**
- * SUB-AGENT 6/10 COMPARE — owned route.
- * URL schema: /compare?models=<slug>,<slug>[,...] (1–4 slugs; unknown ignored;
- * fewer than 2 renders the empty state). Server parses once for the initial
- * selection; CompareView owns tray persistence + URL sync client-side.
- */
 export default async function ComparePage({
   searchParams,
 }: {

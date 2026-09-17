@@ -1,18 +1,7 @@
 import Link from "next/link";
 
-/**
- * HOME FOOTER — Server Component, homepage-owned.
- * NOTE: Agent1 layout owns the global NAVBAR (SiteNavWithSearch) and global
- * SiteFooter — this file renders NO nav duplication. This homepage footer
- * carries the product/resources links + verbatim disclaimer required by the
- * homepage contract. If Agent1 merges footers, keep HOME_DISCLAIMER_VERBATIM
- * wording intact.
- *
- * Disclaimer below is the homepage verbatim disclaimer (demo-safe, never
- * claims live). Keep wording intact when reusing.
- */
 export const HOME_DISCLAIMER_VERBATIM =
-  "BDX Bench is an independent evaluation project. Scores shown on this homepage are illustrative demo data for UI development and do not represent live benchmark results. See Methodology for scoring details.";
+  "BDX Bench is an independent evaluation project. Scores on this page cover the September 2026 Zombie Flamethrower Showdown round. See Methodology for scoring details.";
 
 export function HomeFooter() {
   return (
@@ -41,13 +30,13 @@ export function HomeFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/compare" className="text-bdx-muted hover:text-bdx-accent">
+              <Link href="/compare?models=muse-spark-1-3,gemini-3-8-flash" className="text-bdx-muted hover:text-bdx-accent">
                 Compare Models
               </Link>
             </li>
             <li>
-              <Link href="/methodology" className="text-bdx-muted hover:text-bdx-accent">
-                Methodology
+              <Link href="/benchmarks" className="text-bdx-muted hover:text-bdx-accent">
+                Benchmarks
               </Link>
             </li>
           </ul>
@@ -58,11 +47,6 @@ export function HomeFooter() {
           </p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <Link href="/benchmarks" className="text-bdx-muted hover:text-bdx-accent">
-                Benchmarks
-              </Link>
-            </li>
-            <li>
               <Link href="/models" className="text-bdx-muted hover:text-bdx-accent">
                 Models
               </Link>
@@ -70,6 +54,11 @@ export function HomeFooter() {
             <li>
               <Link href="/methodology" className="text-bdx-muted hover:text-bdx-accent">
                 Methodology
+              </Link>
+            </li>
+            <li>
+              <Link href="/trends" className="text-bdx-muted hover:text-bdx-accent">
+                Trends
               </Link>
             </li>
           </ul>

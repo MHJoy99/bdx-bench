@@ -6,14 +6,6 @@ import { MODELS } from "@/lib/data";
 import { LeaderboardRowSchema, ModelSchema } from "@/lib/types";
 import type { LeaderboardTableRow } from "./columns";
 
-/**
- * Client data hook for the leaderboard.
- * - Primary: GET /api/models (rich Model[]) + GET /api/leaderboard (rank/bdxScore),
- *   both Zod-validated against @/lib/types.
- * - Fallback: placeholder MODELS from @/lib/data, always labeled DEMO DATA.
- * - Never presents demo scores as verified real results.
- */
-
 const modelsResponseSchema = z.object({ models: z.array(ModelSchema) });
 const leaderboardResponseSchema = z.object({
   leaderboard: z.array(LeaderboardRowSchema),
@@ -21,8 +13,6 @@ const leaderboardResponseSchema = z.object({
 
 export type LeaderboardDataState = {
   rows: LeaderboardTableRow[];
-  /** True when rows are placeholder/demo fixtures (not verified). */
-  isDemo: boolean;
   isLoading: boolean;
   error: string | null;
   reload: () => void;
@@ -30,7 +20,6 @@ export type LeaderboardDataState = {
 
 export function useLeaderboardData(): LeaderboardDataState {
   const [rows, setRows] = useState<LeaderboardTableRow[]>([]);
-  const [isDemo, setIsDemo] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nonce, setNonce] = useState(0);
@@ -62,17 +51,12 @@ export function useLeaderboardData(): LeaderboardDataState {
           ...m,
           rank: rankBySlug.get(m.slug) ?? 0,
           rankDelta: null,
-          demo: false,
         }));
-        // Rank fallback: order by bdxScore when the API omits ranks.
         tableRows.sort((a, b) => (a.rank || 9999) - (b.rank || 9999));
         tableRows.forEach((r, i) => {
           if (!r.rank) r.rank = i + 1;
         });
         setRows(tableRows);
-        // Placeholder dataset ships seeded fixtures: keep the DEMO label until
-        // the data agent wires real sources.
-        setIsDemo(true);
       } catch (e) {
         if (cancelled) return;
         setRows(
@@ -80,10 +64,8 @@ export function useLeaderboardData(): LeaderboardDataState {
             ...m,
             rank: i + 1,
             rankDelta: null,
-            demo: true,
           })),
         );
-        setIsDemo(true);
         setError(e instanceof Error ? e.message : "Failed to load leaderboard");
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -98,7 +80,6 @@ export function useLeaderboardData(): LeaderboardDataState {
 
   return {
     rows,
-    isDemo,
     isLoading,
     error,
     reload: () => setNonce((n) => n + 1),

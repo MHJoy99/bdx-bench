@@ -3,9 +3,8 @@ import { getDatasetMeta, getLeaderboard } from "@/lib/data";
 import { jsonError, jsonOk, parseQuery } from "@/lib/http";
 
 /**
- * GET /api/leaderboard — ranked demo rows (BDX Bench Score desc).
+ * GET /api/leaderboard — ranked evaluated rows (BDX Bench Score desc).
  * Query: provider, openWeights (true/false), limit.
- * DEMO DATA. Cached at the edge (dataset profile).
  */
 const LeaderboardQuerySchema = z.object({
   provider: z.string().min(1).max(40).optional(),

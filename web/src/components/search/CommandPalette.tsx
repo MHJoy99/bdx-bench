@@ -195,6 +195,7 @@ export function CommandPalette({
         }}
         type="button"
         role="option"
+        data-testid="cmdk-option"
         id={`bdx-palette-opt-${i}`}
         aria-selected={selected}
         onMouseEnter={() => setActive(i)}
@@ -247,6 +248,7 @@ export function CommandPalette({
         <input
           ref={inputRef}
           id={INPUT_ID}
+          data-testid="cmdk-input"
           role="combobox"
           aria-expanded="true"
           aria-controls={LISTBOX_ID}
@@ -258,7 +260,7 @@ export function CommandPalette({
           placeholder={inputPlaceholder}
           autoComplete="off"
           spellCheck={false}
-          className="h-11 w-full bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-tertiary)] focus:outline-none"
+          className="h-11 w-full min-w-0 bg-transparent text-[16px] text-[var(--text)] placeholder:text-[var(--text-tertiary)] focus:outline-none sm:text-sm"
         />
         <button
           type="button"

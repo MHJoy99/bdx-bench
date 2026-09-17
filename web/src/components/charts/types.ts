@@ -1,8 +1,8 @@
-/** Shared chart data contracts for the BDX Bench viz library (SUB-AGENT 7/10).
+/** Shared chart data contracts for the BDX Bench viz library.
  *
- *  All charts accept `demo`-flagged fixtures from `./demo` so pages can render
- *  offline with `?mock=1` / demo props. Real API data (`@/lib/data` when it
- *  lands) maps onto the same shapes — see `demo.ts` for the mapping notes.
+ *  Charts render measured evaluations only. Nullable fields mean
+ *  "not measured": series omit the point, tables show "Not evaluated".
+ *  See `./real-data` for the current measured snapshot.
  */
 
 export type ThemeMode = "dark" | "light";
@@ -36,15 +36,17 @@ export interface ScatterPoint {
   variance?: number;
   /** Open-weights vs closed — used by trends open-vs-closed rollups. */
   open?: boolean;
+  /** Deprecated: ignored. Charts render measured evaluations only. */
   demo?: boolean;
 }
 
-/** One model polygon on the radar. `values` align to RADAR_AXES order. */
+/** One model polygon on the radar. `values` align to axes order; null = not measured. */
 export interface RadarDatum {
   model: string;
   provider?: string;
-  values: number[] | Record<string, number>;
+  values: Array<number | null> | Record<string, number | null | undefined>;
   runs?: number;
+  /** Deprecated: ignored. Charts render measured evaluations only. */
   demo?: boolean;
 }
 
@@ -60,6 +62,7 @@ export interface TrendSeries {
   provider?: string;
   label?: string;
   points: TrendPoint[];
+  /** Deprecated: ignored. Charts render measured evaluations only. */
   demo?: boolean;
 }
 
@@ -88,6 +91,7 @@ export interface DistributionSet {
   /** Raw per-run scores 0..1. */
   values: number[];
   runs?: number;
+  /** Deprecated: ignored. Charts render measured evaluations only. */
   demo?: boolean;
 }
 

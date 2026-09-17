@@ -7,6 +7,7 @@
 import React, { useMemo, useState } from "react";
 import type { EChartsCoreOption } from "./EChartBase";
 import { EChartBase } from "./EChartBase";
+import { NOT_EVALUATED, REAL_PROVENANCE_NOTE } from "./real-data";
 import { useChartMode } from "./theme";
 import type { AriaTable, ThemeMode, TrendRange, TrendSeries } from "./types";
 import { esc, filterSeriesByRange, fmtDate } from "./utils";
@@ -37,13 +38,13 @@ export interface TrendChartProps {
 export function trendsToTable(series: TrendSeries[], metricLabel: string): AriaTable {
   const dates = Array.from(new Set(series.flatMap((s) => s.points.map((p) => fmtDate(p.date))))).sort();
   return {
-    caption: `${metricLabel} over time by model.`,
+    caption: `${metricLabel} over time by model. Not evaluated means no measured run on that date. ${REAL_PROVENANCE_NOTE}.`,
     columns: ["Date", ...series.map((s) => s.model)],
     rows: dates.map((d) => [
       d,
       ...series.map((s) => {
         const pt = s.points.find((p) => fmtDate(p.date) === d);
-        return pt ? pt.value.toFixed(3) : "—";
+        return pt ? pt.value.toFixed(3) : NOT_EVALUATED;
       }),
     ]),
   };
@@ -82,7 +83,9 @@ export function TrendChart({
       tooltip: {
         trigger: "axis",
         confine: true,
-        valueFormatter: (v: unknown) => (typeof v === "number" ? v.toFixed(3) : String(v ?? "—")),
+        valueFormatter: (v: unknown) =>
+          typeof v === "number" ? v.toFixed(3) : String(v ?? NOT_EVALUATED),
+        formatter: undefined,
       },
       xAxis: {
         type: "time",
@@ -98,10 +101,10 @@ export function TrendChart({
       series: filtered.map((s) => ({
         type: "line",
         name: s.label ?? s.model,
-        data: s.points.map((p) => [p.date, p.value, p.runs ?? "—"]),
-        showSymbol: s.points.length <= 40,
-        symbolSize: 5,
-        smooth: 0.25,
+        data: s.points.map((p) => [p.date, p.value, p.runs ?? NOT_EVALUATED]),
+        showSymbol: true,
+        symbolSize: 7,
+        smooth: false,
         lineStyle: { width: 2 },
         emphasis: { focus: "series" },
       })),

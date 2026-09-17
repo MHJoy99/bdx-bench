@@ -7,6 +7,7 @@
 import React, { useMemo } from "react";
 import type { EChartsCoreOption } from "./EChartBase";
 import { EChartBase } from "./EChartBase";
+import { NOT_EVALUATED, REAL_PROVENANCE_NOTE } from "./real-data";
 import { useChartMode } from "./theme";
 import type { AriaTable, DistributionSet, ThemeMode } from "./types";
 import { boxStats, ci95, esc, fmtPct } from "./utils";
@@ -20,9 +21,13 @@ export interface DistributionChartProps {
 
 export function distributionsToTable(sets: DistributionSet[]): AriaTable {
   return {
-    caption: "Run-score distribution summary by model.",
+    caption:
+      "Run-score distribution summary by model. Not evaluated means fewer than two measured runs. Manual game-build evaluation · 2026-09-17 · match m-001 (open).",
     columns: ["Model", "Runs", "Mean", "Median", "Q1", "Q3", "95% CI", "Variance"],
     rows: sets.map((s) => {
+      if (!s.values.length || s.values.length < 2) {
+        return [s.model, s.values.length || NOT_EVALUATED, NOT_EVALUATED, NOT_EVALUATED, NOT_EVALUATED, NOT_EVALUATED, NOT_EVALUATED, NOT_EVALUATED];
+      }
       const b = boxStats(s.values);
       const [lo, hi] = ci95(b.mean, b.n);
       return [
@@ -33,7 +38,7 @@ export function distributionsToTable(sets: DistributionSet[]): AriaTable {
         fmtPct(b.q1),
         fmtPct(b.q3),
         `${fmtPct(lo)}–${fmtPct(hi)}`,
-        isFinite(b.variance) ? b.variance.toFixed(4) : "—",
+        isFinite(b.variance) ? b.variance.toFixed(4) : NOT_EVALUATED,
       ];
     }),
   };
@@ -51,8 +56,10 @@ export function DistributionChart({
   const border = dark ? "#232A35" : "#E2E8E4";
 
   const option = useMemo<EChartsCoreOption>(() => {
-    const names = sets.map((s) => s.model);
-    const boxes = sets.map((s) => {
+    // Single-run models have no spread: omit the box, keep the table honest.
+    const withSpread = sets.filter((s) => s.values.length >= 2);
+    const names = withSpread.map((s) => s.model);
+    const boxes = withSpread.map((s) => {
       const b = boxStats(s.values);
       return [b.min, b.q1, b.median, b.q3, b.max, b.mean, b.variance, b.n];
     });
@@ -66,7 +73,7 @@ export function DistributionChart({
         formatter: (p: unknown) => {
           const item = p as { seriesName?: string; dataIndex?: number; data?: unknown };
           const i = item.dataIndex ?? 0;
-          const s = sets[i];
+          const s = withSpread[i];
           const row = boxes[i];
           if (!s || !row) return "";
           const [min, q1, med, q3, max, m, v, n] = row as number[];
@@ -75,7 +82,8 @@ export function DistributionChart({
             `<div><b>${esc(s.model)}</b><br/>` +
             `Median: <b>${fmtPct(med)}</b> · mean: <b>${fmtPct(m)}</b><br/>` +
             `Q1 ${fmtPct(q1)} · Q3 ${fmtPct(q3)} · range ${fmtPct(min)}–${fmtPct(max)}<br/>` +
-            `<span style="opacity:.75">Score 95% CI ${fmtPct(lo)}–${fmtPct(hi)} · ${n} runs · var ${(v ?? 0).toFixed(4)}</span></div>`
+            `<span style="opacity:.75">Score 95% CI ${fmtPct(lo)}–${fmtPct(hi)} · ${n} runs · var ${(v ?? 0).toFixed(4)}</span><br/>` +
+            `<span style="opacity:.7">${esc(REAL_PROVENANCE_NOTE)}</span></div>`
           );
         },
       },

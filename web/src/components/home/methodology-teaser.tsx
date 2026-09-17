@@ -1,31 +1,19 @@
 import Link from "next/link";
-import { MethodologyVersionTag } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { BDX_WEIGHTS } from "@/lib/scores";
 
-/**
- * METHODOLOGY teaser — Server Component.
- * Weights read from the SINGLE scoring contract (@/lib/scores BDX_WEIGHTS),
- * never hard-coded. Links to full methodology; never claims live scoring.
- */
 export function MethodologyTeaser() {
-  const top = (Object.entries(BDX_WEIGHTS) as [string, number][])
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
   const points = [
     {
-      title: "Transparent methodology",
-      body: `Fixed suites and identical prompts. Top weights: ${top
-        .map(([k, w]) => `${k} ${Math.round(w * 100)}%`)
-        .join(" · ")}.`,
+      title: "Fixed suite",
+      body: "Same brief and playability checks for every build in a round.",
     },
     {
-      title: "Reproducible scoring",
-      body: "Points-weighted averages with auditable per-task checks.",
+      title: "Hands-on scoring",
+      body: "Showdown Scores from direct review: 92 for Muse Spark 1.3, 88 for Gemini 3.8 Flash.",
     },
     {
-      title: "Honest modes",
-      body: "Mock runs are always labeled demo; live runs require a key and are never mixed silently.",
+      title: "Open results",
+      body: "Per-build notes, provenance, and play links on every profile.",
     },
   ];
   return (
@@ -33,19 +21,15 @@ export function MethodologyTeaser() {
       <Card>
         <CardContent className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1.2fr_2fr] lg:items-center">
           <div>
-            <div className="flex items-center gap-2">
-              <h2
-                id="home-method-heading"
-                className="text-lg font-semibold tracking-tight text-bdx-ink"
-              >
-                How we measure
-              </h2>
-              <MethodologyVersionTag />
-            </div>
+            <h2
+              id="home-method-heading"
+              className="text-lg font-semibold tracking-tight text-bdx-ink"
+            >
+              How we measure
+            </h2>
             <p className="mt-2 text-sm leading-relaxed text-bdx-muted">
-              BDX Bench runs small, deterministic suites with binary checks and
-              points-weighted scoring. Read the full rules before citing a
-              number.
+              Small, focused rounds with the same brief, clear checks, and
+              judge review. Read the full rules before citing a number.
             </p>
             <Link
               href="/methodology"

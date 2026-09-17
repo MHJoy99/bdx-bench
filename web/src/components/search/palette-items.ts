@@ -73,7 +73,16 @@ export interface PalettePageDef {
 }
 
 /** Static page index — mirrors web/README.md route table. */
-export const DEFAULT_PAGES: PalettePageDef[] = [
+export const CANONICAL_MODELS: PaletteModelInput[] = [
+  { slug: "muse-spark-1-3", name: "Muse Spark 1.3", family: "Muse Spark", provider: "other" },
+  { slug: "gemini-3-8-flash", name: "Gemini 3.8 Flash", family: "Gemini Flash", provider: "google" },
+];
+
+export const CANONICAL_BENCHMARKS: PaletteBenchmarkInput[] = [
+  { slug: "zombie-flamethrower-showdown", name: "Zombie Flamethrower Showdown", category: "agentic" },
+];
+
+export const CANONICAL_PAGES: PalettePageDef[] = [
   { title: "Home", hint: "Overview", keywords: "home dashboard start", href: "/" },
   {
     title: "Leaderboard",
@@ -82,10 +91,10 @@ export const DEFAULT_PAGES: PalettePageDef[] = [
     href: "/leaderboard",
   },
   {
-    title: "Compare",
-    hint: "Side-by-side model comparison",
-    keywords: "versus vs difference diff",
-    href: "/compare",
+    title: "Models",
+    hint: "All models",
+    keywords: "models list catalog",
+    href: "/models",
   },
   {
     title: "Benchmarks",
@@ -94,7 +103,13 @@ export const DEFAULT_PAGES: PalettePageDef[] = [
     href: "/benchmarks",
   },
   {
-    title: "Price–Performance",
+    title: "Compare",
+    hint: "Side-by-side model comparison",
+    keywords: "versus vs difference diff",
+    href: "/compare",
+  },
+  {
+    title: "Price/Performance",
     hint: "Cost versus score",
     keywords: "price cost value cheap efficient",
     href: "/price-performance",
@@ -111,7 +126,16 @@ export const DEFAULT_PAGES: PalettePageDef[] = [
     keywords: "scoring weights docs methodology version",
     href: "/methodology",
   },
+  {
+    title: "Compare: Muse Spark vs Gemini",
+    hint: "Preselected comparison",
+    keywords: "compare muse spark gemini versus",
+    href: "/compare?models=muse-spark-1-3,gemini-3-8-flash",
+  },
 ];
+
+/** Static page index — mirrors web/README.md route table. */
+export const DEFAULT_PAGES: PalettePageDef[] = CANONICAL_PAGES;
 
 export interface PaletteIndexInput {
   models?: PaletteModelInput[];
@@ -126,8 +150,8 @@ export interface PaletteIndexInput {
 
 /** Assemble the full searchable index. Pure — safe to memoize per data set. */
 export function buildPaletteIndex(input: PaletteIndexInput): PaletteItem[] {
-  const models = input.models ?? [];
-  const benchmarks: PaletteBenchmarkInput[] = input.benchmarks ?? [];
+  const models = input.models ?? CANONICAL_MODELS;
+  const benchmarks: PaletteBenchmarkInput[] = input.benchmarks ?? CANONICAL_BENCHMARKS;
   const providers = input.providers ?? PROVIDER_LABELS.map((p) => p.id);
   const families =
     input.families ??

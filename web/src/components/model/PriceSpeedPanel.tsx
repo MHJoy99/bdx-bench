@@ -3,69 +3,46 @@ import {
   formatTokens,
   formatTps,
 } from "@/lib/format";
-import type { ModelPageData } from "@/lib/model-pages-demo";
-import { DemoBadge } from "./DemoBadge";
+import type { Model } from "@/lib/types";
 
-/**
- * PRICE & SPEED panel: per-1M pricing, cache pricing, throughput, TTFT,
- * median latency, context window, max output — each with a tooltip.
- * Owner: SUB-AGENT 5/10 MODEL PAGES.
- */
-
-interface PricedRow {
-  label: string;
-  value: string;
-  tooltip: string;
+function num(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
-export function PriceSpeedPanel({ data }: { data: ModelPageData }) {
-  const { model } = data;
-  const rows: PricedRow[] = [
+export function PriceSpeedPanel({ model }: { model: Model }) {
+  const rec = model as unknown as {
+    prices?: { inputPer1M?: unknown; outputPer1M?: unknown; currency?: unknown };
+    speed?: { tps?: unknown; ttftMs?: unknown };
+    context?: unknown;
+  };
+  const currency =
+    typeof rec.prices?.currency === "string" ? rec.prices.currency : "USD";
+  const input = num(rec.prices?.inputPer1M);
+  const output = num(rec.prices?.outputPer1M);
+  const tps = num(rec.speed?.tps);
+  const ttft = num(rec.speed?.ttftMs);
+  const context = num(rec.context);
+
+  const rows: { label: string; value: string }[] = [
     {
       label: "Input / 1M tokens",
-      value: formatPrice(model.prices.inputPer1M, model.prices.currency),
-      tooltip: `Demo vendor list price per 1M input tokens (${model.prices.currency}), effective ${model.prices.effectiveDate}. Placeholder — not a live quote.`,
+      value: input === null ? "Not measured" : formatPrice(input, currency),
     },
     {
       label: "Output / 1M tokens",
-      value: formatPrice(model.prices.outputPer1M, model.prices.currency),
-      tooltip: `Demo vendor list price per 1M output tokens (${model.prices.currency}), effective ${model.prices.effectiveDate}. Placeholder — not a live quote.`,
-    },
-    {
-      label: "Cached input / 1M",
-      value:
-        model.prices.cachedInputPer1M !== undefined
-          ? formatPrice(model.prices.cachedInputPer1M, model.prices.currency)
-          : "—",
-      tooltip:
-        "Demo prompt-cache read price per 1M tokens. Placeholder — cache policies differ by vendor.",
+      value: output === null ? "Not measured" : formatPrice(output, currency),
     },
     {
       label: "Throughput",
-      value: model.speed ? formatTps(model.speed.tps) : "—",
-      tooltip: `Demo median output tokens/sec measured by "${model.speed?.harness ?? "unknown harness"}". Placeholder — hardware and load dependent.`,
+      value: tps === null ? "Not measured" : formatTps(tps),
     },
     {
-      label: "TTFT",
-      value: model.speed ? `${model.speed.ttftMs.toLocaleString()} ms` : "—",
-      tooltip:
-        "Demo time-to-first-token: milliseconds from request to first output token. Placeholder — prompt-length dependent.",
-    },
-    {
-      label: "Median latency",
-      value: `${data.latencyP50Ms.toLocaleString()} ms`,
-      tooltip:
-        "Demo p50 end-to-end request latency on the reference prompt set. Placeholder — not an SLA.",
+      label: "Time to first token",
+      value: ttft === null ? "Not measured" : `${Math.round(ttft).toLocaleString()} ms`,
     },
     {
       label: "Context window",
-      value: formatTokens(model.context),
-      tooltip: "Demo maximum input context in tokens. Placeholder — verify with the vendor.",
-    },
-    {
-      label: "Max output",
-      value: formatTokens(data.maxOutput),
-      tooltip: "Demo maximum output tokens per request. Placeholder — verify with the vendor.",
+      value: context === null ? "Not measured" : formatTokens(context),
     },
   ];
 
@@ -75,7 +52,7 @@ export function PriceSpeedPanel({ data }: { data: ModelPageData }) {
         id="model-price-speed-heading"
         className="text-lg font-semibold text-foreground"
       >
-        Price &amp; speed <DemoBadge />
+        Price and speed
       </h2>
 
       <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -84,14 +61,7 @@ export function PriceSpeedPanel({ data }: { data: ModelPageData }) {
             key={r.label}
             className="flex items-baseline justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2"
           >
-            <dt className="text-xs text-muted-foreground">
-              <abbr
-                title={r.tooltip}
-                className="cursor-help underline decoration-dotted underline-offset-2"
-              >
-                {r.label}
-              </abbr>
-            </dt>
+            <dt className="text-xs text-muted-foreground">{r.label}</dt>
             <dd className="font-mono text-[13px] font-semibold leading-5 text-foreground">
               {r.value}
             </dd>
@@ -99,9 +69,8 @@ export function PriceSpeedPanel({ data }: { data: ModelPageData }) {
         ))}
       </dl>
       <p className="mt-2 text-xs text-muted-foreground">
-        Hover or focus a label for methodology. Prices:{" "}
-        {model.prices.currency}, source “{model.prices.source ?? "demo-vendor-sheet"}”.
-        Speed harness: {model.speed?.harness ?? "—"}.
+        Pricing and speed were not measured for these builds. Values will
+        appear here once vendor pricing and throughput runs are published.
       </p>
     </section>
   );

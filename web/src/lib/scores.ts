@@ -35,38 +35,42 @@ export function normalizedScore(
   return Math.min(100, Math.max(0, Math.round(n * 10) / 10));
 }
 
-type CompositeInput = Pick<
-  ScoreSnapshot,
-  | "reasoning"
-  | "coding"
-  | "knowledge"
-  | "math"
-  | "vision"
-  | "agentic"
-> & {
-  longContext?: number;
-  efficiency?: number;
+type CompositeInput = {
+  [K in
+    | "reasoning"
+    | "coding"
+    | "knowledge"
+    | "math"
+    | "vision"
+    | "agentic"]: number | null;
+} & {
+  longContext?: number | null;
+  efficiency?: number | null;
 };
 
 /**
  * BDX Bench Score — weighted composite of subscores (0-100).
- * Missing longContext/efficiency fall back to the mean of present dims
- * so legacy snapshots without them still score fairly.
+ * Null dims (not evaluated) are skipped like missing: each null dim falls
+ * back to the mean of the present dims so unevaluated models never score 0
+ * for missing data. Returns 0 when no dim is present.
  */
 export function bdxBenchScore(s: CompositeInput): number {
-  const present = [s.reasoning, s.coding, s.knowledge, s.math, s.vision, s.agentic];
+  const present = [s.reasoning, s.coding, s.knowledge, s.math, s.vision, s.agentic].filter(
+    (v): v is number => typeof v === "number" && Number.isFinite(v),
+  );
+  if (present.length === 0) return 0;
   const mean = present.reduce((a, b) => a + b, 0) / present.length;
-  const lc = s.longContext ?? mean;
-  const eff = s.efficiency ?? mean;
+  const v = (n: number | null | undefined): number =>
+    typeof n === "number" && Number.isFinite(n) ? n : mean;
   const total =
-    s.reasoning * BDX_WEIGHTS.reasoning +
-    s.coding * BDX_WEIGHTS.coding +
-    s.knowledge * BDX_WEIGHTS.knowledge +
-    s.math * BDX_WEIGHTS.math +
-    s.vision * BDX_WEIGHTS.vision +
-    s.agentic * BDX_WEIGHTS.agentic +
-    lc * BDX_WEIGHTS.longContext +
-    eff * BDX_WEIGHTS.efficiency;
+    v(s.reasoning) * BDX_WEIGHTS.reasoning +
+    v(s.coding) * BDX_WEIGHTS.coding +
+    v(s.knowledge) * BDX_WEIGHTS.knowledge +
+    v(s.math) * BDX_WEIGHTS.math +
+    v(s.vision) * BDX_WEIGHTS.vision +
+    v(s.agentic) * BDX_WEIGHTS.agentic +
+    v(s.longContext) * BDX_WEIGHTS.longContext +
+    v(s.efficiency) * BDX_WEIGHTS.efficiency;
   return Math.round(total * 10) / 10;
 }
 

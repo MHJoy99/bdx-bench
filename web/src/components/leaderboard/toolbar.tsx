@@ -33,12 +33,9 @@ const COLUMN_LABELS: Record<string, string> = {
   released: "Released",
 };
 
-/**
- * Top toolbar: category tabs (switch sort key) + search + column visibility
- * + share-view (copy URL) + export CSV. Rendered above the table on all viewports.
- */
 export function LeaderboardToolbar({
   category,
+  activeSortId,
   query,
   onCategory,
   onQuery,
@@ -50,6 +47,7 @@ export function LeaderboardToolbar({
   totalCount,
 }: {
   category: CategoryId;
+  activeSortId: string;
   query: string;
   onCategory: (c: CategoryId) => void;
   onQuery: (q: string) => void;
@@ -203,7 +201,7 @@ export function LeaderboardToolbar({
         <span>
           Sorted by{" "}
           <strong className="text-[var(--text)]">
-            {COLUMN_LABELS[category] ?? category}
+            {COLUMN_LABELS[activeSortId] ?? activeSortId}
           </strong>
           . Click any column header to re-sort.
         </span>

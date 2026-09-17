@@ -3,35 +3,19 @@
 import { useId, useMemo, useState } from "react";
 import type { Model } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { COMPARE_MAX_MODELS } from "./compare-data";
+import { COMPARE_MAX_MODELS, COMPARE_TRAY_STORAGE_KEY } from "./compare-data";
 
 export interface CompareTrayProps {
-  /** All models the picker can offer (demo catalog ∪ fetched rows). */
   catalog: readonly Model[];
-  /** Currently selected slugs (max 4). */
   selected: readonly string[];
-  /** Replace the selection (already cleaned by the caller). */
   onChange: (slugs: string[]) => void;
   max?: number;
-  /** Show the DEMO badge (demo fixtures until the live catalog lands). */
-  demo?: boolean;
 }
 
-/**
- * SUB-AGENT 6/10 COMPARE — owned: compare tray.
- *
- * Tray behavior:
- * - Add/remove toggles per model (`aria-pressed`), capped at `max` (Add
- *   disables when full unless the row is already selected).
- * - "Clear" empties the selection. Search filters the catalog by
- *   name/slug/family/id. All controls are native buttons/inputs (keyboard
- *   accessible, visible focus rings).
- * - Persistence + URL sync live in CompareView (single writer): every change is
- *   saved to localStorage (`bdx-compare-tray-v1`) and pushed to
- *   `/compare?models=a,b` via `router.replace` (shareable, no history spam).
- *   On load the URL wins when present; otherwise the tray restores storage.
- */
-export function CompareTray({ catalog, selected, onChange, max = COMPARE_MAX_MODELS, demo = true }: CompareTrayProps) {
+const _trayKey: string = COMPARE_TRAY_STORAGE_KEY;
+
+export function CompareTray({ catalog, selected, onChange, max = COMPARE_MAX_MODELS }: CompareTrayProps) {
+  void _trayKey;
   const [query, setQuery] = useState("");
   const headingId = useId();
   const searchId = useId();
@@ -47,9 +31,11 @@ export function CompareTray({ catalog, selected, onChange, max = COMPARE_MAX_MOD
   const toggle = (slug: string) => {
     if (selectedSet.has(slug)) {
       onChange(selected.filter((s) => s !== slug));
-    } else if (selected.length < max) {
-      onChange([...selected, slug]);
+      return;
     }
+    if (selected.length >= max) return;
+    const next = [...selected, slug].filter((v, i, a) => a.indexOf(v) === i).slice(0, max);
+    onChange(next);
   };
 
   const full = selected.length >= max;
@@ -63,11 +49,6 @@ export function CompareTray({ catalog, selected, onChange, max = COMPARE_MAX_MOD
         <h2 id={headingId} className="text-sm font-semibold">
           Compare tray
         </h2>
-        {demo ? (
-          <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-            Demo
-          </span>
-        ) : null}
         <span aria-live="polite" className="text-xs text-muted-foreground">
           {selected.length}/{max} selected
         </span>
@@ -142,7 +123,7 @@ export function CompareTray({ catalog, selected, onChange, max = COMPARE_MAX_MOD
       )}
 
       <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-        Saved in this browser (localStorage) and synced to the URL — copy the link to share this exact comparison.
+        Saved in this browser and synced to the URL — copy the link to share this exact comparison.
       </p>
     </section>
   );

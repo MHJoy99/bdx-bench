@@ -3,9 +3,8 @@ import { getDatasetMeta, getModel, getModelEvaluations } from "@/lib/data";
 import { jsonError, jsonOk, parseQuery, splitSlugs } from "@/lib/http";
 
 /**
- * GET /api/compare?models=a,b[,c...] — side-by-side demo models (1-6).
+ * GET /api/compare?models=a,b[,c...] — side-by-side evaluated models (1-6).
  * Unknown slugs -> 400 listing them (fail fast, no silent drops).
- * DEMO DATA. Cached at the edge (aggregate profile).
  */
 const CompareQuerySchema = z.object({
   models: z.string().min(1, "models required, e.g. ?models=a,b").max(600),

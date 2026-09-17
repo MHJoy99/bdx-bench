@@ -185,8 +185,11 @@ export function categoryScore(row: Model, category: string): number {
     case "speed":
       return get(row.speed?.tps);
     case "overall":
-    default:
+    default: {
+      const bdx = get((row.scores as { bdxScore?: unknown }).bdxScore);
+      if (bdx !== -Infinity) return bdx;
       return get(row.scores.overall);
+    }
   }
 }
 

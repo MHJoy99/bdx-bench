@@ -8,6 +8,7 @@
 import React, { useMemo } from "react";
 import type { EChartsCoreOption } from "./EChartBase";
 import { EChartBase } from "./EChartBase";
+import { NOT_EVALUATED, REAL_PROVENANCE_NOTE } from "./real-data";
 import { useChartMode } from "./theme";
 import type { AriaTable, BarSeries, ThemeMode } from "./types";
 import { esc, fmtPct } from "./utils";
@@ -24,13 +25,13 @@ export interface BarGroupProps {
 
 export function barsToTable(categories: string[], series: BarSeries[]): AriaTable {
   return {
-    caption: "Benchmark scores by model, 0 to 1. Blank means no run.",
+    caption: "Benchmark scores by model, 0 to 1. Not evaluated means no measured run.",
     columns: ["Benchmark", ...series.map((s) => s.name)],
     rows: categories.map((c, i) => [
       c,
       ...series.map((s) => {
         const v = s.data[i];
-        return v == null ? "—" : v.toFixed(3);
+        return v == null || !Number.isFinite(v) ? NOT_EVALUATED : v.toFixed(3);
       }),
     ]),
   };
@@ -68,10 +69,12 @@ export function BarGroup({
               ? ` <span style="opacity:.7">95% CI ${fmtPct(s.ciLow[idx])}–${fmtPct(s.ciHigh[idx])}</span>`
               : "";
           const runs = s?.runs?.[idx] != null ? ` <span style="opacity:.7">· ${s.runs[idx]} runs</span>` : "";
-          return `${esc(it.seriesName ?? "?")}: <b>${v == null ? "—" : fmtPct(v)}</b>${ci}${runs}`;
+          const missing =
+            v == null ? ` <span style="opacity:.7">· ${esc(NOT_EVALUATED)}</span>` : "";
+          return `${esc(it.seriesName ?? "?")}: <b>${v == null ? esc(NOT_EVALUATED) : fmtPct(v)}</b>${ci}${runs}${missing}`;
         })
         .join("<br/>");
-      return `<div><b>${esc(cat)}</b><br/>${lines}</div>`;
+      return `<div><b>${esc(cat)}</b><br/>${lines}<br/><span style="opacity:.7">${esc(REAL_PROVENANCE_NOTE)}</span></div>`;
     };
 
     const categoryAxis = {

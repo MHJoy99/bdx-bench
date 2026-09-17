@@ -8,6 +8,7 @@
 import React, { useMemo } from "react";
 import type { EChartsCoreOption } from "./EChartBase";
 import { EChartBase } from "./EChartBase";
+import { NOT_EVALUATED, REAL_PROVENANCE_NOTE } from "./real-data";
 import { ACCENT, useChartMode } from "./theme";
 import type { AriaTable, ScatterPoint, ThemeMode } from "./types";
 import { computePareto, esc, fmtCost, fmtPct, fmtTps } from "./utils";
@@ -15,9 +16,14 @@ import { computePareto, esc, fmtCost, fmtPct, fmtTps } from "./utils";
 export const PARETO_EXPLANATION =
   "The Pareto frontier joins models no rival beats on BOTH price and score. " +
   "A model is on the frontier when no other model is cheaper AND higher-scoring. " +
-  "Frontier models are the rational shortlist: any model behind the line is strictly " +
-  "dominated — you could pay less and score more by switching. Bubble size is speed " +
-  "(tok/s) or context window; hover any point for exact prices, 95% CI, and runs.";
+  "It needs at least two models with measured price AND score across " +
+  "comparable benchmarks — with a single measured benchmark and no measured " +
+  "prices, no frontier can be drawn yet.";
+
+export const PARETO_SINGLE_BENCHMARK_NOTE =
+  "Only one benchmark is measured so far, and no prices are measured. " +
+  "A frontier needs price plus score for at least two models, so this view " +
+  "stays a table until more measurements land.";
 
 export type ScatterSizeBy = "speed" | "context" | "runs" | "none";
 
@@ -53,13 +59,13 @@ export function scatterToTable(points: ScatterPoint[]): AriaTable {
     columns: ["Model", "Provider", "Score", "Blended cost", "In price", "Out price", "Speed", "Runs"],
     rows: points.map((p) => [
       p.label ?? p.model,
-      p.provider ?? "—",
+      p.provider ?? NOT_EVALUATED,
       p.score.toFixed(3),
       fmtCost(p.blendedCost),
-      p.inputPrice != null ? fmtCost(p.inputPrice) : "—",
-      p.outputPrice != null ? fmtCost(p.outputPrice) : "—",
-      p.speedTps != null ? fmtTps(p.speedTps) : "—",
-      p.runs ?? "—",
+      p.inputPrice != null ? fmtCost(p.inputPrice) : NOT_EVALUATED,
+      p.outputPrice != null ? fmtCost(p.outputPrice) : NOT_EVALUATED,
+      p.speedTps != null ? fmtTps(p.speedTps) : NOT_EVALUATED,
+      p.runs ?? NOT_EVALUATED,
     ]),
   };
 }
@@ -94,7 +100,7 @@ export function ScatterPlot({
       return (
         `<div><b>${esc(d.label ?? d.model)}</b><br/>` +
         `<span style="opacity:.7">${esc(d.model)}</span><br/>` +
-        `Provider: <b>${esc(d.provider ?? "—")}</b><br/>` +
+        `Provider: <b>${esc(d.provider ?? NOT_EVALUATED)}</b><br/>` +
         `Score: <b>${fmtPct(d.score)}</b>${ci}<br/>` +
         `Blended: <b>${fmtCost(d.blendedCost)}</b>/1M` +
         (d.inputPrice != null || d.outputPrice != null
@@ -104,7 +110,7 @@ export function ScatterPlot({
         (d.contextK != null ? `<br/>Context: <b>${esc(d.contextK)}K</b>` : "") +
         (d.runs != null ? `<br/>Runs: ${esc(d.runs)}` : "") +
         (d.variance != null ? ` · var ${Number(d.variance).toFixed(4)}` : "") +
-        `</div>`
+        `<br/><span style="opacity:.7">${esc(REAL_PROVENANCE_NOTE)}</span></div>`
       );
     };
 

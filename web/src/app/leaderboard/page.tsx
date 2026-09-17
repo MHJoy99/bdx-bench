@@ -1,11 +1,13 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 
-/**
- * Server Component wrapper for /leaderboard (route owned by 4/10 LEADERBOARD).
- * All interactivity lives in the client <LeaderboardTable />.
- * Suspense boundary is required because the table reads searchParams.
- */
+export const metadata: Metadata = {
+  title: "Leaderboard",
+  description:
+    "Ranked Showdown Scores for Muse Spark 1.3 and Gemini 3.8 Flash on Zombie Flamethrower Showdown.",
+};
+
 export default function LeaderboardPage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
@@ -14,8 +16,9 @@ export default function LeaderboardPage() {
           Leaderboard
         </h1>
         <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
-          Ranked model scores. Use category tabs to switch the sort key, filter
-          by provider / capabilities / price, and share any view via URL.
+          Ranked by Showdown Score (manual game-build evaluation) on Zombie
+          Flamethrower Showdown. Select a model to open its profile. Scores
+          outside this round show as Not evaluated.
         </p>
       </header>
 

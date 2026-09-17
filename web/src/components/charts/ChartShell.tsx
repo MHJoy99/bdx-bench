@@ -19,16 +19,26 @@ export interface ChartShellProps {
   loading?: boolean;
   error?: string | null;
   isEmpty?: boolean;
-  emptyMessage?: string;
+  emptyMessage?: React.ReactNode;
   /** Accessible name for the figure. Defaults to title. */
   ariaLabel?: string;
   /** Tabular equivalent of the visual — required for a11y compliance. */
   table?: AriaTable;
+  /** Anchor id for the data-table details so empty states can link to it. */
+  tableId?: string;
   actions?: React.ReactNode;
   footer?: React.ReactNode;
   onRetry?: () => void;
   testId?: string;
   children: React.ReactNode;
+}
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
 }
 
 export function ChartShell({
@@ -38,9 +48,10 @@ export function ChartShell({
   loading = false,
   error = null,
   isEmpty = false,
-  emptyMessage = "No data yet.",
+  emptyMessage = "Not enough measured data yet. See the data table below.",
   ariaLabel,
   table,
+  tableId: tableIdProp,
   actions,
   footer,
   onRetry,
@@ -48,6 +59,7 @@ export function ChartShell({
   children,
 }: ChartShellProps) {
   const label = ariaLabel ?? title;
+  const tableId = tableIdProp ?? `bdx-table-${slugify(title)}`;
   return (
     <section
       className="bdx-chart-shell"
@@ -98,7 +110,7 @@ export function ChartShell({
       </div>
 
       {table && !loading && !error ? (
-        <details className="bdx-fallback">
+        <details className="bdx-fallback" id={tableId}>
           <summary>View data as table ({table.rows.length} rows)</summary>
           <div className="bdx-table-wrap" tabIndex={0}>
             <table>

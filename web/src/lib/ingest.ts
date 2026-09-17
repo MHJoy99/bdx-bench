@@ -302,8 +302,8 @@ export interface ParityReport {
  */
 export function rebuildFromSeed(): ParityReport {
   const batch: IngestBatch = {
-    batchId: "demo-seed-replay",
-    sourceId: "demo-harness-runs",
+    batchId: "showdown-seed-replay",
+    sourceId: "local-manual-eval",
     evaluations: EVALUATIONS.map((e) => ({
       modelSlug: e.modelSlug,
       benchmarkSlug: e.benchmarkSlug,

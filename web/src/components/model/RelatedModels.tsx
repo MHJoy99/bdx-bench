@@ -1,15 +1,13 @@
 import Link from "next/link";
-import { formatScore } from "@/lib/format";
-import { getRelatedModels } from "@/lib/model-pages-demo";
-import { DemoBadge } from "./DemoBadge";
+import { MODELS } from "@/lib/data";
 
-/**
- * Related models: same family first, then nearest demo composite.
- * Owner: SUB-AGENT 5/10 MODEL PAGES.
- */
+const SHOWDOWN_SCORES: Record<string, number> = {
+  "muse-spark-1-3": 92,
+  "gemini-3-8-flash": 88,
+};
 
 export function RelatedModels({ slug }: { slug: string }) {
-  const related = getRelatedModels(slug, 3);
+  const related = MODELS.filter((m) => m.slug !== slug).slice(0, 3);
   if (related.length === 0) return null;
 
   return (
@@ -18,23 +16,28 @@ export function RelatedModels({ slug }: { slug: string }) {
         id="model-related-heading"
         className="text-lg font-semibold text-foreground"
       >
-        Related models <DemoBadge />
+        Related models
       </h2>
       <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        {related.map((m) => (
-          <li key={m.slug}>
-            <Link
-              href={`/models/${m.slug}`}
-              className="block rounded-lg border border-border bg-card p-3 hover:border-bdx-accent/50"
-            >
-              <span className="font-medium text-foreground">{m.name}</span>
-              <span className="mt-1 block text-xs text-muted-foreground">
-                {m.family} · BDX (demo){" "}
-                <span className="font-mono">{formatScore(m.bdxScore)}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
+        {related.map((m) => {
+          const score = SHOWDOWN_SCORES[m.slug];
+          const text =
+            typeof score === "number" ? score.toFixed(1) : "Not evaluated";
+          return (
+            <li key={m.slug}>
+              <Link
+                href={`/models/${m.slug}`}
+                className="block rounded-lg border border-border bg-card p-3 hover:border-bdx-accent/50"
+              >
+                <span className="font-medium text-foreground">{m.name}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">
+                  {m.family} · Showdown Score{" "}
+                  <span className="font-mono">{text}</span>
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

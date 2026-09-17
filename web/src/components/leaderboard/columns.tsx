@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { LegacyColumnDef } from "@tanstack/react-table/legacy";
 import type { Model } from "@/lib/types";
 import {
@@ -8,22 +9,11 @@ import {
   formatTps,
 } from "@/lib/format";
 
-/**
- * Leaderboard table row: canonical Model + computed rank.
- * Canonical Model comes from @/lib/types (single source of truth).
- * `rank` is assigned client-side after sorting; `rankDelta` is optional
- * (previous-snapshot comparison) and `demo` marks mock fixtures.
- */
 export type LeaderboardTableRow = Model & {
   rank: number;
   rankDelta?: number | null;
-  demo?: boolean;
 };
 
-/**
- * Exact column order required by the leaderboard contract.
- * IDs are stable and persisted to the URL (?cols=, ?sort=).
- */
 export const LEADERBOARD_COLUMN_ORDER = [
   "rank",
   "model",
@@ -45,7 +35,6 @@ export const LEADERBOARD_COLUMN_ORDER = [
 export type LeaderboardColumnId =
   (typeof LEADERBOARD_COLUMN_ORDER)[number];
 
-/** Category tabs switch the table sort key. Maps tab -> column id. */
 export const CATEGORY_SORT_KEY: Record<string, LeaderboardColumnId> = {
   overall: "overall",
   reasoning: "reasoning",
@@ -79,13 +68,12 @@ function scoreTone(v: number | null | undefined): string {
   return "text-[var(--text-tertiary)]";
 }
 
-// ---------------------------------------------------------------- column defs
+function scoreText(v: unknown): string {
+  return typeof v === "number" && Number.isFinite(v)
+    ? formatScore(v)
+    : "Not evaluated";
+}
 
-/**
- * TanStack Table column definitions for the leaderboard.
- * Numeric columns sort nulls last. Cell rendering is dependency-free
- * (no ui imports) so the table survives ui refactors.
- */
 export function getLeaderboardColumns(): LegacyColumnDef<
   LeaderboardTableRow,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,9 +131,13 @@ export function getLeaderboardColumns(): LegacyColumnDef<
         const r = row.original;
         return (
           <span className="flex min-w-0 flex-col">
-            <span className="truncate font-medium text-[var(--text)]" title={r.name}>
+            <Link
+              href={`/models/${r.slug}`}
+              className="truncate font-medium text-[var(--text)] underline-offset-4 hover:underline"
+              title={r.name}
+            >
               {r.name}
-            </span>
+            </Link>
             <span className="mt-0.5 flex flex-wrap items-center gap-1">
               <span
                 className="truncate font-mono text-[11px] text-[var(--text-tertiary)]"
@@ -153,11 +145,6 @@ export function getLeaderboardColumns(): LegacyColumnDef<
               >
                 {r.slug}
               </span>
-              {r.demo ? (
-                <span className="rounded bg-[var(--warning)]/15 px-1 py-px text-[10px] font-semibold uppercase tracking-wide text-[var(--warning)]">
-                  demo
-                </span>
-              ) : null}
               <span className="rounded bg-[var(--elevated)] px-1 py-px text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">
                 {r.openWeights ? "open-weights" : "proprietary"}
               </span>
@@ -184,7 +171,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.overall,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.overall)}`}>
-          {formatScore(row.original.scores.overall)}
+          {scoreText(row.original.scores.overall)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.overall)),
@@ -196,7 +183,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.reasoning,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.reasoning)}`}>
-          {formatScore(row.original.scores.reasoning)}
+          {scoreText(row.original.scores.reasoning)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.reasoning)),
@@ -208,7 +195,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.coding,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.coding)}`}>
-          {formatScore(row.original.scores.coding)}
+          {scoreText(row.original.scores.coding)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.coding)),
@@ -220,7 +207,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.math,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.math)}`}>
-          {formatScore(row.original.scores.math)}
+          {scoreText(row.original.scores.math)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.math)),
@@ -232,7 +219,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.knowledge,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.knowledge)}`}>
-          {formatScore(row.original.scores.knowledge)}
+          {scoreText(row.original.scores.knowledge)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.knowledge)),
@@ -244,7 +231,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.vision,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.vision)}`}>
-          {formatScore(row.original.scores.vision)}
+          {scoreText(row.original.scores.vision)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.vision)),
@@ -256,7 +243,7 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.scores.agentic,
       cell: ({ row }) => (
         <span className={`tnum text-[13px] ${scoreTone(row.original.scores.agentic)}`}>
-          {formatScore(row.original.scores.agentic)}
+          {scoreText(row.original.scores.agentic)}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.scores.agentic)),
@@ -268,7 +255,9 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       accessorFn: (row) => row.speed?.tps ?? null,
       cell: ({ row }) => (
         <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
-          {row.original.speed ? formatTps(row.original.speed.tps) : "—"}
+          {row.original.speed && Number.isFinite(row.original.speed.tps)
+            ? formatTps(row.original.speed.tps)
+            : "Not measured"}
         </span>
       ),
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.speed?.tps)),
@@ -278,11 +267,16 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       id: "inputPrice",
       header: "Input Price",
       accessorFn: (row) => row.prices.inputPer1M,
-      cell: ({ row }) => (
-        <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
-          {formatPrice(row.original.prices.inputPer1M, row.original.prices.currency)}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const v = row.original.prices.inputPer1M as unknown;
+        return (
+          <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
+            {typeof v === "number" && Number.isFinite(v)
+              ? formatPrice(v, row.original.prices.currency)
+              : "Not measured"}
+          </span>
+        );
+      },
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.prices.inputPer1M)),
       size: 110,
     },
@@ -290,11 +284,16 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       id: "outputPrice",
       header: "Output Price",
       accessorFn: (row) => row.prices.outputPer1M,
-      cell: ({ row }) => (
-        <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
-          {formatPrice(row.original.prices.outputPer1M, row.original.prices.currency)}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const v = row.original.prices.outputPer1M as unknown;
+        return (
+          <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
+            {typeof v === "number" && Number.isFinite(v)
+              ? formatPrice(v, row.original.prices.currency)
+              : "Not measured"}
+          </span>
+        );
+      },
       sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.prices.outputPer1M)),
       size: 116,
     },
@@ -302,12 +301,15 @@ export function getLeaderboardColumns(): LegacyColumnDef<
       id: "context",
       header: "Context",
       accessorKey: "context",
-      cell: ({ row }) => (
-        <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
-          {formatTokens(row.original.context)}
-        </span>
-      ),
-      sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.context)),
+      cell: ({ row }) => {
+        const c = row.original.context as unknown;
+        return (
+          <span className="tnum whitespace-nowrap text-[13px] text-[var(--text-secondary)]">
+            {typeof c === "number" && Number.isFinite(c) ? formatTokens(c) : "Not measured"}
+          </span>
+        );
+      },
+      sortFn: (a, b) => num(a.original, b.original, (r) => finite(r.context as unknown as number)),
       size: 90,
     },
     {
@@ -329,8 +331,6 @@ export function getLeaderboardColumns(): LegacyColumnDef<
   ];
 }
 
-// ---------------------------------------------------------------- CSV export
-
 const CSV_HEADERS = [
   "rank",
   "model",
@@ -351,7 +351,6 @@ const CSV_HEADERS = [
   "outputPricePer1M",
   "context",
   "released",
-  "demo",
 ];
 
 function csvEscape(v: unknown): string {
@@ -359,7 +358,6 @@ function csvEscape(v: unknown): string {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-/** Build a CSV string from ranked rows (filtered + sorted order). */
 export function leaderboardToCSV(rows: LeaderboardTableRow[]): string {
   const lines = [CSV_HEADERS.join(",")];
   for (const r of rows) {
@@ -384,7 +382,6 @@ export function leaderboardToCSV(rows: LeaderboardTableRow[]): string {
         r.prices.outputPer1M ?? "",
         r.context ?? "",
         r.released ?? "",
-        r.demo ? "demo" : "live",
       ]
         .map(csvEscape)
         .join(","),
@@ -393,7 +390,6 @@ export function leaderboardToCSV(rows: LeaderboardTableRow[]): string {
   return lines.join("\n");
 }
 
-/** Trigger a client-side CSV download. No server round-trip, no secrets. */
 export function downloadCSV(filename: string, rows: LeaderboardTableRow[]): void {
   const csv = leaderboardToCSV(rows);
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });

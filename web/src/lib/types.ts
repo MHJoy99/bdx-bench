@@ -11,6 +11,7 @@ import { z } from "zod";
 // ---------------------------------------------------------------------------
 
 export const ProviderSchema = z.enum([
+  "bdx-ai",
   "openai",
   "anthropic",
   "google",
@@ -33,11 +34,12 @@ export type Capability = z.infer<typeof CapabilitySchema>;
 
 // ---------------------------------------------------------------------------
 // Price snapshot — USD per 1M tokens
+// `null` input/output = Not measured (no verified price for this model).
 // ---------------------------------------------------------------------------
 
 export const PriceSnapshotSchema = z.object({
-  inputPer1M: z.number().nonnegative(),
-  outputPer1M: z.number().nonnegative(),
+  inputPer1M: z.number().nonnegative().nullable(),
+  outputPer1M: z.number().nonnegative().nullable(),
   cachedInputPer1M: z.number().nonnegative().optional(),
   currency: z.string().default("USD"),
   effectiveDate: z.string(), // ISO date
@@ -47,6 +49,10 @@ export type PriceSnapshot = z.infer<typeof PriceSnapshotSchema>;
 
 // ---------------------------------------------------------------------------
 // Score snapshot — raw 0-100 subscores per dimension
+//
+// `overall` carries the verified Showdown Score (manual game-build
+// evaluation). Every other dimension is `null` until it is measured —
+// `null` renders as "Not evaluated", never as zero or an estimate.
 // ---------------------------------------------------------------------------
 
 export const ScoreDimensions = [
@@ -64,19 +70,19 @@ export type ScoreDimension = (typeof ScoreDimensions)[number];
 
 export const ScoreSnapshotSchema = z.object({
   overall: z.number().min(0).max(100),
-  reasoning: z.number().min(0).max(100),
-  coding: z.number().min(0).max(100),
-  math: z.number().min(0).max(100),
-  knowledge: z.number().min(0).max(100),
-  vision: z.number().min(0).max(100),
-  agentic: z.number().min(0).max(100),
-  /** Long-context handling subscore (0-100). */
-  longContext: z.number().min(0).max(100).optional(),
-  /** Cost/latency efficiency subscore (0-100, higher = more efficient). */
-  efficiency: z.number().min(0).max(100).optional(),
+  reasoning: z.number().min(0).max(100).nullable(),
+  coding: z.number().min(0).max(100).nullable(),
+  math: z.number().min(0).max(100).nullable(),
+  knowledge: z.number().min(0).max(100).nullable(),
+  vision: z.number().min(0).max(100).nullable(),
+  agentic: z.number().min(0).max(100).nullable(),
+  /** Long-context handling subscore (0-100). Null = Not evaluated. */
+  longContext: z.number().min(0).max(100).nullish(),
+  /** Cost/latency efficiency subscore (0-100, higher = more efficient). Null = Not evaluated. */
+  efficiency: z.number().min(0).max(100).nullish(),
   /** Composite BDX Bench Score (0-100), computed via lib/scores.ts. */
   bdxScore: z.number().min(0).max(100).optional(),
-  speed: z.number().min(0).optional(), // tokens/sec (legacy alias of SpeedTest.tps)
+  speed: z.number().min(0).nullish(), // tokens/sec (legacy alias of SpeedTest.tps). Null = Not measured.
   evaluatedAt: z.string(), // ISO date
   benchmark: z.string().optional(), // benchmark slug this snapshot came from
 });
@@ -106,8 +112,8 @@ export const ModelSchema = z.object({
   name: z.string(),
   family: z.string(),
   provider: ProviderSchema,
-  context: z.number().int().nonnegative(), // context window (tokens)
-  released: z.string(), // ISO date
+  context: z.number().int().nonnegative().nullable(), // context window (tokens). Null = Not measured.
+  released: z.string().nullable(), // ISO date. Null = unknown release date.
   openWeights: z.boolean(),
   capabilities: CapabilitySchema,
   prices: PriceSnapshotSchema,
@@ -174,7 +180,8 @@ export const LeaderboardRowSchema = z.object({
   provider: ProviderSchema,
   bdxScore: z.number(),
   overall: z.number(),
-  pricePer1MBlended: z.number(),
+  /** Blended USD/1M. Null = Not measured (no verified price). */
+  pricePer1MBlended: z.number().nullable(),
   tps: z.number().optional(),
 });
 export type LeaderboardRow = z.infer<typeof LeaderboardRowSchema>;
@@ -276,9 +283,9 @@ export const HomepageModelSchema = z.object({
   provider: ProviderSchema,
   bdxScore: z.number(),
   overall: z.number(),
-  pricePer1MBlended: z.number(),
+  pricePer1MBlended: z.number().nullable(),
   tps: z.number().optional(),
   openWeights: z.boolean(),
-  released: z.string(),
+  released: z.string().nullable(),
 });
 export type HomepageModel = z.infer<typeof HomepageModelSchema>;

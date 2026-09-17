@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { LeaderboardTableRow } from "./columns";
 import {
   formatDate,
@@ -9,23 +10,25 @@ import {
   formatTps,
 } from "@/lib/format";
 
-function ScoreGridItem({ label, value }: { label: string; value: number }) {
+function scoreText(v: unknown): string {
+  return typeof v === "number" && Number.isFinite(v)
+    ? formatScore(v)
+    : "Not evaluated";
+}
+
+function ScoreGridItem({ label, value }: { label: string; value: unknown }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-[6px] bg-[var(--elevated)] px-2 py-1.5">
       <span className="text-[11px] uppercase tracking-wide text-[var(--text-tertiary)]">
         {label}
       </span>
       <span className="tnum text-[13px] font-medium text-[var(--text)]">
-        {formatScore(value)}
+        {scoreText(value)}
       </span>
     </div>
   );
 }
 
-/**
- * Mobile fallback card (<md). The desktop <table> is hidden on small screens
- * and this card list takes over. Keyboard navigable via tabIndex + aria-label.
- */
 export function LeaderboardMobileCard({
   row,
   rank,
@@ -37,11 +40,11 @@ export function LeaderboardMobileCard({
 }) {
   const highlight = (key: string) =>
     activeCategory === key ? "ring-1 ring-[var(--ring)]" : "";
+  const overallText = scoreText(row.scores.overall);
   return (
     <article
-      tabIndex={0}
-      aria-label={`Rank ${rank}: ${row.name}, overall ${formatScore(row.scores.overall)}`}
-      className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+      aria-label={`Rank ${rank}: ${row.name}, overall ${overallText}`}
+      className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2.5">
@@ -53,7 +56,9 @@ export function LeaderboardMobileCard({
           </span>
           <div className="min-w-0">
             <h3 className="truncate text-[13px] font-semibold text-[var(--text)]">
-              {row.name}
+              <Link href={`/models/${row.slug}`} className="underline-offset-4 hover:underline">
+                {row.name}
+              </Link>
             </h3>
             <p className="truncate font-mono text-[11px] text-[var(--text-tertiary)]">
               {row.slug} · <span className="capitalize">{row.provider}</span>
@@ -65,17 +70,12 @@ export function LeaderboardMobileCard({
             Overall
           </div>
           <div className="tnum text-xl font-semibold text-[var(--text)]">
-            {formatScore(row.scores.overall)}
+            {overallText}
           </div>
         </div>
       </div>
 
       <div className="mt-2 flex flex-wrap gap-1">
-        {row.demo || row.prices.source === "placeholder" ? (
-          <span className="rounded bg-[var(--warning)]/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--warning)]">
-            Demo data
-          </span>
-        ) : null}
         <span className="rounded bg-[var(--elevated)] px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">
           {row.openWeights ? "open-weights" : "proprietary"}
         </span>
@@ -127,25 +127,33 @@ export function LeaderboardMobileCard({
         <div>
           <dt className="text-[var(--text-tertiary)]">Speed</dt>
           <dd className="tnum font-medium text-[var(--text)]">
-            {row.speed ? formatTps(row.speed.tps) : "—"}
+            {row.speed && Number.isFinite(row.speed.tps) ? formatTps(row.speed.tps) : "Not measured"}
           </dd>
         </div>
         <div>
           <dt className="text-[var(--text-tertiary)]">In / Out</dt>
           <dd className="tnum font-medium text-[var(--text)]">
-            {formatPrice(row.prices.inputPer1M)} / {formatPrice(row.prices.outputPer1M)}
+            {typeof (row.prices.inputPer1M as unknown) === "number" &&
+            Number.isFinite(row.prices.inputPer1M as unknown as number) &&
+            typeof (row.prices.outputPer1M as unknown) === "number" &&
+            Number.isFinite(row.prices.outputPer1M as unknown as number)
+              ? `${formatPrice(row.prices.inputPer1M as unknown as number)} / ${formatPrice(row.prices.outputPer1M as unknown as number)}`
+              : "Not measured"}
           </dd>
         </div>
         <div>
           <dt className="text-[var(--text-tertiary)]">Context</dt>
           <dd className="tnum font-medium text-[var(--text)]">
-            {formatTokens(row.context)}
+            {typeof (row.context as unknown) === "number" &&
+            Number.isFinite(row.context as unknown as number)
+              ? formatTokens(row.context as unknown as number)
+              : "Not measured"}
           </dd>
         </div>
         <div>
           <dt className="text-[var(--text-tertiary)]">Released</dt>
           <dd className="tnum font-medium text-[var(--text)]">
-            {formatDate(row.released)}
+            {row.released ? formatDate(row.released) : "—"}
           </dd>
         </div>
       </dl>

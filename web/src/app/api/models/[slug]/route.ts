@@ -3,8 +3,8 @@ import { DATASET_FRESHNESS } from "@/lib/data";
 import { jsonError, jsonOk, SlugSchema } from "@/lib/http";
 
 /**
- * GET /api/models/[slug] — single demo model + evaluations + provenance.
- * DEMO DATA. Cached at the edge (dataset profile). 404 for unknown slugs.
+ * GET /api/models/[slug] — single evaluated model + evaluations + provenance.
+ * 404 for unknown slugs.
  */
 export async function GET(
   _req: Request,
@@ -18,7 +18,7 @@ export async function GET(
 
   const evaluations = getModelEvaluations(model.slug);
   const usedSources = new Set(evaluations.map((e) => e.sourceId));
-  usedSources.add(typeof model.prices.source === "string" ? model.prices.source : "demo-vendor-sheet");
+  usedSources.add(typeof model.prices.source === "string" ? model.prices.source : "local-manual-eval");
 
   return jsonOk({
     model,

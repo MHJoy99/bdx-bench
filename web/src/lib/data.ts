@@ -1,10 +1,10 @@
-import { bdxBenchScore, blendedPricePer1M } from "@/lib/scores";
+import { blendedPricePer1M } from "@/lib/scores";
 import {
   BENCHMARK_CATALOGUE,
   DATASET_META,
   EVALUATIONS,
   FRESHNESS,
-  MODELS as DEMO_MODELS,
+  MODELS as SHOWDOWN_MODELS,
   PRICE_SNAPSHOTS,
   PROVENANCE,
   SCORE_SNAPSHOTS,
@@ -34,21 +34,21 @@ import type {
 } from "@/lib/types";
 
 /**
- * Canonical server-side dataset accessors — Owner: SUB-AGENT 8/10 BACKEND+DATA.
+ * Canonical server-side dataset accessors.
  *
- * Backs all `/api/*` routes and RSC pages. Values come from `@/lib/demo-data`
- * (GENERATED DEMO DATA — fictional, seeded via web/scripts/make-seed.cjs).
- * Shape of the original exports (MODELS / BENCHMARKS / getModel /
- * toLeaderboardRow / getLeaderboard / getTrends) is FINAL — API response
- * envelopes must not change without arch approval.
+ * Backs all `/api/*` routes and RSC pages. Values come from
+ * `@/lib/demo-data` (hand-maintained local evaluation data: the Zombie
+ * Flamethrower Showdown, 2026-09-17). Shape of the original exports (MODELS /
+ * BENCHMARKS / getModel / toLeaderboardRow / getLeaderboard / getTrends) is
+ * FINAL — API response envelopes must not change without arch approval.
  */
 
 // ---------------------------------------------------------------------------
-// Core tables (re-exported from the generated seed)
+// Core tables (re-exported from the local seed)
 // ---------------------------------------------------------------------------
 
-/** All demo models (canonical `Model[]`). */
-export const MODELS: Model[] = DEMO_MODELS;
+/** All evaluated models (canonical `Model[]`). */
+export const MODELS: Model[] = SHOWDOWN_MODELS;
 
 /** Benchmark catalogue as base `Benchmark[]` (dimension mapping stripped). */
 export const BENCHMARKS: Benchmark[] = BENCHMARK_CATALOGUE.map(
@@ -58,19 +58,19 @@ export const BENCHMARKS: Benchmark[] = BENCHMARK_CATALOGUE.map(
 /** Full benchmark catalogue with dimension/version/task metadata. */
 export const BENCHMARK_DETAILS: BenchmarkMeta[] = BENCHMARK_CATALOGUE;
 
-/** Demo provider groupings (labels, not affiliations). */
+/** Provider groupings (labels, not affiliations). */
 export const PROVIDER_LIST: ProviderInfo[] = PROVIDERS;
 
-/** All demo evaluations (model x benchmark, with CI + provenance). */
+/** All evaluations (model x benchmark, with CI + provenance). */
 export const ALL_EVALUATIONS: DemoEvaluation[] = EVALUATIONS;
 
 /** Score snapshots keyed by model. */
 export const ALL_SNAPSHOTS: SnapshotEntry[] = SCORE_SNAPSHOTS;
 
-/** Speed tests keyed by model. */
+/** Speed tests keyed by model (empty until a harness reports). */
 export const ALL_SPEED_TESTS: SpeedEntry[] = SPEED_TESTS;
 
-/** Price snapshots keyed by model. */
+/** Price snapshots keyed by model (nulls = Not measured). */
 export const ALL_PRICE_SNAPSHOTS: PriceEntry[] = PRICE_SNAPSHOTS;
 
 /** Provenance sources. */
@@ -125,14 +125,21 @@ export function getSource(id: string): Source | undefined {
 // ---------------------------------------------------------------------------
 
 export function toLeaderboardRow(m: Model, rank: number): LeaderboardRow {
+  const input = m.prices.inputPer1M;
+  const output = m.prices.outputPer1M;
   return {
     rank,
     modelSlug: m.slug,
     modelName: m.name,
     provider: m.provider,
-    bdxScore: m.scores.bdxScore ?? bdxBenchScore(m.scores),
+    // Stored Showdown Score — never recomputed from null dimensions.
+    bdxScore: m.scores.bdxScore ?? m.scores.overall,
     overall: m.scores.overall,
-    pricePer1MBlended: blendedPricePer1M(m.prices.inputPer1M, m.prices.outputPer1M),
+    // Null = Not measured (owners render "Not measured", never NaN).
+    pricePer1MBlended:
+      input != null && output != null
+        ? blendedPricePer1M(input, output)
+        : null,
     tps: m.speed?.tps,
   };
 }
@@ -177,7 +184,7 @@ const TREND_RANGE_DAYS: Record<TrendRange, number> = {
   all: Number.POSITIVE_INFINITY,
 };
 
-/** Monthly avg-BDX-Score series, optionally windowed (demo trajectory). */
+/** Showdown snapshot series (single point until more evals land). */
 export function getTrends(range: TrendRange = "all"): TrendPoint[] {
   if (range === "all") return TRENDS;
   const max = TRENDS.reduce((a, b) => (a.date > b.date ? a : b)).date;

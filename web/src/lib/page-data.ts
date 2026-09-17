@@ -20,15 +20,16 @@ import {
   getTrends,
   type TrendRange,
 } from "@/lib/data";
-import { BDX_WEIGHTS, blendedPricePer1M, scoreLabel } from "@/lib/scores";
+import { BDX_WEIGHTS, scoreLabel } from "@/lib/scores";
 
 /**
- * Page view-models — Owner: SUB-AGENT 8/10 BACKEND+DATA.
+ * Page view-models.
  *
- * DATA NEEDS ONLY for Agents 3/7 UI routes:
+ * DATA NEEDS ONLY for UI routes:
  *   /benchmarks, /benchmarks/[slug], /price-performance, /trends, /methodology
  * Pure data builders + Zod schemas. No JSX, no styling — UI agents own that.
- * Every payload is DEMO DATA (see `@/lib/demo-data`).
+ * Values are the local manual evaluation (Zombie Flamethrower Showdown,
+ * 2026-09-17). Unmeasured fields are null ("Not evaluated"/"Not measured").
  */
 
 // ---------------------------------------------------------------------------
@@ -120,7 +121,7 @@ export function getBenchmarkDetailData(slug: string): BenchmarkDetailData | null
     return {
       modelSlug: e.modelSlug,
       modelName: m?.name ?? e.modelSlug,
-      provider: m?.provider ?? "other",
+      provider: m?.provider ?? "bdx-ai",
       raw: e.raw,
       normalized: e.normalized ?? e.raw,
       ciLow: e.ciLow,
@@ -165,11 +166,11 @@ export const PricePerformancePointSchema = z.object({
   provider: z.string(),
   bdxScore: z.number(),
   label: z.string(),
-  blendedPricePer1M: z.number(),
-  inputPer1M: z.number(),
-  outputPer1M: z.number(),
+  blendedPricePer1M: z.number().nullable(),
+  inputPer1M: z.number().nullable(),
+  outputPer1M: z.number().nullable(),
   tps: z.number().optional(),
-  efficiency: z.number(),
+  efficiency: z.number().nullable(),
   onFrontier: z.boolean(),
 });
 export type PricePerformancePoint = z.infer<typeof PricePerformancePointSchema>;
@@ -179,42 +180,29 @@ export function getPricePerformanceData(): {
   frontier: string[];
   meta: typeof DATASET_META;
 } {
-  const base = SCORE_SNAPSHOTS.map((s) => {
+  const points: PricePerformancePoint[] = SCORE_SNAPSHOTS.map((s) => {
     const m = getModel(s.modelSlug);
     if (!m) return null;
+    const bdx = s.snapshot.bdxScore ?? s.snapshot.overall;
+    const input = m.prices.inputPer1M;
+    const output = m.prices.outputPer1M;
     return {
       modelSlug: s.modelSlug,
       modelName: m.name,
       provider: m.provider,
-      bdxScore: s.snapshot.bdxScore ?? s.snapshot.overall,
-      label: m.scores.bdxScore != null ? scoreLabel(m.scores.bdxScore) : scoreLabel(s.snapshot.overall),
-      blendedPricePer1M: blendedPricePer1M(m.prices.inputPer1M, m.prices.outputPer1M),
-      inputPer1M: m.prices.inputPer1M,
-      outputPer1M: m.prices.outputPer1M,
+      bdxScore: bdx,
+      label: scoreLabel(bdx),
+      // Nulls = Not measured; no frontier without measured prices.
+      blendedPricePer1M: null,
+      inputPer1M: input ?? null,
+      outputPer1M: output ?? null,
       tps: m.speed?.tps,
-      efficiency: s.snapshot.efficiency ?? 50,
+      efficiency: s.snapshot.efficiency ?? null,
+      onFrontier: false,
     };
   }).filter((p): p is NonNullable<typeof p> => p != null);
 
-  // Pareto frontier: a model is on it when no other model is both cheaper
-  // (or equal) AND higher-scoring (or equal) with at least one strict edge.
-  const frontier = base
-    .filter((p) =>
-      !base.some(
-        (q) =>
-          q.modelSlug !== p.modelSlug &&
-          q.blendedPricePer1M <= p.blendedPricePer1M &&
-          q.bdxScore >= p.bdxScore &&
-          (q.blendedPricePer1M < p.blendedPricePer1M || q.bdxScore > p.bdxScore),
-      ),
-    )
-    .map((p) => p.modelSlug);
-  const onFrontier = new Set(frontier);
-  return {
-    points: base.map((p) => ({ ...p, onFrontier: onFrontier.has(p.modelSlug) })),
-    frontier,
-    meta: getDatasetMeta(),
-  };
+  return { points, frontier: [], meta: getDatasetMeta() };
 }
 
 // ---------------------------------------------------------------------------
@@ -278,17 +266,18 @@ const WEIGHT_LABELS: Record<string, string> = {
 export function getMethodologyData(): MethodologyPageData {
   return {
     version: "v1",
-    frozenAt: "2026-09-01",
+    frozenAt: "2026-09-17",
     weights: (Object.entries(BDX_WEIGHTS) as [string, number][]).map(([dimension, weight]) => ({
       dimension,
       weight,
       label: WEIGHT_LABELS[dimension] ?? dimension,
     })),
     formulas: {
-      normalizedScore: "clamp(round1(raw / scaleMax * 100), 0, 100) — all demo suites already report 0-100",
+      normalizedScore:
+        "Single manual game-build evaluation per model, scored 0-100 directly as Showdown Score (manual game-build evaluation); no multi-suite normalization.",
       bdxBenchScore:
-        "round1(sum(dimension * weight)); missing longContext/efficiency fall back to the mean of the six core dims",
-      blendedPrice: "round2(inputPer1M * 0.75 + outputPer1M * 0.25) — 3:1 input:output weighting",
+        "Not composited for this showdown — Showdown Score is stored directly (manual game-build evaluation). Dimension composites apply once multi-suite harness runs land.",
+      blendedPrice: "Not measured — per-token prices are null until verified price runs land.",
     },
     duplicatePolicy: {
       key: ["modelSlug", "benchmarkSlug", "benchmarkVersion", "methodologyVersion"],
@@ -298,7 +287,7 @@ export function getMethodologyData(): MethodologyPageData {
         "Remaining ties: first-seen wins; dropped rows are reported as conflicts, never silently merged.",
       ],
     },
-    sourceKinds: ["vendor", "benchmark", "harness", "manual"],
+    sourceKinds: ["manual"],
     freshness: FRESHNESS,
     provenance: PROVENANCE,
     uncertainty: UNCERTAINTY,
@@ -307,7 +296,7 @@ export function getMethodologyData(): MethodologyPageData {
 }
 
 // ---------------------------------------------------------------------------
-// /models/[slug] detail helper (complements Agent5's model-pages-demo)
+// /models/[slug] detail helper (complements model-pages)
 // ---------------------------------------------------------------------------
 
 export interface ModelDetailData {

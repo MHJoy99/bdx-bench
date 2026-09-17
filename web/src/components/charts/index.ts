@@ -4,16 +4,18 @@
  *  route-support sections. Do NOT rebuild chart primitives per page.
  *
  *  @example
- *  import { ChartShell, ScatterPlot, DEMO_SCATTER_POINTS } from "@/components/charts";
+ *  import { ChartShell, BarGroup, REAL_BAR_CATEGORIES, REAL_BAR_SERIES } from "@/components/charts";
  *  import { ScatterSection } from "@/components/price-performance/ScatterSection";
  */
 
 export { ChartShell, type ChartShellProps } from "./ChartShell";
-export { RadarChart, radarToTable, radarValues } from "./RadarChart";
+export { NotEnoughData, type NotEnoughDataProps } from "./NotEnoughData";
+export { RadarChart, evaluatedAxes, radarToTable, radarValues } from "./RadarChart";
 export type { RadarChartProps } from "./RadarChart";
 export {
   ScatterPlot,
   PARETO_EXPLANATION,
+  PARETO_SINGLE_BENCHMARK_NOTE,
   scatterToTable,
   type ScatterPlotProps,
   type ScatterSizeBy,
@@ -26,6 +28,8 @@ export {
   type TrendMetric,
 } from "./TrendChart";
 export { BarGroup, barsToTable, type BarGroupProps } from "./BarGroup";
+export { PriceBars, pricesToTable, type PriceBarsProps, type PriceEntry } from "./PriceBars";
+export { SpeedBars, speedsToTable, type SpeedBarsProps, type SpeedEntry } from "./SpeedBars";
 export {
   HeatmapMatrix,
   heatmapToTable,
@@ -63,6 +67,33 @@ export {
   mean,
   variance,
 } from "./utils";
+
+export {
+  NOT_ENOUGH_DATA,
+  NOT_EVALUATED,
+  REAL_BAR_CATEGORIES,
+  REAL_BAR_SERIES,
+  REAL_BENCHMARK_LABEL,
+  REAL_BENCHMARK_SLUG,
+  REAL_EVAL_DATE,
+  REAL_HEATMAP_BENCHMARKS,
+  REAL_HEATMAP_CELLS,
+  REAL_HEATMAP_MODELS,
+  REAL_MATCH_ID,
+  REAL_MODEL_FLASH,
+  REAL_MODEL_NAMES,
+  REAL_MODEL_SPARK,
+  REAL_PROVENANCE_KIND,
+  REAL_PROVENANCE_NOTE,
+  REAL_RADAR,
+  REAL_RADAR_AXES,
+  REAL_SCORES_01,
+  REAL_SLUGS,
+  REAL_TRENDS,
+  isRealModelName,
+  isRealModelSlug,
+  scoreCell,
+} from "./real-data";
 
 export {
   DEMO_BARS,

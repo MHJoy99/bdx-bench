@@ -1,10 +1,5 @@
-import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * Homepage skeleton loaders + empty states.
- * Uses the Agent2 `Skeleton` primitive. Dark-first bdx tokens.
- */
 export function HomeTableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div

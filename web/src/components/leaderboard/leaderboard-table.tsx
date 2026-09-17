@@ -15,7 +15,7 @@ import type {
   SortingState,
   Updater,
 } from "@tanstack/table-core";
-import { Badge, DemoDataBadge, MethodologyVersionTag } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { LeaderboardTableRow } from "./columns";
 import {
@@ -25,7 +25,6 @@ import {
   type CategoryId,
 } from "./columns";
 import {
-  DEFAULT_FILTERS,
   applyLeaderboardFilters,
   categoryScore,
   parseFilterParams,
@@ -62,41 +61,43 @@ function SkeletonRows({ count = 8 }: { count?: number }) {
   );
 }
 
-function sortValue(row: LeaderboardTableRow, sortId: string): number {
+function finiteOrNull(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
+}
+
+function sortValue(row: LeaderboardTableRow, sortId: string): number | null {
   switch (sortId) {
     case "reasoning":
-      return row.scores.reasoning;
+      return finiteOrNull(row.scores.reasoning);
     case "coding":
-      return row.scores.coding;
+      return finiteOrNull(row.scores.coding);
     case "math":
-      return row.scores.math;
+      return finiteOrNull(row.scores.math);
     case "knowledge":
-      return row.scores.knowledge;
+      return finiteOrNull(row.scores.knowledge);
     case "vision":
-      return row.scores.vision;
+      return finiteOrNull(row.scores.vision);
     case "agentic":
-      return row.scores.agentic;
+      return finiteOrNull(row.scores.agentic);
     case "speed":
-      return row.speed?.tps ?? -Infinity;
+      return finiteOrNull(row.speed?.tps);
     case "inputPrice":
-      return row.prices.inputPer1M;
+      return finiteOrNull(row.prices.inputPer1M as unknown as number);
     case "outputPrice":
-      return row.prices.outputPer1M;
+      return finiteOrNull(row.prices.outputPer1M as unknown as number);
     case "context":
-      return row.context;
+      return finiteOrNull(row.context);
     case "released":
-      return row.released ? new Date(row.released).getTime() : -Infinity;
+      return row.released ? new Date(row.released).getTime() : null;
     case "overall":
-    default:
-      return row.scores.overall;
+    default: {
+      const bdx = finiteOrNull((row.scores as { bdxScore?: unknown }).bdxScore);
+      if (bdx !== null) return bdx;
+      return finiteOrNull(row.scores.overall);
+    }
   }
 }
 
-/**
- * Client leaderboard: TanStack Table for sorting/pagination, URL-persisted
- * filters via searchParams, sticky model column + sticky headers, desktop
- * table with mobile card fallback.
- */
 export function LeaderboardTable() {
   const router = useRouter();
   const pathname = usePathname();
@@ -120,7 +121,6 @@ export function LeaderboardTable() {
     [filters, pathname, router],
   );
 
-  // Search input is local-first, debounced into the URL.
   const [draftQuery, setDraftQuery] = useState(filters.q);
   const lastUrlQuery = useRef(filters.q);
   useEffect(() => {
@@ -146,7 +146,6 @@ export function LeaderboardTable() {
     [data.rows, filters],
   );
 
-  // Sort by the active sort key, then assign the global rank.
   const ranked = useMemo(() => {
     const sortId = filters.sort || CATEGORY_SORT_KEY[filters.category] || "overall";
     const dir = filters.dir === "asc" ? 1 : -1;
@@ -157,11 +156,21 @@ export function LeaderboardTable() {
         const cmp = String(av ?? "").localeCompare(String(bv ?? ""));
         if (cmp !== 0) return cmp * dir;
       } else if (sortId !== "rank") {
-        const d = (sortValue(a, sortId) - sortValue(b, sortId)) * dir;
-        if (d !== 0) return d;
+        const av = sortValue(a, sortId);
+        const bv = sortValue(b, sortId);
+        if (av === null && bv === null) {
+          // both missing: fall through to tiebreakers
+        } else if (av === null) {
+          return 1;
+        } else if (bv === null) {
+          return -1;
+        } else {
+          const d = (av - bv) * dir;
+          if (d !== 0) return d;
+        }
       }
       const cat = categoryScore(b, filters.category) - categoryScore(a, filters.category);
-      if (cat !== 0) return cat;
+      if (Number.isFinite(cat) && cat !== 0) return cat;
       return a.slug.localeCompare(b.slug);
     });
     return sorted.map((r, i) => ({ ...r, rank: i + 1 }) as LeaderboardTableRow);
@@ -204,7 +213,7 @@ export function LeaderboardTable() {
         page: 1,
       };
       const catEntry = Object.entries(CATEGORY_SORT_KEY).find(([, col]) => col === first.id);
-      if (catEntry) patch.category = catEntry[0] as CategoryId;
+      if (catEntry && catEntry[0]) patch.category = catEntry[0] as CategoryId;
       replaceFilters(patch);
     },
     onColumnVisibilityChange: (updater: Updater<ColumnVisibilityState>) => {
@@ -257,6 +266,7 @@ export function LeaderboardTable() {
     <div className="space-y-4">
       <LeaderboardToolbar
         category={activeCategory}
+        activeSortId={activeSortId}
         query={draftQuery}
         onQuery={(q) => setDraftQuery(q)}
         onCategory={(c) =>
@@ -288,26 +298,14 @@ export function LeaderboardTable() {
           role="status"
           className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs text-[var(--text-secondary)]"
         >
-          {data.isDemo ? (
-            <>
-              <DemoDataBadge />
-              <span>
-                Placeholder fixtures for plumbing only — not verified real results.
-                {data.error ? ` (live fetch failed: ${data.error})` : ""}
-              </span>
-            </>
-          ) : (
-            <>
-              <Badge variant="pass">Live</Badge>
-              <span>
-                Ranked from <code className="font-mono">GET /api/leaderboard</code>,
-                enriched by <code className="font-mono">GET /api/models</code>.
-              </span>
-            </>
-          )}
-          <span className="ml-auto">
-            <MethodologyVersionTag />
+          <Badge variant="default">
+            {filtered.length} of {data.rows.length} builds
+          </Badge>
+          <span>
+            Ranked by Showdown Score (manual game-build evaluation) on Zombie
+            Flamethrower Showdown. Other dimensions show as Not evaluated.
           </span>
+          {data.error ? <span>Could not refresh live data; showing stored rows.</span> : null}
         </div>
       ) : null}
 
@@ -341,12 +339,10 @@ export function LeaderboardTable() {
         </div>
       ) : (
         <>
-          {/* Desktop table (md+): sticky headers + sticky model column. */}
           <div
             className="hidden max-h-[68vh] overflow-auto rounded-[10px] border border-[var(--border)] bg-[var(--surface)] md:block"
             role="region"
             aria-label="Leaderboard table, scrollable"
-            tabIndex={0}
           >
             <table className="w-full min-w-[1180px] border-collapse text-left text-[13px]">
               <thead className="sticky top-0 z-20">
@@ -412,9 +408,8 @@ export function LeaderboardTable() {
                 {pageRows.map((row) => (
                   <tr
                     key={row.id}
-                    tabIndex={0}
                     aria-label={`Rank ${row.original.rank}: ${row.original.name}`}
-                    className="border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--elevated)]/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
+                    className="border-b border-[var(--border)] transition-colors last:border-0 hover:bg-[var(--elevated)]/60"
                   >
                     {row.getVisibleCells().map((cell) => {
                       const isModel = cell.column.id === "model";
@@ -497,8 +492,6 @@ export function LeaderboardTable() {
           </nav>
         </>
       )}
-
-      <p className="sr-only">Fallback defaults: {JSON.stringify(DEFAULT_FILTERS)}</p>
     </div>
   );
 }

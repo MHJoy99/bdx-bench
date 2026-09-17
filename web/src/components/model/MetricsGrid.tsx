@@ -4,78 +4,79 @@ import {
   formatTokens,
   formatTps,
 } from "@/lib/format";
-import { blendedPricePer1M, scoreLabel } from "@/lib/scores";
+import { scoreLabel } from "@/lib/scores";
 import type { Model } from "@/lib/types";
-import { DemoBadge } from "./DemoBadge";
 
-/**
- * Primary metrics grid for a model page.
- * Owner: SUB-AGENT 5/10 MODEL PAGES.
- * TODO(@ui): swap section/card divs for `@/components/ui/card` when it lands.
- */
-
-interface Metric {
-  label: string;
-  value: string;
-  hint: string;
+function num(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
-export function MetricsGrid({ model }: { model: Model }) {
-  const s = model.scores;
-  const bdx = s.bdxScore ?? s.overall;
-  const blended = blendedPricePer1M(
-    model.prices.inputPer1M,
-    model.prices.outputPer1M,
-  );
+function scoreOr(v: unknown): string {
+  const n = num(v);
+  return n === null ? "Not evaluated" : formatScore(n);
+}
 
-  const metrics: Metric[] = [
-    {
-      label: "Overall",
-      value: `${formatScore(s.overall)} · ${scoreLabel(s.overall)}`,
-      hint: "Demo overall subscore 0-100",
-    },
-    {
-      label: "Reasoning",
-      value: formatScore(s.reasoning),
-      hint: "Demo reasoning subscore 0-100",
-    },
-    { label: "Coding", value: formatScore(s.coding), hint: "Demo coding subscore 0-100" },
-    { label: "Math", value: formatScore(s.math), hint: "Demo math subscore 0-100" },
-    {
-      label: "Knowledge",
-      value: formatScore(s.knowledge),
-      hint: "Demo knowledge subscore 0-100",
-    },
-    { label: "Vision", value: formatScore(s.vision), hint: "Demo vision subscore 0-100" },
-    {
-      label: "Agentic",
-      value: formatScore(s.agentic),
-      hint: "Demo agentic subscore 0-100",
-    },
+const SHOWDOWN_SCORES: Record<string, number> = {
+  "muse-spark-1-3": 92,
+  "gemini-3-8-flash": 88,
+};
+
+const SHOWDOWN_LABEL = "Showdown Score (manual game-build evaluation)";
+
+export function MetricsGrid({ model }: { model: Model }) {
+  const rec = model as unknown as {
+    scores?: Record<string, unknown>;
+    prices?: { inputPer1M?: unknown; outputPer1M?: unknown; currency?: string };
+    speed?: { tps?: unknown };
+    context?: unknown;
+  };
+  const showdown = SHOWDOWN_SCORES[model.slug] ?? num(rec.scores?.["overall"]);
+  const showdownText =
+    typeof showdown === "number" && Number.isFinite(showdown)
+      ? `${formatScore(showdown)} · ${scoreLabel(showdown)}`
+      : "Not evaluated";
+
+  const metrics: { label: string; value: string }[] = [
+    { label: "Showdown Score", value: showdownText },
+    { label: "Reasoning", value: scoreOr(rec.scores?.["reasoning"]) },
+    { label: "Coding", value: scoreOr(rec.scores?.["coding"]) },
+    { label: "Math", value: scoreOr(rec.scores?.["math"]) },
+    { label: "Knowledge", value: scoreOr(rec.scores?.["knowledge"]) },
+    { label: "Vision", value: scoreOr(rec.scores?.["vision"]) },
+    { label: "Agentic", value: scoreOr(rec.scores?.["agentic"]) },
     {
       label: "Speed",
-      value: model.speed ? formatTps(model.speed.tps) : "—",
-      hint: "Demo median output throughput",
+      value:
+        num(rec.speed?.tps) === null
+          ? "Not measured"
+          : formatTps(num(rec.speed?.tps) as number),
     },
     {
       label: "Input price",
-      value: formatPrice(model.prices.inputPer1M, model.prices.currency),
-      hint: "Demo USD per 1M input tokens",
+      value:
+        num(rec.prices?.inputPer1M) === null
+          ? "Not measured"
+          : formatPrice(
+              num(rec.prices?.inputPer1M) as number,
+              typeof rec.prices?.currency === "string" ? rec.prices.currency : "USD",
+            ),
     },
     {
       label: "Output price",
-      value: formatPrice(model.prices.outputPer1M, model.prices.currency),
-      hint: "Demo USD per 1M output tokens",
-    },
-    {
-      label: "Blended price",
-      value: formatPrice(blended, model.prices.currency),
-      hint: "3:1 input:output weighting (lib/scores)",
+      value:
+        num(rec.prices?.outputPer1M) === null
+          ? "Not measured"
+          : formatPrice(
+              num(rec.prices?.outputPer1M) as number,
+              typeof rec.prices?.currency === "string" ? rec.prices.currency : "USD",
+            ),
     },
     {
       label: "Context",
-      value: formatTokens(model.context),
-      hint: "Demo context window (tokens)",
+      value:
+        num(rec.context) === null
+          ? "Not measured"
+          : formatTokens(num(rec.context) as number),
     },
   ];
 
@@ -86,14 +87,9 @@ export function MetricsGrid({ model }: { model: Model }) {
           id="model-metrics-heading"
           className="text-lg font-semibold text-foreground"
         >
-          Key metrics <DemoBadge />
+          Key metrics
         </h2>
-        <p className="text-xs text-muted-foreground">
-          BDX Bench Score (demo composite):{" "}
-          <strong className="text-foreground">
-            {formatScore(bdx)} · {scoreLabel(bdx)}
-          </strong>
-        </p>
+        <p className="text-xs text-muted-foreground">{SHOWDOWN_LABEL}</p>
       </div>
 
       <dl className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -105,10 +101,7 @@ export function MetricsGrid({ model }: { model: Model }) {
             <dt className="text-[11px] uppercase leading-4 tracking-wide text-muted-foreground">
               {m.label}
             </dt>
-            <dd
-              className="mt-0.5 font-mono text-sm font-semibold text-foreground"
-              title={m.hint}
-            >
+            <dd className="mt-0.5 font-mono text-sm font-semibold text-foreground">
               {m.value}
             </dd>
           </div>

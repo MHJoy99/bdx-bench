@@ -1,48 +1,12 @@
-import { DemoDataBadge } from "@/components/ui/badge";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { MODELS } from "@/lib/data";
-import type { Model } from "@/lib/types";
-// Local synthetic padding (TODO Agent8 canonical `@/lib/demo-data`):
-import { DEMO_CATEGORY_LEADERS } from "./home-demo-data";
 
-const DIMS: { key: keyof Model["scores"]; label: string }[] = [
-  { key: "coding", label: "Coding" },
-  { key: "reasoning", label: "Reasoning" },
-  { key: "math", label: "Math" },
-  { key: "knowledge", label: "Knowledge" },
-  { key: "vision", label: "Vision" },
-  { key: "longContext", label: "Long Context" },
-  { key: "agentic", label: "Agentic" },
-  { key: "efficiency", label: "Efficiency" },
+const SHOWDOWN_SCORES = [
+  { label: "Muse Spark 1.3", slug: "muse-spark-1-3", score: 92 },
+  { label: "Gemini 3.8 Flash", slug: "gemini-3-8-flash", score: 88 },
 ];
 
-/**
- * CATEGORY LEADERS — Server Component. DEMO DATA.
- * Leaders computed from the placeholder set via canonical scores; tiles the
- * placeholder set cannot fill come from the synthetic demo list.
- */
 export function CategoryLeaders() {
-  const tiles = DIMS.map((dim) => {
-    const val = (m: Model): number => {
-      const v: unknown = m.scores[dim.key];
-      return typeof v === "number" ? v : 0;
-    };
-    const ranked = [...MODELS].sort((a, b) => val(b) - val(a));
-    const top = ranked[0];
-    if (top) {
-      return {
-        category: dim.label,
-        model: top.name,
-        provider: top.provider,
-        score: val(top),
-      };
-    }
-    const fb = DEMO_CATEGORY_LEADERS.find((d) => d.category === dim.label);
-    return (
-      fb ?? { category: dim.label, model: "—", provider: "—", score: 0 }
-    );
-  });
-
   return (
     <section aria-labelledby="home-category-leaders-heading">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -52,26 +16,32 @@ export function CategoryLeaders() {
         >
           Category leaders
         </h2>
-        <DemoDataBadge />
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {tiles.map((c) => (
-          <Card key={c.category}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {SHOWDOWN_SCORES.map((c) => (
+          <Card key={c.slug}>
             <CardContent className="p-4">
               <p className="text-xs font-medium uppercase tracking-wider text-bdx-muted">
-                {c.category}
+                Zombie Flamethrower Showdown
               </p>
               <p className="mt-2 truncate font-semibold text-bdx-ink">
-                {c.model}
+                <Link href={`/models/${c.slug}`} className="underline-offset-4 hover:underline">
+                  {c.label}
+                </Link>
               </p>
-              <p className="truncate text-xs capitalize text-bdx-muted">{c.provider}</p>
               <p className="mt-2 text-xl font-bold tabular-nums text-bdx-accent">
                 {c.score.toFixed(1)}
+              </p>
+              <p className="mt-1 text-[11px] text-bdx-muted">
+                Showdown Score (manual game-build evaluation)
               </p>
             </CardContent>
           </Card>
         ))}
       </div>
+      <p className="mt-3 text-xs text-bdx-muted">
+        Other categories show as Not evaluated until measured.
+      </p>
     </section>
   );
 }

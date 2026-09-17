@@ -10,7 +10,6 @@ export {
 } from "@/components/ui/card";
 export {
   Badge,
-  DemoDataBadge,
   MethodologyVersionTag,
   badgeVariants,
   type BadgeProps,

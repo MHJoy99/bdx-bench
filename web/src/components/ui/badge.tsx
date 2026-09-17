@@ -32,20 +32,6 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
 
-/** Required: marks every mock/seeded run. Never hide this. */
-function DemoDataBadge({ className }: { className?: string }) {
-  return (
-    <Badge
-      variant="warn"
-      title="Seeded mock data — not a live gateway run"
-      className={cn("normal-case tracking-normal", className)}
-    >
-      <FlaskConical className="size-3" aria-hidden />
-      Demo data
-    </Badge>
-  );
-}
-
 /** Required: pins which scoring rules produced a number. */
 function MethodologyVersionTag({
   version = methodologyVersion,
@@ -62,4 +48,4 @@ function MethodologyVersionTag({
   );
 }
 
-export { Badge, DemoDataBadge, MethodologyVersionTag, badgeVariants };
+export { Badge, MethodologyVersionTag, badgeVariants };

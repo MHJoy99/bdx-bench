@@ -1,18 +1,22 @@
 -- ============================================================================
--- BDX Bench — Postgres / Supabase schema (demo dataset)
--- Owner: SUB-AGENT 8/10 BACKEND+DATA
+-- BDX Bench — Postgres / Supabase schema (local evaluation dataset)
 --
--- DEMO DATA — every row seeded here is fictional and synthetic, for local
--- development and UI work only. Never present seeded values as live results.
+-- Real values from the Zombie Flamethrower Showdown (manual game-build
+-- evaluation, 2026-09-17). Unmeasured dimensions/prices/speed are NULL and
+-- must render as "Not evaluated" / "Not measured" — never as zero.
 --
 -- Compatible with Postgres 14+ / Supabase. Local dev does NOT need a live
--- database: the Next.js app serves the checked-in JSON/TS seed
--- (`web/src/lib/demo-data.ts`, generated from the same source as
--- `web/supabase/seed.sql`) entirely in-memory.
+-- database: the Next.js app serves the checked-in seed
+-- (`web/src/lib/demo-data.ts`, same values as `web/supabase/seed.sql`)
+-- entirely in-memory.
+--
+-- Runtime community state (match m-001 votes, likes, ratings, comments)
+-- lives in the interactive JSON store (`web/data/interactive/`, Agent B) —
+-- not in these tables.
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- Providers (demo grouping labels, NOT affiliations or endorsements)
+-- Providers (gateway grouping labels, NOT affiliations or endorsements)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS providers (
   slug        TEXT PRIMARY KEY,
@@ -29,8 +33,8 @@ CREATE TABLE IF NOT EXISTS models (
   name            TEXT NOT NULL,
   family          TEXT NOT NULL,
   provider_slug   TEXT NOT NULL REFERENCES providers (slug) ON UPDATE CASCADE,
-  context_tokens  INTEGER NOT NULL CHECK (context_tokens > 0),
-  released_date   DATE NOT NULL,
+  context_tokens  INTEGER CHECK (context_tokens IS NULL OR context_tokens > 0),
+  released_date   DATE,
   open_weights    BOOLEAN NOT NULL DEFAULT false,
   vision          BOOLEAN NOT NULL DEFAULT false,
   tools           BOOLEAN NOT NULL DEFAULT false,
@@ -44,7 +48,8 @@ CREATE INDEX IF NOT EXISTS idx_models_released ON models (released_date DESC);
 
 -- ----------------------------------------------------------------------------
 -- Benchmarks (concrete suites; `dimension` maps each suite onto one of the
--- eight BDX Bench Score dimensions defined in web/src/lib/scores.ts)
+-- eight BDX Bench Score dimensions defined in web/src/lib/scores.ts).
+-- `prompt_*` / `methodology` carry the showdown brief for game-build suites.
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS benchmarks (
   slug              TEXT PRIMARY KEY,
@@ -57,6 +62,9 @@ CREATE TABLE IF NOT EXISTS benchmarks (
   higher_is_better  BOOLEAN NOT NULL DEFAULT true,
   unit              TEXT NOT NULL DEFAULT 'score 0-100',
   task_count        INTEGER NOT NULL DEFAULT 0 CHECK (task_count >= 0),
+  prompt_title      TEXT,
+  prompt_body       TEXT,
+  methodology       TEXT,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_benchmarks_dimension ON benchmarks (dimension);
@@ -119,14 +127,15 @@ CREATE TABLE IF NOT EXISTS speed_tests (
 CREATE INDEX IF NOT EXISTS idx_speed_tests_model ON speed_tests (model_slug);
 
 -- ----------------------------------------------------------------------------
--- Price snapshots (USD per 1M tokens; append-only history)
+-- Price snapshots (USD per 1M tokens; append-only history).
+-- NULL prices = Not measured.
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS price_snapshots (
   id                  SERIAL PRIMARY KEY,
   model_slug          TEXT NOT NULL REFERENCES models (slug) ON UPDATE CASCADE ON DELETE CASCADE,
   source_id           TEXT REFERENCES sources (id) ON UPDATE CASCADE,
-  input_per_1m        NUMERIC NOT NULL CHECK (input_per_1m >= 0),
-  output_per_1m       NUMERIC NOT NULL CHECK (output_per_1m >= 0),
+  input_per_1m        NUMERIC CHECK (input_per_1m IS NULL OR input_per_1m >= 0),
+  output_per_1m       NUMERIC CHECK (output_per_1m IS NULL OR output_per_1m >= 0),
   cached_input_per_1m NUMERIC,
   currency            TEXT NOT NULL DEFAULT 'USD',
   effective_date      DATE NOT NULL,
@@ -137,7 +146,9 @@ CREATE INDEX IF NOT EXISTS idx_price_snapshots_model_date
 
 -- ----------------------------------------------------------------------------
 -- Score snapshots (materialized composite per model + methodology version;
--- rebuilt by the ingest pipeline — see web/src/lib/ingest.ts)
+-- rebuilt by the ingest pipeline — see web/src/lib/ingest.ts).
+-- `overall` carries the Showdown Score (manual game-build evaluation);
+-- NULL dimensions = Not evaluated.
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS score_snapshots (
   model_slug          TEXT PRIMARY KEY REFERENCES models (slug) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -145,14 +156,14 @@ CREATE TABLE IF NOT EXISTS score_snapshots (
   benchmark_ref       TEXT NOT NULL DEFAULT '',
   methodology_version TEXT NOT NULL,
   overall             NUMERIC NOT NULL,
-  reasoning           NUMERIC NOT NULL,
-  coding              NUMERIC NOT NULL,
-  knowledge           NUMERIC NOT NULL,
-  math                NUMERIC NOT NULL,
-  vision              NUMERIC NOT NULL,
-  agentic             NUMERIC NOT NULL,
-  long_context        NUMERIC NOT NULL,
-  efficiency          NUMERIC NOT NULL,
+  reasoning           NUMERIC,
+  coding              NUMERIC,
+  knowledge           NUMERIC,
+  math                NUMERIC,
+  vision              NUMERIC,
+  agentic             NUMERIC,
+  long_context        NUMERIC,
+  efficiency          NUMERIC,
   bdx_score           NUMERIC NOT NULL,
   speed_tps           NUMERIC,
   eval_count          INTEGER NOT NULL DEFAULT 0,

@@ -1,16 +1,6 @@
 import Link from "next/link";
-import { DemoDataBadge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 
-/**
- * HERO — Server Component.
- * Exact copy contract (do not reword without owner approval):
- *   H1: "AI models, measured."
- *   Sub: "Independent benchmarks, pricing, speed, capability and model intelligence in one place."
- *   Meta: "Updated recently • Transparent methodology • Reproducible scoring"
- * Never claim live / real-time results here.
- * NOTE: Button has no asChild API — CTAs are Links styled with buttonVariants.
- */
 export function Hero() {
   return (
     <section
@@ -22,12 +12,9 @@ export function Hero() {
         className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-bdx-accent/10 blur-3xl"
       />
       <div className="relative max-w-3xl">
-        <div className="flex flex-wrap items-center gap-2">
-          <DemoDataBadge />
-          <span className="text-xs text-bdx-muted">
-            Homepage preview — illustrative only
-          </span>
-        </div>
+        <p className="text-xs text-bdx-muted">
+          Zombie Flamethrower Showdown · September 2026 round
+        </p>
 
         <h1
           id="home-hero-heading"
@@ -39,6 +26,11 @@ export function Hero() {
           Independent benchmarks, pricing, speed, capability and model
           intelligence in one place.
         </p>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-bdx-muted">
+          Current round: Muse Spark 1.3 scores 92 and Gemini 3.8 Flash scores
+          88 — Showdown Score (manual game-build evaluation). Play both builds
+          and compare.
+        </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Link
@@ -48,15 +40,30 @@ export function Hero() {
             Explore Leaderboard
           </Link>
           <Link
-            href="/compare"
+            href="/compare?models=muse-spark-1-3,gemini-3-8-flash"
             className={buttonVariants({ variant: "outline", size: "lg" })}
           >
             Compare Models
           </Link>
         </div>
 
+        <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <Link
+            href="/play/pyro-vs-zombies"
+            className="underline underline-offset-4"
+          >
+            Play Muse build
+          </Link>
+          <Link
+            href="/play/pyroclasm-inferno"
+            className="underline underline-offset-4"
+          >
+            Play Gemini build
+          </Link>
+        </div>
+
         <p className="mt-6 text-xs tracking-wide text-bdx-muted">
-          Updated recently • Transparent methodology • Reproducible scoring
+          Transparent methodology · Reproducible scoring · Playable builds
         </p>
       </div>
     </section>

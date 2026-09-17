@@ -1,33 +1,27 @@
 import Link from "next/link";
-import { getAllModelSlugs, getModelPageData } from "@/lib/model-pages-demo";
+import { MODELS } from "@/lib/data";
 
-/**
- * 404 for /models/[slug] — unknown or malformed slugs.
- * Owner: SUB-AGENT 5/10 MODEL PAGES.
- */
 export default function ModelNotFound() {
-  const known = getAllModelSlugs().flatMap((slug) => {
-    const r = getModelPageData(slug);
-    return r.ok ? [{ slug: r.data.model.slug, name: r.data.model.name }] : [];
-  });
+  const known = MODELS.map((m) => ({ slug: m.slug, name: m.name }));
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-16 text-center sm:px-6">
-      <p className="font-mono text-[11px] uppercase leading-4 tracking-wide text-[#9A6200] dark:text-[#FFC53D]">
-        Demo catalogue
+      <p className="font-mono text-[11px] uppercase leading-4 tracking-wide text-muted-foreground">
+        BDX Bench
       </p>
       <h1 className="mt-2 text-2xl font-bold text-foreground">
         Model not found
       </h1>
       <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
-        That slug is not in the demo catalogue. It may be malformed (lowercase
-        letters, numbers and single hyphens only) or simply unknown.
+        That address does not match a known build. Slugs use lowercase
+        letters, numbers, and single hyphens. Try one of the evaluated builds
+        below, or search from the leaderboard.
       </p>
 
       {known.length > 0 ? (
-        <nav aria-label="Known demo models" className="mt-6">
+        <nav aria-label="Known models" className="mt-6">
           <p className="text-xs text-muted-foreground">
-            Available demo models:
+            Evaluated builds:
           </p>
           <ul className="mt-2 flex flex-wrap justify-center gap-1.5">
             {known.map((m) => (

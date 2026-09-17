@@ -2,8 +2,7 @@ import { BENCHMARKS, BENCHMARK_DETAILS, getBenchmarkEvaluations, getDatasetMeta 
 import { jsonOk } from "@/lib/http";
 
 /**
- * GET /api/benchmarks — demo benchmark catalogue + per-suite coverage stats.
- * DEMO DATA. Cached at the edge (dataset profile).
+ * GET /api/benchmarks — evaluated benchmark catalogue + per-suite coverage stats.
  */
 export async function GET() {
   const stats: Record<

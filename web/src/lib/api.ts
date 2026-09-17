@@ -90,7 +90,7 @@ const UncertaintySchema = z.object({
 });
 
 const MetaSchema = z.object({
-  isDemoData: z.literal(true),
+  isLocalEvaluation: z.literal(true),
   freshness: FreshnessSchema,
   provenance: z.array(ProvenanceItemSchema),
   uncertainty: UncertaintySchema,

@@ -8,6 +8,7 @@
 import React, { useMemo, useState } from "react";
 import type { EChartsCoreOption } from "./EChartBase";
 import { EChartBase } from "./EChartBase";
+import { NOT_EVALUATED, REAL_PROVENANCE_NOTE } from "./real-data";
 import { ACCENT, useChartMode } from "./theme";
 import type { AriaTable, HeatmapCell, ThemeMode } from "./types";
 import { esc, fmtDate } from "./utils";
@@ -33,13 +34,13 @@ export interface HeatmapMatrixProps {
 export function heatmapToTable(models: string[], benchmarks: string[], cells: HeatmapCell[]): AriaTable {
   const byKey = new Map(cells.map((c) => [`${c.model}¦${c.benchmark}`, c]));
   return {
-    caption: "Raw benchmark scores by model. Blank means no run.",
+    caption: "Raw benchmark scores by model. Not evaluated means no measured run.",
     columns: ["Model", ...benchmarks],
     rows: models.map((m) => [
       m,
       ...benchmarks.map((b) => {
         const c = byKey.get(`${m}¦${b}`);
-        return c?.raw == null ? "—" : c.raw.toFixed(3);
+        return c?.raw == null || !Number.isFinite(c.raw) ? NOT_EVALUATED : c.raw.toFixed(3);
       }),
     ]),
   };
@@ -101,13 +102,14 @@ export function HeatmapMatrix({
           const item = p as { value?: [number, number, number, string, string] };
           const [, , , m, b] = item.value ?? [-1, -1, -1, "?", "?"];
           const c = byKey.get(`${m}¦${b}`);
-          if (!c || c.raw == null)
-            return `<div><b>${esc(m)}</b> · ${esc(b)}<br/><span style="opacity:.7">no run</span></div>`;
+          if (!c || c.raw == null || !Number.isFinite(c.raw))
+            return `<div><b>${esc(m)}</b> · ${esc(b)}<br/><span style="opacity:.7">${esc(NOT_EVALUATED)}</span><br/><span style="opacity:.7">${esc(REAL_PROVENANCE_NOTE)}</span></div>`;
           return (
             `<div><b>${esc(m)}</b> · ${esc(b)}<br/>` +
             `Raw: <b>${c.raw.toFixed(3)}</b> · normalized: <b>${c.normalized.toFixed(2)}</b>` +
             (c.date ? `<br/>Date: ${esc(fmtDate(c.date))}` : "") +
             (c.runs != null ? ` · runs: ${esc(c.runs)}` : "") +
+            `<br/><span style="opacity:.7">${esc(REAL_PROVENANCE_NOTE)}</span>` +
             `</div>`
           );
         },
@@ -149,7 +151,7 @@ export function HeatmapMatrix({
             color: dark ? "#F2F5F4" : "#0B0E0C",
             formatter: (p: unknown) => {
               const v = (p as { value?: [number, number, number] }).value?.[2];
-              return v == null || v < 0 ? "–" : v.toFixed(2);
+              return v == null || v < 0 ? NOT_EVALUATED : v.toFixed(2);
             },
           },
           itemStyle: { borderColor: border, borderWidth: 2, borderRadius: 4 },

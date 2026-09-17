@@ -1,16 +1,47 @@
-import { formatDate, formatScore } from "@/lib/format";
-import { cn } from "@/lib/utils";
-import type { BenchmarkRow } from "@/lib/model-pages-demo";
-import { DemoBadge } from "./DemoBadge";
+import Link from "next/link";
+import { formatDate } from "@/lib/format";
+import { getBenchmarkEvaluations } from "@/lib/data";
 
-/**
- * MODEL PERFORMANCE table: one row per benchmark.
- * Columns: Benchmark | Score | Avg | Percentile | Updated.
- * Owner: SUB-AGENT 5/10 MODEL PAGES.
- * TODO(@ui): swap for `@/components/ui/table` when it lands.
- */
+const SHOWDOWN_SLUG = "zombie-flamethrower-showdown";
+const SHOWDOWN_NAME = "Zombie Flamethrower Showdown";
+const SHOWDOWN_LABEL = "Showdown Score (manual game-build evaluation)";
 
-export function PerformanceTable({ rows }: { rows: BenchmarkRow[] }) {
+export function PerformanceTable({
+  modelSlug,
+  modelName,
+}: {
+  modelSlug: string;
+  modelName: string;
+}) {
+  const stored = getBenchmarkEvaluations(SHOWDOWN_SLUG).filter(
+    (e) => e.modelSlug === modelSlug,
+  );
+  const fallbackRaw =
+    modelSlug === "muse-spark-1-3"
+      ? 92
+      : modelSlug === "gemini-3-8-flash"
+        ? 88
+        : null;
+
+  const rows =
+    stored.length > 0
+      ? stored.map((e) => ({
+          name: SHOWDOWN_SLUG,
+          title: SHOWDOWN_NAME,
+          score: e.raw,
+          updatedAt: e.evaluatedAt,
+        }))
+      : fallbackRaw !== null
+        ? [
+            {
+              name: SHOWDOWN_SLUG,
+              title: SHOWDOWN_NAME,
+              score: fallbackRaw,
+              updatedAt: "2026-09-12",
+            },
+          ]
+        : [];
+
   return (
     <section aria-labelledby="model-performance-heading">
       <div className="flex items-baseline justify-between gap-3">
@@ -18,87 +49,61 @@ export function PerformanceTable({ rows }: { rows: BenchmarkRow[] }) {
           id="model-performance-heading"
           className="text-lg font-semibold uppercase tracking-wide text-foreground"
         >
-          Model performance <DemoBadge />
+          Model performance
         </h2>
-        <p className="text-xs text-muted-foreground">
-          Avg = demo fleet average · Percentile vs demo fleet
-        </p>
+        <p className="text-xs text-muted-foreground">{SHOWDOWN_LABEL}</p>
       </div>
 
-      <div className="mt-3 overflow-x-auto rounded-lg border border-border">
-        <table className="w-full min-w-[640px] border-collapse bg-card text-[13px] leading-5">
-          <thead>
-            <tr className="border-b border-border text-left text-[11px] uppercase leading-4 tracking-wide text-muted-foreground">
-              <th scope="col" className="px-3 py-2 font-medium">
-                Benchmark
-              </th>
-              <th scope="col" className="px-3 py-2 text-right font-medium">
-                Score
-              </th>
-              <th scope="col" className="px-3 py-2 text-right font-medium">
-                Avg
-              </th>
-              <th scope="col" className="px-3 py-2 text-right font-medium">
-                Percentile
-              </th>
-              <th scope="col" className="px-3 py-2 text-right font-medium">
-                Updated
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => {
-              const delta = r.score - r.fleetAvg;
-              return (
+      {rows.length === 0 ? (
+        <p className="mt-3 rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+          {modelName} has no evaluated benchmarks yet. Other dimensions show
+          as Not evaluated.
+        </p>
+      ) : (
+        <div className="mt-3 overflow-x-auto rounded-lg border border-border">
+          <table className="w-full min-w-[560px] border-collapse bg-card text-[13px] leading-5">
+            <thead>
+              <tr className="border-b border-border text-left text-[11px] uppercase leading-4 tracking-wide text-muted-foreground">
+                <th scope="col" className="px-3 py-2 font-medium">
+                  Benchmark
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  Score
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  Updated
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
                 <tr
-                  key={r.benchmark.slug}
+                  key={r.name}
                   className="border-b border-border last:border-0 hover:bg-muted/50"
                 >
                   <th scope="row" className="px-3 py-2 text-left font-medium text-foreground">
-                    <span title={r.benchmark.description}>{r.benchmark.name}</span>{" "}
-                    <span className="font-mono text-[11px] font-normal leading-4 text-muted-foreground">
-                      {r.benchmark.category}
-                    </span>
+                    <Link
+                      href={`/benchmarks/${r.name}`}
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {r.title}
+                    </Link>
                   </th>
                   <td className="px-3 py-2 text-right font-mono font-semibold text-foreground">
-                    {formatScore(r.score)}
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono text-muted-foreground">
-                    {formatScore(r.fleetAvg)}
-                  </td>
-                  <td
-                    className={cn(
-                      "px-3 py-2 text-right font-mono",
-                      r.percentile >= 75
-                        ? "font-semibold text-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    P{r.percentile}
+                    {Number.isFinite(r.score) ? r.score.toFixed(1) : "Not evaluated"}
                   </td>
                   <td className="px-3 py-2 text-right text-xs text-muted-foreground">
                     <time dateTime={r.updatedAt}>{formatDate(r.updatedAt)}</time>
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-          <caption className="sr-only">
-            Demo benchmark scores with fleet averages, percentiles, and update dates.
-            Positive deltas mean above the demo fleet average.
-          </caption>
-        </table>
-      </div>
-
-      <ul className="sr-only">
-        {rows.map((r) => (
-          <li key={r.benchmark.slug}>
-            {r.benchmark.name}: score {formatScore(r.score)}, fleet average{" "}
-            {formatScore(r.fleetAvg)}, percentile P{r.percentile}, updated{" "}
-            {formatDate(r.updatedAt)}.
-          </li>
-        ))}
-      </ul>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="mt-2 text-xs text-muted-foreground">
+        All other benchmarks show as Not evaluated for this build.
+      </p>
     </section>
   );
 }

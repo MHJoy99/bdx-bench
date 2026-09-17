@@ -2,10 +2,6 @@
 
 import Link from "next/link";
 
-/**
- * Error state for /models/[slug] (route-level error boundary).
- * Owner: SUB-AGENT 5/10 MODEL PAGES.
- */
 export default function ModelPageError({
   error,
   reset,
@@ -22,14 +18,14 @@ export default function ModelPageError({
         Could not load this model page
       </h1>
       <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
-        The demo profile failed to render
+        This profile could not be rendered
         {error?.digest ? (
           <>
             {" "}
             (ref <span className="font-mono">{error.digest}</span>)
           </>
         ) : null}
-        . No live data was fetched and nothing was charged.
+        . Try again, or return to the leaderboard.
       </p>
       <div className="mt-6 flex justify-center gap-3">
         <button

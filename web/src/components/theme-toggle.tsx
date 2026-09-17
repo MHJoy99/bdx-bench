@@ -14,11 +14,12 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
+      data-testid="theme-toggle"
       onClick={() => setTheme(dark ? "light" : "dark")}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-transparent text-sm transition-colors hover:bg-muted"
+      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-transparent text-sm transition-colors hover:bg-muted"
     >
-      {dark ? <Sun size={16} /> : <Moon size={16} />}
+      {dark ? <Sun size={16} aria-hidden /> : <Moon size={16} aria-hidden />}
     </button>
   );
 }

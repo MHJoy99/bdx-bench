@@ -1,91 +1,97 @@
 import type { Model } from "@/lib/types";
 import { formatDate, formatPrice, formatRelative, formatScore, formatTokens, formatTps } from "@/lib/format";
-import { blendedPricePer1M } from "@/lib/scores";
 import { cn } from "@/lib/utils";
 import { COMPARE_METRICS, bestIndexesForMetric, type CompareMetricDef } from "./compare-data";
 
 export interface CompareTableProps {
   models: readonly Model[];
-  /** Show the DEMO badge (demo fixtures until live data lands). */
-  demo?: boolean;
+}
+
+function num(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
 function cellText(model: Model, key: CompareMetricDef["key"]): { text: string; sub?: string } {
+  const rec = model as unknown as {
+    scores?: Record<string, unknown>;
+    prices?: { inputPer1M?: unknown; outputPer1M?: unknown; currency?: unknown };
+    speed?: { tps?: unknown; ttftMs?: unknown };
+    context?: unknown;
+    released?: unknown;
+    openWeights?: unknown;
+    capabilities?: { multimodal?: unknown; tools?: unknown };
+  };
   switch (key) {
     case "overall":
-      return { text: formatScore(model.scores.overall) };
+      return { text: num(rec.scores?.["overall"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["overall"]) as number) };
     case "reasoning":
-      return { text: formatScore(model.scores.reasoning) };
+      return { text: num(rec.scores?.["reasoning"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["reasoning"]) as number) };
     case "coding":
-      return { text: formatScore(model.scores.coding) };
+      return { text: num(rec.scores?.["coding"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["coding"]) as number) };
     case "math":
-      return { text: formatScore(model.scores.math) };
+      return { text: num(rec.scores?.["math"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["math"]) as number) };
     case "knowledge":
-      return { text: formatScore(model.scores.knowledge) };
+      return { text: num(rec.scores?.["knowledge"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["knowledge"]) as number) };
     case "vision":
-      return { text: formatScore(model.scores.vision) };
+      return { text: num(rec.scores?.["vision"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["vision"]) as number) };
     case "agentic":
-      return { text: formatScore(model.scores.agentic) };
+      return { text: num(rec.scores?.["agentic"]) === null ? "Not evaluated" : formatScore(num(rec.scores?.["agentic"]) as number) };
     case "price": {
-      const blended = blendedPricePer1M(model.prices.inputPer1M, model.prices.outputPer1M);
+      const inp = num(rec.prices?.inputPer1M);
+      const out = num(rec.prices?.outputPer1M);
+      if (inp === null || out === null) return { text: "Not measured" };
+      const currency = typeof rec.prices?.currency === "string" ? rec.prices.currency : "USD";
+      const blended = Math.round((inp * 0.75 + out * 0.25) * 100) / 100;
       return {
-        text: formatPrice(blended, model.prices.currency),
-        sub: `in ${formatPrice(model.prices.inputPer1M, model.prices.currency)} · out ${formatPrice(
-          model.prices.outputPer1M,
-          model.prices.currency,
-        )}`,
+        text: formatPrice(blended, currency),
+        sub: `in ${formatPrice(inp, currency)} · out ${formatPrice(out, currency)}`,
       };
     }
     case "speed": {
-      const tps = model.speed?.tps ?? model.scores.speed ?? null;
-      if (tps === null || tps === undefined || !Number.isFinite(tps)) return { text: "—" };
-      const ttft = model.speed?.ttftMs;
+      const tps = num(rec.speed?.tps);
+      if (tps === null) return { text: "Not measured" };
+      const ttft = num(rec.speed?.ttftMs);
       return {
         text: formatTps(tps),
-        sub: typeof ttft === "number" && Number.isFinite(ttft) ? `${Math.round(ttft)} ms TTFT` : undefined,
+        sub: ttft !== null ? `${Math.round(ttft)} ms to first token` : undefined,
       };
     }
     case "latency": {
-      const ttft = model.speed?.ttftMs;
-      if (typeof ttft !== "number" || !Number.isFinite(ttft)) return { text: "—" };
+      const ttft = num(rec.speed?.ttftMs);
+      if (ttft === null) return { text: "Not measured" };
       return { text: `${Math.round(ttft)} ms` };
     }
-    case "context":
-      return { text: formatTokens(model.context) };
-    case "released":
-      return { text: formatDate(model.released), sub: formatRelative(model.released) };
+    case "context": {
+      const c = num(rec.context);
+      return { text: c === null ? "Not measured" : formatTokens(c) };
+    }
+    case "released": {
+      const rel = typeof rec.released === "string" ? rec.released : "";
+      if (!rel) return { text: "—" };
+      return { text: formatDate(rel), sub: formatRelative(rel) };
+    }
     case "openWeights":
-      return { text: model.openWeights ? "Yes" : "No" };
+      return { text: rec.openWeights === true ? "Yes (open)" : rec.openWeights === false ? "No (closed)" : "—" };
     case "multimodal":
-      return { text: model.capabilities.multimodal ? "Yes" : "No" };
+      return { text: rec.capabilities?.multimodal === true ? "Yes" : rec.capabilities?.multimodal === false ? "No" : "—" };
     case "toolCalling":
-      return { text: model.capabilities.tools ? "Yes" : "No" };
+      return { text: rec.capabilities?.tools === true ? "Yes" : rec.capabilities?.tools === false ? "No" : "—" };
   }
 }
 
-/**
- * SUB-AGENT 6/10 COMPARE — owned: side-by-side metric table.
- *
- * Rows (spec order): Overall, Reasoning, Coding, Math, Knowledge, Vision,
- * Agentic, Price, Speed, Latency, Context, Release, OpenWeights, Multimodal,
- * ToolCalling. The stronger cell(s) per metric get an accent highlight
- * (ties all highlight). There is deliberately NO overall-winner banner, trophy,
- * rank, or summed victory count — per-metric highlights only.
- */
-export function CompareTable({ models, demo = true }: CompareTableProps) {
+function isMissing(model: Model, key: CompareMetricDef["key"]): boolean {
+  return cellText(model, key).text === "Not evaluated" || cellText(model, key).text === "Not measured";
+}
+
+export function CompareTable({ models }: CompareTableProps) {
   return (
     <section aria-labelledby="compare-table-heading" className="overflow-hidden rounded-lg border border-border bg-card">
       <div className="flex flex-wrap items-center gap-2 border-b border-border p-4">
         <h2 id="compare-table-heading" className="text-sm font-semibold">
           Side-by-side metrics
         </h2>
-        {demo ? (
-          <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-            Demo
-          </span>
-        ) : null}
         <span className="flex-1" />
-        <p className="text-[11px] text-muted-foreground">Accent marks the stronger value per metric only.</p>
+        <p className="text-[11px] text-muted-foreground">Accent marks the stronger value per metric; tied values both highlight.</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -114,7 +120,13 @@ export function CompareTable({ models, demo = true }: CompareTableProps) {
           </thead>
           <tbody>
             {COMPARE_METRICS.map((metric) => {
-              const best = new Set(bestIndexesForMetric(models, metric.key));
+              const bestRaw = new Set(bestIndexesForMetric(models, metric.key));
+              const best = new Set<number>();
+              bestRaw.forEach((i) => {
+                const m = models[i];
+                if (m && !isMissing(m, metric.key)) best.add(i);
+              });
+              const tied = best.size > 1;
               return (
                 <tr key={metric.key} className="border-b border-border last:border-b-0">
                   <th
@@ -135,7 +147,7 @@ export function CompareTable({ models, demo = true }: CompareTableProps) {
                         key={m.slug}
                         data-metric={metric.key}
                         data-stronger={stronger ? "true" : "false"}
-                        title={stronger ? `Stronger in ${metric.label} (this metric only)` : undefined}
+                        title={stronger ? `Stronger in ${metric.label} (this metric only)${tied ? ", tied" : ""}` : undefined}
                         className={cn(
                           "p-3 align-top",
                           stronger &&
@@ -150,7 +162,7 @@ export function CompareTable({ models, demo = true }: CompareTableProps) {
                             />
                           ) : null}
                           {text}
-                          {stronger ? <span className="sr-only"> (stronger in {metric.label})</span> : null}
+                          {stronger ? <span className="sr-only"> (stronger in {metric.label}{tied ? ", tied" : ""})</span> : null}
                         </span>
                         {sub ? <span className="mt-0.5 block text-[11px] text-muted-foreground">{sub}</span> : null}
                       </td>
@@ -164,8 +176,8 @@ export function CompareTable({ models, demo = true }: CompareTableProps) {
       </div>
 
       <p className="border-t border-border p-3 text-[11px] leading-relaxed text-muted-foreground">
-        Per-metric highlights only — no overall winner is declared. Scores 0–100 (higher is better); price and latency
-        highlight the lower value; release highlights the newest date.
+        Per-metric highlights only — no overall winner is declared. Scores 0–100 (higher is better); price and time to
+        first token highlight the lower value; release highlights the newest date. Tied values both highlight.
       </p>
     </section>
   );

@@ -148,3 +148,31 @@
     display: none;
   }
 }
+
+/* Accessible focus everywhere: 2px ring, offset for dark + light. */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Mobile nav sheet: usable at 375px, no horizontal overflow. */
+.bdx-mobile-menu {
+  background: var(--surface);
+  max-height: calc(100dvh - 3.5rem);
+  overflow-y: auto;
+  overflow-x: clip;
+}
+.bdx-mobile-menu a,
+.bdx-mobile-menu button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bdx-mobile-menu,
+  .bdx-mobile-menu a,
+  .bdx-mobile-menu button {
+    transition: none !important;
+    animation: none !important;
+  }
+}
