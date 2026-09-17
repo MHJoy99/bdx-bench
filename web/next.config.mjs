@@ -7,6 +7,7 @@ const nextConfig = {
     return [
       { source: "/play/pyro-vs-zombies", destination: "/play/pyro-vs-zombies/index.html" },
       { source: "/play/pyroclasm-inferno", destination: "/play/pyroclasm-inferno/index.html" },
+      { source: "/favicon.ico", destination: "/icon.svg" },
     ];
   },
 };
