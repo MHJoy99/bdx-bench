@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>ORBITBREAKERS // LUNA</title>
+  <style>
+    :root {
+      --ink: #eaf8ff;
+      --muted: #8aa8bd;
+      --cyan: #2de9ff;
+      --blue: #5d7aff;
+      --orange: #ff8a3d;
+      --pink: #ff4fbb;
+      --lime: #b6ff76;
+      --panel: rgba(5, 12, 28, .78);
+      --line: rgba(141, 220, 255, .23);
+      --shadow: 0 22px 70px rgba(0, 0, 0, .52);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #02040c; color: var(--ink); font-family: "Segoe UI", Inter, system-ui, sans-serif; }
+    body { user-select: none; }
+    button { font: inherit; }
+    #game { position: fixed; inset: 0; background: #02040c; }
+    #c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 42%, rgba(1, 3, 12, .22) 72%, rgba(0, 0, 8, .82)); z-index: 2; }
+    #speedlines { position: absolute; inset: -8%; pointer-events: none; opacity: 0; z-index: 3; transition: opacity .16s ease; mix-blend-mode: screen; background: repeating-conic-gradient(from 0deg, transparent 0 2.4deg, rgba(255,255,255,.12) 2.55deg 2.82deg, transparent 3deg 7deg); mask-image: radial-gradient(ellipse at center, transparent 42%, #000 76%); }
+    #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 7; background: #fff; }
+    #damage { position: absolute; inset: 0; pointer-events: none; z-index: 6; box-shadow: inset 0 0 140px 36px rgba(255, 35, 78, 0); transition: box-shadow .12s ease; }
+    #hud { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: none; font-variant-numeric: tabular-nums; }
+    #hud.active { display: block; }
+    .cluster { position: absolute; display: flex; flex-direction: column; gap: 7px; }
+    .top-left { top: 16px; left: 17px; }
+    .top-right { top: 16px; right: 17px; align-items: flex-end; text-align: right; }
+    .bottom-left { left: 17px; bottom: 17px; max-width: 330px; }
+    .bottom-right { right: 17px; bottom: 17px; align-items: flex-end; }
+    .glass { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; padding: 8px 12px; box-shadow: 0 0 22px rgba(45, 233, 255, .08); backdrop-filter: blur(9px); }
+    #place { font-size: 39px; font-weight: 900; letter-spacing: .02em; line-height: .9; text-shadow: 0 0 18px rgba(45,233,255,.5); }
+    #place small { font-size: 13px; font-weight: 700; color: var(--muted); margin-left: 3px; }
+    #lap { font-size: 13px; font-weight: 800; letter-spacing: .18em; margin-top: 5px; color: #d7f5ff; }
+    #timer, #best { font-size: 13px; letter-spacing: .08em; }
+    #best { color: var(--muted); margin-top: 3px; font-size: 11px; }
+    #sector { font-size: 11px; color: var(--cyan); letter-spacing: .17em; font-weight: 800; }
+    #speed { font-size: 53px; line-height: .88; font-weight: 900; text-shadow: 0 0 24px rgba(45,233,255,.52); }
+    #speed small { color: var(--muted); font-size: 12px; letter-spacing: .18em; }
+    #boostbox { width: 250px; }
+    #boostbar { height: 12px; border: 1px solid rgba(255, 138, 61, .66); border-radius: 10px; background: rgba(255,255,255,.08); overflow: hidden; }
+    #boostfill { height: 100%; width: 62%; border-radius: 10px; background: linear-gradient(90deg, var(--orange), #ffe16b, var(--cyan)); box-shadow: 0 0 16px var(--orange); transition: width .08s linear; }
+    #boostmeta { display: flex; justify-content: space-between; margin-top: 4px; font-size: 10px; letter-spacing: .13em; font-weight: 800; color: #ffe3bc; }
+    #minimap { width: 184px; height: 154px; border-radius: 11px; background: rgba(2, 7, 18, .72); border: 1px solid var(--line); }
+    #nextgate { font-size: 11px; letter-spacing: .1em; font-weight: 800; color: var(--cyan); }
+    #objective { font-size: 12px; font-weight: 800; letter-spacing: .04em; color: #e7fbff; }
+    #event { min-height: 19px; color: #ffd679; font-size: 12px; letter-spacing: .06em; font-weight: 900; text-shadow: 0 0 11px rgba(255, 145, 46, .72); }
+    #loot { font-size: 11px; color: #a9dbed; letter-spacing: .04em; }
+    #shield { color: var(--lime); font-size: 10px; font-weight: 900; letter-spacing: .14em; margin-top: 4px; display: none; }
+    #near { position: absolute; top: 22%; left: 0; width: 100%; text-align: center; font-weight: 900; font-size: 28px; letter-spacing: .23em; opacity: 0; color: white; text-shadow: 0 0 26px var(--cyan); transition: opacity .1s; }
+    #center { position: absolute; left: 0; right: 0; top: 34%; text-align: center; }
+    #countdown { font-size: clamp(64px, 11vw, 128px); font-weight: 900; line-height: .9; text-shadow: 0 0 36px var(--cyan); }
+    #callout { font-weight: 900; font-size: clamp(22px, 4vw, 48px); letter-spacing: .14em; text-shadow: 0 0 24px var(--orange); }
+    #callout-sub { margin-top: 7px; color: #cfe7f1; font-size: 12px; letter-spacing: .18em; }
+    #toast { position: absolute; left: 50%; bottom: 104px; transform: translateX(-50%); min-height: 20px; color: #dffbff; text-align: center; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-shadow: 0 2px 9px #000; }
+
+    .screen { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 22px; overflow: auto; background: radial-gradient(ellipse at 18% 12%, rgba(49, 92, 206, .34), transparent 54%), radial-gradient(ellipse at 82% 86%, rgba(255, 54, 168, .19), transparent 47%), rgba(1, 4, 13, .72); backdrop-filter: blur(8px); }
+    .screen.hidden { display: none; }
+    .panel { width: min(1030px, 96vw); max-height: 94vh; overflow: auto; padding: 28px; border: 1px solid rgba(45,233,255,.33); border-radius: 20px; background: linear-gradient(180deg, rgba(9, 19, 44, .94), rgba(3, 8, 19, .96)); box-shadow: var(--shadow), 0 0 70px rgba(45,233,255,.12); }
+    .panel.narrow { width: min(600px, 94vw); }
+    .logo { font-size: clamp(40px, 7vw, 82px); line-height: .9; letter-spacing: .08em; font-weight: 950; color: transparent; background: linear-gradient(105deg, var(--cyan), #f9ffff 35%, var(--orange) 70%, var(--pink)); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(45,233,255,.28)); }
+    .eyebrow { margin-top: 9px; margin-bottom: 20px; font-size: 11px; font-weight: 800; letter-spacing: .22em; color: #a6d2e4; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(250px, .75fr); gap: 24px; }
+    .section-label { margin: 11px 0 7px; font-size: 11px; font-weight: 900; letter-spacing: .2em; color: #add4e6; }
+    .row { display: flex; gap: 11px; flex-wrap: wrap; }
+    .mode { flex: 1 1 175px; min-height: 111px; cursor: pointer; border: 1px solid rgba(255,255,255,.12); border-radius: 13px; padding: 14px; background: rgba(255,255,255,.035); transition: transform .15s ease, border-color .15s ease, background .15s ease; }
+    .mode:hover { transform: translateY(-2px); background: rgba(45,233,255,.08); }
+    .mode.selected { border-color: var(--cyan); background: rgba(45,233,255,.105); box-shadow: 0 0 22px rgba(45,233,255,.17); }
+    .mode h3 { font-size: 14px; letter-spacing: .13em; }
+    .mode p { margin-top: 8px; color: #a4bdcb; font-size: 12px; line-height: 1.42; }
+    .vehicle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 9px; }
+    .vehicle { cursor: pointer; padding: 11px; border: 1px solid rgba(255,255,255,.13); border-radius: 11px; background: rgba(255,255,255,.025); }
+    .vehicle.selected { border-color: var(--orange); box-shadow: 0 0 18px rgba(255,138,61,.22); }
+    .vehicle h4 { font-size: 12px; letter-spacing: .1em; }
+    .vehicle p { margin-top: 4px; color: #8aa6b6; font-size: 10px; line-height: 1.35; }
+    .stat { margin-top: 7px; font-size: 10px; color: #cce4ef; }
+    .stat-line { height: 4px; margin-top: 3px; overflow: hidden; border-radius: 4px; background: rgba(255,255,255,.1); }
+    .stat-line i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--orange)); }
+    .swatches { display: flex; gap: 8px; }
+    .swatch { width: 24px; height: 24px; cursor: pointer; border: 2px solid transparent; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+    .swatch.selected { border-color: white; transform: scale(1.15); }
+    .btn { flex: 1; min-width: 145px; cursor: pointer; padding: 13px 15px; border: 1px solid rgba(45,233,255,.48); border-radius: 11px; color: var(--ink); background: linear-gradient(180deg, rgba(45,233,255,.18), rgba(45,233,255,.05)); font-size: 12px; font-weight: 900; letter-spacing: .12em; transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(45,233,255,.29); }
+    .btn.primary { border-color: #ffbb80; background: linear-gradient(100deg, #ff762f, #ff3c9b); box-shadow: 0 0 26px rgba(255, 116, 52, .3); }
+    .btn.ghost { background: rgba(255,255,255,.035); }
+    .record { min-height: 144px; padding: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 13px; background: rgba(255,255,255,.03); }
+    .record .big { font-size: 30px; font-weight: 900; color: var(--lime); }
+    .record .kv { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed rgba(255,255,255,.1); color: #a6c0cc; font-size: 12px; }
+    .record .kv b { color: #e9fbff; }
+    .controls { color: #b7ced8; font-size: 12px; line-height: 2; }
+    .controls b { display: inline-block; min-width: 93px; color: #ffe08b; }
+    .fine { margin-top: 13px; color: #7695a8; font-size: 11px; line-height: 1.5; }
+    #loading .panel { text-align: center; }
+    #loading .logo { font-size: 42px; }
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; }
+      .top-left { top: 9px; left: 9px; }
+      .top-right { top: 9px; right: 9px; }
+      .bottom-left { left: 9px; bottom: 9px; max-width: 245px; }
+      .bottom-right { right: 9px; bottom: 9px; }
+      #minimap { width: 135px; height: 112px; }
+      #speed { font-size: 38px; }
+      #boostbox { width: 170px; }
+      .glass { padding: 6px 8px; }
+      .panel { padding: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+  </style>
+  <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+  <main id="game">
+    <canvas id="c" aria-label="Orbitbreakers 3D racing field"></canvas>
+    <div id="speedlines"></div><div id="vignette"></div><div id="flash"></div><div id="damage"></div>
+
+    <section id="hud" aria-live="polite">
+      <div class="cluster top-left">
+        <div class="glass"><div id="place">P1<small>/6</small></div><div id="lap">LAP 1/3</div></div>
+        <div class="glass"><div id="timer">0:00.0</div><div id="best">BEST --:--.-</div></div>
+        <div id="sector" class="glass">SECTOR 7 // RING OF KESSLER</div>
+      </div>
+      <div class="cluster top-right">
+        <div class="glass"><div id="speed">0 <small>KM/H</small></div></div>
+        <div id="boostbox" class="glass"><div id="boostbar"><div id="boostfill"></div></div><div id="boostmeta"><span>BOOST // SHIFT</span><span id="boostpct">62%</span></div></div>
+      </div>
+      <div class="cluster bottom-left">
+        <div id="event"></div>
+        <div class="glass"><div id="objective">FOLLOW THE GATES ▸</div><div id="loot">ENERGY 0 ◇ &nbsp;•&nbsp; DATA 0/24 ◆</div><div id="shield">◈ SHIELD ACTIVE</div></div>
+      </div>
+      <div class="cluster bottom-right">
+        <canvas id="minimap" width="184" height="154"></canvas>
+        <div id="nextgate" class="glass">◉ NEXT GATE 0m</div>
+      </div>
+      <div id="near">NEAR MISS // BOOST +</div>
+      <div id="center"><div id="countdown"></div><div id="callout"></div><div id="callout-sub"></div></div>
+      <div id="toast"></div>
+    </section>
+
+    <section id="mainmenu" class="screen">
+      <div class="panel">
+        <h1 class="logo">ORBITBREAKERS</h1>
+        <div class="eyebrow">LUNA BUILD // ANTI-GRAV GRAND PRIX // SIX RACERS // A DENSE SPACE PLAYGROUND</div>
+        <div class="layout">
+          <div>
+            <div class="row" id="modeRow">
+              <div class="mode selected" data-mode="race"><h3>◈ GRAND PRIX</h3><p>Three laps through stations, storm corridors, mining lasers and a live wormhole. Find the shortcut before the rivals do.</p></div>
+              <div class="mode" data-mode="timetrial"><h3>◉ TIME TRIAL</h3><p>Solo clean-line chase. Stack speed traps, jump gates and the best lap you can hold together.</p></div>
+              <div class="mode" data-mode="freeroam"><h3>⬡ FREE ROAM</h3><p>Detach from the magnetic highway. Hunt data shards, wrecks, alien ruins, caves and secret challenge beacons.</p></div>
+            </div>
+            <div class="section-label">SELECT FRAME</div>
+            <div id="vehicleGrid" class="vehicle-grid"></div>
+            <div class="section-label">PAINT // COSMETIC ENERGY SIGNATURE</div>
+            <div id="swatches" class="swatches"></div>
+            <div class="row" style="margin-top:16px"><button id="launch" class="btn primary">▶ LAUNCH // 3 SEC TO RACE</button><button id="how" class="btn ghost">CONTROLS</button></div>
+            <div class="fine">W / ↑ accelerate · S / ↓ brake or reverse · A/D steer · SHIFT boost · SPACE drift · R recover · C camera · E detach into free roam · M mute · ESC pause · gamepad supported</div>
+          </div>
+          <aside>
+            <div class="section-label">PILOT RECORD</div>
+            <div id="record" class="record"></div>
+            <div id="howBox" class="controls" hidden style="margin-top:12px"><b>W / ↑</b> accelerate<br><b>S / ↓</b> brake / reverse<br><b>A / D</b> steer + bank<br><b>SHIFT</b> boost + hyperdrive<br><b>SPACE</b> drift / handbrake<br><b>R</b> recover to track<br><b>C</b> cycle chase camera<br><b>E</b> free-roam detachment<br><b>M</b> mute engine + music<br><b>ESC / P</b> pause</div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="pausemenu" class="screen hidden"><div class="panel narrow"><h1 class="logo" style="font-size:43px">PAUSED</h1><div class="eyebrow">RACE SUSPENDED // PILOT INPUT RELEASED</div><div class="row"><button id="resume" class="btn primary">RESUME</button><button id="restart" class="btn">RESTART</button><button id="quit" class="btn ghost">MENU</button></div><div class="fine">The camera and flight controls are suspended while this panel is open.</div></div></section>
+
+    <section id="finishmenu" class="screen hidden"><div class="panel narrow"><h1 id="finishTitle" class="logo" style="font-size:46px">FINISH</h1><div id="finishSub" class="eyebrow"></div><div id="finishStats" class="record"></div><div class="row" style="margin-top:15px"><button id="again" class="btn primary">RACE AGAIN</button><button id="roam" class="btn">FREE ROAM</button><button id="menu" class="btn ghost">MENU</button></div></div></section>
+    <section id="loading" class="screen hidden"><div class="panel narrow"><h1 class="logo">IGNITING…</h1><div class="eyebrow">BUILDING LUNA // PROCEDURAL SECTOR 7</div></div></section>
+  </main>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>

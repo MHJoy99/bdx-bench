@@ -1,0 +1,25 @@
+# bench.bdx.market - BDX Bench prod (second drive /srv/bot-storage/sites/bench.bdx.market)
+# Backend: node server/server.js on 127.0.0.1:8766 (BDX_BENCH_PORT=8766)
+# NOTE: certbot manages 443 + redirect lines in /etc/nginx/sites-enabled/bench.bdx.market
+# This file is the template — do not overwrite live cert lines blindly.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name bench.bdx.market;
+    access_log /var/log/nginx/bench.bdx.market.access.log;
+    error_log /var/log/nginx/bench.bdx.market.error.log;
+    client_max_body_size 1m;
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:8766;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+        proxy_connect_timeout 5s;
+    }
+}

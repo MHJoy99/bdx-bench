@@ -1,8 +1,27 @@
 # BDX Bench
 
+[![Live Demo](https://img.shields.io/badge/demo-bench.bdx.market-brightgreen)](https://bench.bdx.market)
+[![Repo](https://img.shields.io/badge/github-MHJoy99%2Fbdx--bench-blue?logo=github)](https://github.com/MHJoy99/bdx-bench)
+[![Issues](https://img.shields.io/github/issues/MHJoy99/bdx-bench)](https://github.com/MHJoy99/bdx-bench/issues)
+[![License](https://img.shields.io/github/license/MHJoy99/bdx-bench)](https://github.com/MHJoy99/bdx-bench/blob/main/LICENSE)
+
 > Blind arena + prompt bank + manual leaderboard for benchmarking our models — zero-dependency Node.js, local-first.
 
-`[status: v0.1]` `[stack: node built-ins only]` `[suites: swe-mini + terminal-mini]` `[modes: mock · live]` `[gui: :8765]`
+Live: https://bench.bdx.market/ (VPS second drive, port 8766, systemd `bdx-bench`) · Local dev: http://127.0.0.1:8765 (`npm start`)
+
+`[status: v0.1]` `[stack: node built-ins only]` `[suites: swe-mini + terminal-mini]` `[modes: mock · live]` `[gui: :8765 local · :8766 prod]`
+
+## Live demo — play it now
+
+Zombie flamethrower showdown (p-001 / m-001) is live first:
+
+- Prompt p-001: `make me a video game where i am killing zombies with fire and all please?`
+- Match m-001: Muse Spark 1.3 (0.92, playable [/zombie-pyro-vs-zombies/](https://bench.bdx.market/zombie-pyro-vs-zombies/)) vs Gemini 3.8 Flash (0.88, PYROCLASM design writeup)
+- Vote in [Arena](https://bench.bdx.market/arena.html), comment via scores notes in [Prompt bank](https://bench.bdx.market/prompts.html). Verdict auto-finalizes at 2-vote majority or 3 votes, Elo K=32 from 1000.
+
+## Deployment (VPS second drive)
+
+Deployed from this repo to `/srv/bot-storage/sites/bench.bdx.market` (36G free, not root 9.9G). Systemd `bdx-bench` on `127.0.0.1:8766` reverse-proxied to https. See `deploy/` for unit + nginx template + `deploy.sh`. Never bind `:8765` in tests — use `$env:BDX_BENCH_PORT="18765"`.
 
 ## What is this?
 

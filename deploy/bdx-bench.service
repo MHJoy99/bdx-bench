@@ -1,0 +1,22 @@
+[Unit]
+Description=BDX Bench (bench.bdx.market) - zero-dep node server
+After=network.target
+
+[Service]
+Type=simple
+User=bench
+Group=bench
+WorkingDirectory=/srv/bot-storage/sites/bench.bdx.market
+ExecStart=/usr/bin/node server/server.js
+Environment=NODE_ENV=production
+Environment=BDX_BENCH_PORT=8766
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bdx-bench
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

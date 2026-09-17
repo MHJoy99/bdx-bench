@@ -1,17 +1,88 @@
-# BDX Bench ignores
+# BDX Bench — keep repo tiny and GitHub-friendly (Node built-ins only, no npm install)
+
+# Deps (root is zero-dep; also guards any nested workspace if re-added)
 node_modules/
-work/
-*.tmp-test/
-results/.tmp-*
-*.log
-.DS_Store
-Thumbs.db
-*.orig
-*.rej
-# runtime data (local-only, keep .gitkeep)
+.pnp/
+.pnp.*
+
+# Runtime data — local-only, keep .gitkeep so dirs survive clone
 data/matches.json
 data/ratings.json
 data/prompts.json
 data/scores.json
-# local test runs (keep demo-*.json)
+
+# Run outputs — keep demos + schema, ignore generated/local
 results/run-*.json
+results/mock.json
+results/mock-*.json
+results/leaderboard.json
+results/.tmp-*
+
+# Local scratch / test shims
+work/
+*.tmp-test/
+.tmp-*/
+.tmp-*
+
+# Playwright / browser artifacts (logs, yml snapshots, pngs, chrome profiles)
+.playwright-mcp/
+playwright-report/
+test-results/
+
+# Nested game dev workspace — separate Vite app, not part of bench harness
+orbitbreakers-gemini-pro-agent/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+
+# Root screenshots only (allows docs/assets + public sprites later)
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.orig
+*.rej
+
+# Kilo local state (portable — .git/info/exclude is local-only)
+.kilo/worktrees/
+.kilo/agent-manager.json
+.kilo/setup-script
+.kilo/setup-script.*
+.kilocode/worktrees/
+.kilocode/agent-manager.json
+.kilocode/setup-script.*
+
+# Env / secrets — never commit keys (BDX_AI_API_KEY arrives via env only)
+.env
+.env.*
+!.env.example
+*.pem
+*.key

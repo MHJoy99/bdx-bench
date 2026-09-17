@@ -1,0 +1,18 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  mock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --version
+      - run: node --check server/server.js
+      - run: node --check runner/run.js
+      - run: node --check scripts/aggregate.js
+      - run: node --check scripts/seed-demo.js
+      - run: node runner/run.js --model mock-model --suite swe-mini --mode mock --out /tmp/mock.json
+      - run: node scripts/aggregate.js || true
+      - run: node tests/smoke.js || true
