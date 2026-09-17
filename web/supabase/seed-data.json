@@ -1,0 +1,98 @@
+{
+  "generatedBy": "web/scripts/make-seed.cjs",
+  "methodologyVersion": "v1",
+  "retrievedAt": "2026-09-17T07:00:00.000Z",
+  "demoData": true,
+  "note": "DEMO DATA — fictional and synthetic. Never present as live results.",
+  "providers": [
+    {
+      "slug": "openai",
+      "label": "OpenAI (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "anthropic",
+      "label": "Anthropic (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "google",
+      "label": "Google (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "meta",
+      "label": "Meta (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "mistral",
+      "label": "Mistral (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "deepseek",
+      "label": "DeepSeek (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "qwen",
+      "label": "Qwen (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    },
+    {
+      "slug": "xai",
+      "label": "xAI (demo grouping)",
+      "note": "Demo grouping label. Not an affiliation, endorsement, or vendor claim."
+    }
+  ],
+  "sources": [
+    {
+      "id": "demo-methodology-v1",
+      "label": "BDX Bench methodology v1 (demo)",
+      "kind": "manual",
+      "url": "https://demo-data.bdx-bench.local/methodology/v1",
+      "retrievedAt": "2026-09-17T07:00:00.000Z",
+      "notes": "Demo scoring weights, duplicate policy, and freshness rules."
+    },
+    {
+      "id": "demo-vendor-sheet",
+      "label": "Demo vendor pricing sheet",
+      "kind": "vendor",
+      "url": "https://demo-data.bdx-bench.local/pricing/2026-09",
+      "retrievedAt": "2026-09-17T07:00:00.000Z",
+      "notes": "Fictional list prices for UI layout. Not vendor quotes."
+    },
+    {
+      "id": "demo-harness-runs",
+      "label": "BDX Bench demo harness runs",
+      "kind": "harness",
+      "url": "https://demo-data.bdx-bench.local/harness/runs",
+      "retrievedAt": "2026-09-17T07:00:00.000Z",
+      "notes": "Synthetic harness output; seeded PRNG, fully reproducible."
+    },
+    {
+      "id": "demo-provider-cards",
+      "label": "Demo provider eval cards",
+      "kind": "benchmark",
+      "url": "https://demo-data.bdx-bench.local/cards",
+      "retrievedAt": "2026-09-17T07:00:00.000Z",
+      "notes": "Fictional vendor-reported scores for provenance shape."
+    },
+    {
+      "id": "demo-community-mirror",
+      "label": "Demo community mirror",
+      "kind": "manual",
+      "url": "https://demo-data.bdx-bench.local/mirror",
+      "retrievedAt": "2026-09-17T07:00:00.000Z",
+      "notes": "Placeholder mirror entry so multi-source provenance renders."
+    }
+  ],
+  "counts": {
+    "providers": 8,
+    "models": 22,
+    "benchmarks": 12,
+    "evaluations": 252,
+    "sources": 5
+  }
+}

@@ -1,0 +1,257 @@
+/* BDX chart library styles — theme-aware via [data-theme] / .dark / .light.
+ *  Brand: dark #080A0D, accent #B8FF5A. No gradients, no glow (brand rule).
+ *  Shell owns surface; ECharts canvas stays transparent.
+ */
+
+.bdx-chart-shell {
+  --bdx-bg: #ffffff;
+  --bdx-surface: #f4f6f4;
+  --bdx-ink: #0b0e0c;
+  --bdx-muted: #5b6672;
+  --bdx-border: #e2e8e4;
+  background: var(--bdx-bg);
+  border: 1px solid var(--bdx-border);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--bdx-ink);
+}
+
+.dark .bdx-chart-shell,
+[data-theme="dark"] .bdx-chart-shell,
+.bdx-chart-shell {
+  /* default to dark brand when no theme ancestor sets light */
+}
+
+:root .bdx-chart-shell {
+  /* light default; dark override below wins when .dark present */
+}
+
+.dark .bdx-chart-shell,
+[data-theme="dark"] .bdx-chart-shell {
+  --bdx-bg: #0f1217;
+  --bdx-surface: #080a0d;
+  --bdx-ink: #f2f5f4;
+  --bdx-muted: #9aa4b2;
+  --bdx-border: #232a35;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bdx-chart-shell {
+    --bdx-bg: #0f1217;
+    --bdx-surface: #080a0d;
+    --bdx-ink: #f2f5f4;
+    --bdx-muted: #9aa4b2;
+    --bdx-border: #232a35;
+  }
+}
+
+.light .bdx-chart-shell,
+[data-theme="light"] .bdx-chart-shell {
+  --bdx-bg: #ffffff;
+  --bdx-surface: #f4f6f4;
+  --bdx-ink: #0b0e0c;
+  --bdx-muted: #5b6672;
+  --bdx-border: #e2e8e4;
+}
+
+.bdx-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.bdx-chart-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.bdx-chart-sub {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--bdx-muted);
+}
+
+.bdx-chart-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bdx-chart-body {
+  position: relative;
+}
+
+.bdx-figure {
+  margin: 0;
+}
+
+.bdx-chart-foot {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--bdx-muted);
+}
+
+.bdx-state {
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  text-align: center;
+  color: var(--bdx-muted);
+  border: 1px dashed var(--bdx-border);
+  border-radius: 8px;
+  padding: 28px 16px;
+  min-height: 160px;
+}
+
+.bdx-state-error {
+  color: var(--bdx-ink);
+  border-color: #f85149;
+}
+
+.bdx-btn {
+  justify-self: center;
+  border: 1px solid var(--bdx-border);
+  background: var(--bdx-surface);
+  color: var(--bdx-ink);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bdx-btn:hover {
+  border-color: #b8ff5a;
+}
+
+/* Skeleton — static under prefers-reduced-motion */
+.bdx-skeleton {
+  display: grid;
+  gap: 12px;
+  align-content: center;
+  border: 1px solid var(--bdx-border);
+  border-radius: 8px;
+  padding: 24px;
+  background: var(--bdx-surface);
+}
+
+.bdx-skeleton-bar {
+  display: block;
+  height: 12px;
+  border-radius: 99px;
+  background: var(--bdx-border);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bdx-skeleton-bar {
+    animation: bdx-pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes bdx-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Textual fallback table */
+.bdx-fallback {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.bdx-fallback summary {
+  cursor: pointer;
+  color: var(--bdx-muted);
+  font-weight: 600;
+}
+
+.bdx-fallback summary:hover {
+  color: var(--bdx-ink);
+}
+
+.bdx-table-wrap {
+  overflow: auto;
+  max-height: 280px;
+  margin-top: 8px;
+  border: 1px solid var(--bdx-border);
+  border-radius: 8px;
+}
+
+.bdx-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.bdx-table-wrap th,
+.bdx-table-wrap td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--bdx-border);
+  white-space: nowrap;
+}
+
+.bdx-table-wrap th {
+  position: sticky;
+  top: 0;
+  background: var(--bdx-surface);
+  color: var(--bdx-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Control chips shared by Trend / Matrix sections */
+.bdx-chip-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bdx-chip {
+  border: 1px solid var(--bdx-border);
+  background: transparent;
+  color: var(--bdx-muted);
+  border-radius: 99px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bdx-chip[aria-pressed="true"] {
+  background: #b8ff5a;
+  border-color: #b8ff5a;
+  color: #080a0d;
+}
+
+.bdx-select,
+.bdx-input {
+  background: var(--bdx-surface);
+  color: var(--bdx-ink);
+  border: 1px solid var(--bdx-border);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

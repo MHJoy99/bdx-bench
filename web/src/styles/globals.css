@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 7%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 7%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 40%;
+  --border: 220 13% 88%;
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: 222 20% 3%;
+  --foreground: 150 20% 96%;
+  --card: 222 18% 6%;
+  --card-foreground: 150 20% 96%;
+  --muted: 222 14% 10%;
+  --muted-foreground: 220 9% 62%;
+  --border: 222 14% 16%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+}
+
+/*
+ * BDX Bench contract tokens (SUB-AGENT 2/10 DESIGN SYSTEM).
+ * Dark-first dashboard; light mode via next-themes `class` (.light on <html>).
+ * Additive: does not touch the shadcn HSL vars above. UI primitives in
+ * src/components/ui/* resolve these vars; baked rgba derivatives exist
+ * because Tailwind v3 cannot apply /opacity modifiers to var() colors.
+ */
+:root,
+.dark {
+  color-scheme: dark;
+  --bg: #080a0d;
+  --surface: #0f1217;
+  --elevated: #151920;
+  --overlay: rgba(4, 6, 8, 0.72);
+  --border: #222a33;
+  --border-strong: #333d47;
+  --text: #f2f5f7;
+  --text-secondary: #9aa4b2;
+  --text-tertiary: #6b7684;
+  --accent: #b8ff5a;
+  --accent-foreground: #101600;
+  --accent-muted: rgba(184, 255, 90, 0.12);
+  --accent-border: rgba(184, 255, 90, 0.35);
+  --accent-ink: #b8ff5a;
+  --success: #b8ff5a;
+  --warning: #ffc53d;
+  --warning-muted: rgba(255, 197, 61, 0.12);
+  --warning-border: rgba(255, 197, 61, 0.4);
+  --danger: #ff7a72;
+  --danger-muted: rgba(255, 122, 114, 0.15);
+  --info: #7dd3fc;
+  --info-muted: rgba(125, 211, 252, 0.12);
+  --info-border: rgba(125, 211, 252, 0.4);
+  --ring: #b8ff5a;
+  --ring-soft: rgba(184, 255, 90, 0.4);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.light {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --elevated: #ffffff;
+  --overlay: rgba(12, 16, 21, 0.45);
+  --border: #e2e7ed;
+  --border-strong: #c9d1db;
+  --text: #0c1015;
+  --text-secondary: #5b6675;
+  --text-tertiary: #8a94a3;
+  --accent: #b8ff5a;
+  --accent-foreground: #101600;
+  --accent-muted: rgba(101, 163, 13, 0.1);
+  --accent-border: rgba(101, 163, 13, 0.35);
+  --accent-ink: #3f7a00;
+  --success: #2f7a0b;
+  --warning: #9a6200;
+  --warning-muted: rgba(154, 98, 0, 0.12);
+  --warning-border: rgba(154, 98, 0, 0.4);
+  --danger: #c22e2e;
+  --danger-muted: rgba(194, 46, 46, 0.12);
+  --info: #0369a1;
+  --info-muted: rgba(3, 105, 161, 0.12);
+  --info-border: rgba(3, 105, 161, 0.4);
+  --ring: #3f7a00;
+  --ring-soft: rgba(63, 122, 0, 0.35);
+  --shadow-card: 0 1px 2px rgba(12, 16, 21, 0.08);
+}
+
+/* Tabular numbers for every score / rank / ms readout. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Skeleton shimmer (flat base, no gradient wash). */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--elevated);
+  border: 1px solid var(--border);
+}
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(128, 140, 155, 0.18) 50%,
+    transparent 80%
+  );
+  animation: bdx-shimmer 1.6s ease-in-out infinite;
+}
+.light .skeleton-shimmer::after {
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(12, 16, 21, 0.08) 50%,
+    transparent 80%
+  );
+}
+@keyframes bdx-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    display: none;
+  }
+}

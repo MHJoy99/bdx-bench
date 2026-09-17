@@ -1,0 +1,100 @@
+/*
+ * BDX Bench — polish layer (SUB-AGENT 10/10 POLISH). Additive only.
+ * Import AFTER globals in app/layout.tsx (see web/PALETTE_WIRING.md).
+ * Never add gradients, glow, blobs, or radius > 10px here.
+ */
+
+/* ------------------------------------------------------------------ */
+/* 1. Complete the status token set.                                   */
+/* ui/badge.tsx (badge.tsx:17-19) references --danger-muted,           */
+/* --warning-muted/border, --info-muted/border, but app/globals.css    */
+/* only defines --accent-muted/border. Without these, fail/warn/info   */
+/* badges render with transparent fills. Values mirror the accent      */
+/* muted/border construction (12% fill, 35% border).                   */
+/* ------------------------------------------------------------------ */
+
+:root,
+.dark {
+  --danger-muted: rgba(255, 122, 114, 0.12);
+  --danger-border: rgba(255, 122, 114, 0.35);
+  --warning-muted: rgba(255, 197, 61, 0.12);
+  --warning-border: rgba(255, 197, 61, 0.35);
+  --info-muted: rgba(125, 211, 252, 0.12);
+  --info-border: rgba(125, 211, 252, 0.35);
+}
+
+.light,
+[data-theme="light"] {
+  --danger-muted: rgba(194, 46, 46, 0.1);
+  --danger-border: rgba(194, 46, 46, 0.35);
+  --warning-muted: rgba(154, 98, 0, 0.1);
+  --warning-border: rgba(154, 98, 0, 0.35);
+  --info-muted: rgba(3, 105, 161, 0.1);
+  --info-border: rgba(3, 105, 161, 0.35);
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Hover consistency: flat border/background shifts only. No lift,  */
+/* no shadow growth, no scale — movement is reserved for entrances.    */
+/* ------------------------------------------------------------------ */
+
+.bdx-row-hover {
+  transition:
+    background-color 120ms ease-out,
+    border-color 120ms ease-out,
+    color 120ms ease-out;
+}
+.bdx-row-hover:hover {
+  background-color: var(--elevated);
+}
+@media (hover: none) {
+  .bdx-row-hover:hover {
+    background-color: transparent;
+  }
+}
+
+.bdx-card-hover {
+  transition: border-color 120ms ease-out;
+}
+.bdx-card-hover:hover {
+  border-color: var(--border-strong);
+}
+@media (hover: none) {
+  .bdx-card-hover:hover {
+    border-color: var(--border);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Keyboard hint chip (palette footer, trigger button, toolbars).   */
+/* ------------------------------------------------------------------ */
+
+.bdx-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding-inline: 0.3rem;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--elevated);
+  color: var(--text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Reduced motion: app/globals.css already zeroes global animation; */
+/* this keeps NUMBER transitions honest for users who force styles.    */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .bdx-row-hover,
+  .bdx-card-hover {
+    transition: none;
+  }
+}
