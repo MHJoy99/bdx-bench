@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
-import { PendingRound } from "@/components/leaderboard/pending-round";
 
 export const metadata: Metadata = {
   title: "Leaderboard",
@@ -44,8 +43,6 @@ export default function LeaderboardPage() {
       >
         <LeaderboardTable />
       </Suspense>
-
-      <PendingRound />
     </div>
   );
 }

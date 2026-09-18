@@ -1,18 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-type Entry = {
-  model: string;
-  ok: boolean;
-  answerLen: number;
-  matchId: string | null;
-  note: string;
-  excerpt: string;
-};
 
 const VERIFIED = [
   {
@@ -38,21 +29,11 @@ const VERIFIED = [
   },
 ];
 
-const TABS = ["Playable builds", "Round captures", "How scoring works"] as const;
+const TABS = ["Playable builds", "How scoring works"] as const;
 type Tab = (typeof TABS)[number];
 
 export function BuildsGallery() {
   const [tab, setTab] = useState<Tab>("Playable builds");
-  const [entries, setEntries] = useState<Entry[]>([]);
-
-  useEffect(() => {
-    fetch("/api/free-round", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => {
-        if (Array.isArray(j.entries)) setEntries(j.entries.filter((e: Entry) => e.ok && e.excerpt));
-      })
-      .catch(() => {});
-  }, []);
 
   return (
     <section aria-labelledby="home-builds-heading">
@@ -61,10 +42,9 @@ export function BuildsGallery() {
           <CardTitle id="home-builds-heading" className="text-lg font-semibold tracking-tight">
             Builds gallery
           </CardTitle>
-          <p className="mt-1 text-sm text-bdx-muted">
-            Every playable build in one place. Verified builds launch instantly — round captures show
-            answer previews with arena matches for voting until they pass playability review.
-          </p>
+            <p className="mt-1 text-sm text-bdx-muted">
+              Every verified build in one place. Each one launches instantly in your browser.
+            </p>
         </CardHeader>
         <CardContent>
           <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
@@ -104,33 +84,10 @@ export function BuildsGallery() {
             </div>
           )}
 
-          {tab === "Round captures" && (
-            <div className="mt-4 grid gap-3">
-              {entries.length === 0 && (
-                <p className="text-sm text-bdx-muted">Loading captures…</p>
-              )}
-              {entries.map((e) => (
-                <details key={e.model} className="rounded-[10px] border border-bdx-border bg-bdx-bg p-3">
-                  <summary className="cursor-pointer text-sm font-medium text-bdx-ink">
-                    <span className="font-mono text-xs">{e.model}</span>
-                    <span className="ml-2 text-xs text-bdx-muted">
-                      {e.answerLen} chars · {e.matchId ? `${e.matchId} open` : e.note}
-                    </span>
-                  </summary>
-                  <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap text-xs text-bdx-muted">{e.excerpt}…</pre>
-                  <p className="mt-2 text-xs text-bdx-muted">
-                    Unverified capture — needs playability review before it becomes a playable build.{" "}
-                    {e.matchId && <span className="font-mono">{e.matchId}: vote on the leaderboard.</span>}
-                  </p>
-                </details>
-              ))}
-            </div>
-          )}
-
           {tab === "How scoring works" && (
             <div className="mt-4 space-y-2 text-sm text-bdx-muted">
               <p>Same brief for every build in a round (prompt p-001), binary playability check + feature checklist, then judge review.</p>
-              <p>Showdown Scores come only from direct review: 92 Muse Spark 1.3, 88 Gemini 3.8 Flash. Automated captures never invent scores — they enter blind arena matches for community votes.</p>
+              <p>Showdown Scores come only from direct hands-on review: 94 DeepSeek V4.1 Flash, 92 Muse Spark 1.3, 88 Gemini 3.8 Flash.</p>
               <p><Link href="/methodology" className="text-bdx-accent underline-offset-4 hover:underline">Read methodology</Link></p>
             </div>
           )}

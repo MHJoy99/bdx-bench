@@ -9,7 +9,6 @@ import {
   HomeFooter,
   LatestModels,
   MethodologyTeaser,
-  OpenFreeRound,
   PricePerformance,
   TopModels,
 } from "@/components/home";
@@ -29,7 +28,6 @@ export default function HomePage() {
       <GlobalStats />
       <TopModels />
       <BuildsGallery />
-      <OpenFreeRound />
       <PricePerformance />
       <CategoryLeaders />
       <LatestModels />

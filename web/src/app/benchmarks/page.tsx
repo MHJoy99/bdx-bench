@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Flame, Gamepad2, ArrowUpRight, Trophy, Zap, ShieldCheck } from "lucide-react";
 import { getBenchmarkEvaluations, getModel } from "@/lib/data";
-import ROUND from "../../../data/openrouter-free-p001.json";
 
 export const metadata: Metadata = {
   title: "Zombie Flamethrower Showdown — Interactive Builds & Benchmark Results",
@@ -76,15 +75,6 @@ const PLAYABLE_BUILDS: Record<
 export default function BenchmarksPage() {
   const evals = getBenchmarkEvaluations(SHOWDOWN_SLUG);
   const display = [...evals].sort((a, b) => b.raw - a.raw);
-
-  const entries = (ROUND.entries as Array<{
-    model: string;
-    ok: boolean;
-    answerLen: number;
-    matchId: string | null;
-    note: string;
-    excerpt?: string;
-  }>).filter((e) => e.ok && e.excerpt);
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
@@ -228,51 +218,6 @@ export default function BenchmarksPage() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      {/* Secondary Section: OpenRouter Free Models Awaiting Rating */}
-      <section className="mt-14" aria-labelledby="free-round-heading">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--border)] pb-4">
-          <div>
-            <h2 id="free-round-heading" className="text-xl font-bold tracking-tight text-[var(--text)]">
-              Open Model Round — Tested Candidates ({entries.length})
-            </h2>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">
-              We also ran the exact same p-001 prompt across free models on OpenRouter. Their code was captured and linked into blind A/B arena matches. Preview their generated game logic below:
-            </p>
-          </div>
-          <Link
-            href="/leaderboard"
-            className="text-xs font-semibold text-[var(--accent)] underline-offset-4 hover:underline"
-          >
-            Vote in Arena Leaderboard →
-          </Link>
-        </div>
-
-        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {entries.map((c) => (
-            <details
-              key={c.model}
-              className="group rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-4 text-xs transition-colors hover:border-[var(--border-strong)]"
-            >
-              <summary className="flex cursor-pointer items-center justify-between font-mono font-medium text-[var(--text)]">
-                <span className="truncate max-w-[220px]">{c.model.replace(":free", "")}</span>
-                <span className="rounded bg-[var(--elevated)] px-2 py-0.5 text-[10px] text-[var(--text-tertiary)]">
-                  {c.answerLen} chars
-                </span>
-              </summary>
-              <div className="mt-3 border-t border-[var(--border)]/60 pt-3">
-                <p className="text-[11px] text-[var(--text-tertiary)] mb-2">
-                  Status: <strong className="text-[var(--text-secondary)]">{c.note}</strong>
-                  {c.matchId && ` · Match: ${c.matchId}`}
-                </p>
-                <pre className="max-h-40 overflow-auto rounded bg-[var(--bg)] p-2.5 font-mono text-[11px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">
-                  {c.excerpt}…
-                </pre>
-              </div>
-            </details>
-          ))}
         </div>
       </section>
 
