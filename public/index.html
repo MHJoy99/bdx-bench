@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BDX Bench — Independent Model Analysis</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">BDX</span> Bench</div>
+  <nav class="nav" id="nav">
+    <a href="#intelligence">Intelligence</a>
+    <a href="#manual">Manual</a>
+    <a href="#arena">Arena</a>
+    <a href="#models">Models</a>
+    <a href="#tasks">Tasks</a>
+    <a href="#runs">Runs</a>
+    <a href="#prompts">Prompts</a>
+    <a href="#openrouter">OpenRouter Free</a>
+    <a href="#methodology">Methodology</a>
+  </nav>
+  <div class="health"><span id="healthDot" class="dot">●</span><span id="healthText">checking…</span></div>
+</header>
+
+<main>
+<section class="hero">
+  <h1>Independent analysis of models</h1>
+  <p>Zero-dependency local benchmark harness. Auto suites, blind manual prompts, and arena Elo — all on one page. <span id="viewCount"></span></p>
+  <div class="searchrow">
+    <input id="globalSearch" type="search" placeholder="Filter everything: model, suite, prompt, task…" aria-label="Global filter">
+    <button id="refreshBtn" type="button">Refresh</button>
+    <span id="updatedAt" class="muted"></span>
+  </div>
+  <div class="cards" id="highlights"></div>
+</section>
+
+<section id="intelligence" class="panel">
+  <h2>Intelligence <span class="tag">auto</span></h2>
+  <p class="muted">Points-weighted avgScore from <code>results/*.json</code> via <code>GET /api/leaderboard</code>. Higher is better. Mock runs are labelled.</p>
+  <div class="tabs" data-tabs="intelligence"></div>
+  <div class="tabbody" id="intelligenceBody"></div>
+  <canvas id="chartAuto" class="chart" width="900" height="220" aria-label="Auto scores chart"></canvas>
+</section>
+
+<section id="manual" class="panel">
+  <h2>Manual prompts <span class="tag">human judged</span></h2>
+  <p class="muted">Scores from <code>POST /api/scores {promptId, model, answer, score01}</code>. Flamethrower game is <code>p-001</code>. Bulk OpenRouter answers land here as arena matches, never as fake scores.</p>
+  <div class="tabs" data-tabs="manual"></div>
+  <div class="tabbody" id="manualBody"></div>
+</section>
+
+<section id="arena" class="panel">
+  <h2>Arena <span class="tag">blind Elo</span></h2>
+  <p class="muted">Blind A/B matches. Vote via <code>POST /api/matches/:id/votes {judge, side}</code>. Auto-verdict at 2-vote majority or 3 votes, Elo K=32 from 1000. Models hidden until verdict unless <code>?reveal=1</code>.</p>
+  <div class="tabs" data-tabs="arena"></div>
+  <div class="tabbody" id="arenaBody"></div>
+  <canvas id="chartArena" class="chart" width="900" height="220" aria-label="Arena Elo chart"></canvas>
+</section>
+
+<section id="models" class="panel">
+  <h2>Models</h2>
+  <p class="muted">Static list from <code>GET /api/models</code> (offline-safe) plus live OpenRouter catalog below.</p>
+  <div class="tabs" data-tabs="models"></div>
+  <div class="tabbody" id="modelsBody"></div>
+</section>
+
+<section id="tasks" class="panel">
+  <h2>Tasks</h2>
+  <p class="muted">From <code>GET /api/tasks?suite=swe-mini|terminal-mini</code>. Unknown suite returns <code>{tasks:[]}</code>.</p>
+  <div class="tabs" data-tabs="tasks"></div>
+  <div class="tabbody" id="tasksBody"></div>
+</section>
+
+<section id="runs" class="panel">
+  <h2>Runs</h2>
+  <p class="muted">From <code>GET /api/runs</code>, newest first. Full run via <code>GET /api/runs/:id</code>.</p>
+  <div class="tabs" data-tabs="runs"></div>
+  <div class="tabbody" id="runsBody"></div>
+</section>
+
+<section id="prompts" class="panel">
+  <h2>Prompts <span class="tag">flamethrower p-001</span></h2>
+  <p class="muted">From <code>GET /api/prompts</code>. Open a prompt for full body plus linked scores and matches.</p>
+  <div class="tabs" data-tabs="prompts"></div>
+  <div class="tabbody" id="promptsBody"></div>
+</section>
+
+<section id="openrouter" class="panel">
+  <h2>OpenRouter Free</h2>
+  <p class="muted">Live public catalog <code>https://openrouter.ai/api/v1/models</code> (no key). Free = $0 in/out or <code>:free</code> suffix. Bulk flamethrower job posts arena matches above as it completes.</p>
+  <div class="tabs" data-tabs="openrouter"></div>
+  <div class="tabbody" id="openrouterBody"></div>
+</section>
+
+<section id="methodology" class="panel">
+  <h2>Methodology v1</h2>
+  <ul>
+    <li>Auto: points-weighted <code>avgScore</code>, unweighted <code>passRate</code>. Only board endpoint is <code>GET /api/leaderboard → {leaderboard, manual, arena}</code>.</li>
+    <li>Manual: human <code>score01</code> per answer. Automated captures never invent scores; they go to arena for voting.</li>
+    <li>Arena: blind until verdict, majority-of-3, Elo K=32 start 1000, journal-first to <code>data/matches.json</code>.</li>
+    <li>Secrets: gateway keys via env only, never in responses, logs, or stored runs. Crash-safe tmp+rename writes.</li>
+    <li>Test API on <code>:18765</code>, never bind <code>:8765</code> in tests. Live server stays up.</li>
+  </ul>
+</section>
+</main>
+
+<footer class="footer">
+  <span>BDX Bench · zero-dep · <span id="tableCount"></span></span>
+  <span class="muted">Inspired by public leaderboard UX; all data here is local.</span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
