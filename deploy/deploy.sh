@@ -20,4 +20,5 @@ curl -sf https://bench.bdx.market/
 curl -sf https://bench.bdx.market/play/pyro-vs-zombies > /dev/null
 curl -sf https://bench.bdx.market/play/pyroclasm-inferno > /dev/null
 curl -sf https://bench.bdx.market/play/pyre-burn-horde > /dev/null
+curl -sf https://bench.bdx.market/play/firebreak-night-shift > /dev/null
 echo "DEPLOY OK: $(git rev-parse HEAD)"

@@ -48,9 +48,10 @@ export default function MethodologyPage() {
       <section aria-labelledby="m-scoring" className="mt-8">
         <h2 id="m-scoring" className="text-xl font-semibold">Scoring</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Judges assign a Showdown Score from 0 to 100 for each build. Muse
-          Spark 1.3 scored 92 and Gemini 3.8 Flash scored 88 in the September
-          2026 round. The score reflects build quality, feel, and completeness
+          Judges assign a Showdown Score from 0 to 100 for each build. DeepSeek
+          V4.1 Flash scored 94, Muse Spark 1.3 scored 92, GPT Luna 5.6 scored
+          91, and Gemini 3.8 Flash scored 88 in the September 2026 round. The
+          score reflects build quality, feel, and completeness
           observed during hands-on review. Dimensions outside this round, such
           as reasoning or coding subscores, show as Not evaluated. Pricing and
           speed show as Not measured until dedicated measurements land.
@@ -81,7 +82,7 @@ export default function MethodologyPage() {
       <section aria-labelledby="m-limits" className="mt-8">
         <h2 id="m-limits" className="text-xl font-semibold">Limitations</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-muted-foreground">
-          <li>Two builds only — results do not generalize to other models.</li>
+          <li>Four builds only — results do not generalize to other models.</li>
           <li>Game-build quality only — no claims about chat, code, or reasoning strength.</li>
           <li>Judge review includes human judgment and carries taste variance.</li>
           <li>No price or speed claims in this round; those pages state Not measured.</li>

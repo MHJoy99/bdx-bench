@@ -19,7 +19,7 @@
 //              real sha256 voter hash.
 //   comments -> {} (empty threads on demand)
 //
-// Canonical slugs: muse-spark-1-3, deepseek-v4-1-flash, gemini-3-8-flash.
+// Canonical slugs: muse-spark-1-3, deepseek-v4-1-flash, gpt-5-6-luna, gemini-3-8-flash.
 // Match m-001: side A = muse-spark-1-3 (Muse), side B = gemini-3-8-flash
 // (Gemini), status open. Ratings scale 1-5.
 //
@@ -36,7 +36,7 @@ import type { NextResponse } from "next/server";
 // Canonical constants
 // ---------------------------------------------------------------------------
 
-export const MODEL_SLUGS = ["muse-spark-1-3", "deepseek-v4-1-flash", "gemini-3-8-flash"] as const;
+export const MODEL_SLUGS = ["muse-spark-1-3", "deepseek-v4-1-flash", "gpt-5-6-luna", "gemini-3-8-flash"] as const;
 export type ModelSlug = (typeof MODEL_SLUGS)[number];
 
 export const MATCH_ID = "m-001" as const;

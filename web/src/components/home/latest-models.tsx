@@ -5,6 +5,7 @@ import { MODELS } from "@/lib/data";
 const PLAY_LINKS: Record<string, string> = {
   "muse-spark-1-3": "/play/pyro-vs-zombies",
   "deepseek-v4-1-flash": "/play/pyre-burn-horde",
+  "gpt-5-6-luna": "/play/firebreak-night-shift",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
 };
 

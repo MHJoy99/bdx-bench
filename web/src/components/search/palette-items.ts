@@ -76,6 +76,7 @@ export interface PalettePageDef {
 export const CANONICAL_MODELS: PaletteModelInput[] = [
   { slug: "muse-spark-1-3", name: "Muse Spark 1.3", family: "Muse Spark", provider: "other" },
   { slug: "deepseek-v4-1-flash", name: "DeepSeek V4.1 Flash", family: "DeepSeek", provider: "deepseek" },
+  { slug: "gpt-5-6-luna", name: "GPT Luna 5.6", family: "GPT Luna", provider: "openai" },
   { slug: "gemini-3-8-flash", name: "Gemini 3.8 Flash", family: "Gemini Flash", provider: "google" },
 ];
 

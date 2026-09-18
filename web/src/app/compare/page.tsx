@@ -7,7 +7,7 @@ import { CompareSkeleton } from "@/components/compare/CompareSkeleton";
 export const metadata: Metadata = {
   title: "Compare Models",
   description:
-    "Side-by-side view of Muse Spark 1.3 and Gemini 3.8 Flash on Zombie Flamethrower Showdown with shareable links.",
+    "Side-by-side view of verified models on Zombie Flamethrower Showdown with shareable links.",
 };
 
 export const dynamic = "force-dynamic";

@@ -21,6 +21,13 @@ const VERIFIED = [
     blurb: "Dark-arena wave survival built on chain reactions: ignited zombies spread fire, six enemy types, Titan boss every 5th wave, upgrades between waves. Verified 60 FPS with 120 zombies live.",
   },
   {
+    name: "GPT Luna 5.6",
+    model: "GPT Luna 5.6",
+    score: 91,
+    href: "/play/firebreak-night-shift",
+    blurb: "Street survival with spreading fire, four enemy types, Solar Burst, fire dash, fuel and health pickups, touch controls, and endless waves.",
+  },
+  {
     name: "PYROCLASM: Zombie Inferno",
     model: "Gemini 3.8 Flash",
     score: 88,

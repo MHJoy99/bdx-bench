@@ -150,7 +150,7 @@ function page(model: Model): ModelPageData {
 }
 
 function loadPages(): ModelPageData[] {
-  const slugs = ["muse-spark-1-3", "deepseek-v4-1-flash", "gemini-3-8-flash"];
+  const slugs = ["muse-spark-1-3", "deepseek-v4-1-flash", "gpt-5-6-luna", "gemini-3-8-flash"];
   const out: ModelPageData[] = [];
   for (const slug of slugs) {
     const model = getModel(slug);

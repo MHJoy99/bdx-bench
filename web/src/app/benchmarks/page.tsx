@@ -41,6 +41,21 @@ const PLAYABLE_BUILDS: Record<
     fps: "60 FPS @ 120 zombies + 2,300 particles live",
     tech: "Pooled entity buffers · End-of-frame compaction pass · Web Audio synthesizer",
   },
+  "gpt-5-6-luna": {
+    title: "GPT Luna 5.6",
+    playUrl: "/play/firebreak-night-shift",
+    badge: "THIRD · #3",
+    tagline: "Single-run street survival with spreading fire, tactical dashes, charged bursts, and mobile controls.",
+    features: [
+      "4 enemy classes: Shambler, Runner, Brute, and ranged Spitter",
+      "Spreading fire, fuel reserve, health/ash pickups, and obstacle field",
+      "Solar Burst (E), fire dash (Shift), pause/restart, and endless waves",
+      "Pointer-based touch controls and local best-run persistence",
+      "Self-contained Canvas 2D build with procedural Web Audio",
+    ],
+    fps: "58 KB standalone Canvas 2D build",
+    tech: "Static code + browser-start verified · no external assets or network calls",
+  },
   "muse-spark-1-3": {
     title: "PYRO vs ZOMBIES",
     playUrl: "/play/pyro-vs-zombies",

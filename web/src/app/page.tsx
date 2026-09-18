@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     absolute: "BDX Bench — AI Model Benchmarks, Rankings & Intelligence",
   },
   description:
-    "Game-build evaluation for Muse Spark 1.3 and Gemini 3.8 Flash on Zombie Flamethrower Showdown, with Showdown Scores, play links, and methodology.",
+    "Game-build evaluation for four verified models on Zombie Flamethrower Showdown, with Showdown Scores, play links, and methodology.",
 };
 
 export default function HomePage() {

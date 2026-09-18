@@ -30,7 +30,7 @@ export function PricePerformance() {
               Not measured in this round
             </p>
             <p className="mx-auto mt-2 max-w-md text-sm text-bdx-muted">
-              Muse Spark 1.3 and Gemini 3.8 Flash were evaluated for game-build
+               The four verified builds were evaluated for game-build
               quality only. Price and speed charts will appear once vendor
               pricing and throughput measurements are published.
             </p>
@@ -39,7 +39,7 @@ export function PricePerformance() {
                 href="/compare?models=muse-spark-1-3,gemini-3-8-flash"
                 className="text-bdx-accent underline-offset-4 hover:underline"
               >
-                Compare the two builds
+                 Compare verified builds
               </Link>
             </p>
           </div>

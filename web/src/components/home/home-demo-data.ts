@@ -29,9 +29,9 @@ export interface GlobalStats {
 }
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 3,
+  modelsTracked: 4,
   benchmarks: 1,
-  evalRuns: 3,
+  evalRuns: 4,
   providers: 1,
   datasetRefresh: DEMO_DATASET_REFRESH_LABEL,
 };
@@ -40,6 +40,16 @@ export const DEMO_GLOBAL_STATS: GlobalStats = {
 // have no rows until those dimensions are evaluated.
 export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
   Overall: [
+    {
+      id: "deepseek-v4-1-flash",
+      name: "DeepSeek V4.1 Flash",
+      provider: "bdx-ai",
+      score: 94,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
     {
       id: "muse-spark-1-3",
       name: "Muse Spark 1.3",
@@ -51,21 +61,21 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       contextK: null,
     },
     {
-      id: "gemini-3-8-flash",
-      name: "Gemini 3.8 Flash",
+      id: "gpt-5-6-luna",
+      name: "GPT Luna 5.6",
       provider: "bdx-ai",
-      score: 88,
-      delta: -2,
+      score: 91,
+      delta: 0,
       pricePer1M: null,
       speedTps: null,
       contextK: null,
     },
     {
-      id: "deepseek-v4-1-flash",
-      name: "DeepSeek V4.1 Flash",
+      id: "gemini-3-8-flash",
+      name: "Gemini 3.8 Flash",
       provider: "bdx-ai",
-      score: 91,
-      delta: 0,
+      score: 88,
+      delta: -2,
       pricePer1M: null,
       speedTps: null,
       contextK: null,
@@ -83,7 +93,7 @@ export interface CategoryLeader {
 }
 
 export const DEMO_CATEGORY_LEADERS: CategoryLeader[] = [
-  { category: "Showdown", model: "Muse Spark 1.3", provider: "bdx-ai", score: 92 },
+  { category: "Showdown", model: "DeepSeek V4.1 Flash", provider: "bdx-ai", score: 94 },
 ];
 
 // No verified release dates — empty until publishers confirm.
@@ -117,5 +127,5 @@ export interface TrendPoint {
 
 export const DEMO_TREND_SERIES: TrendPoint[] = [
   { label: "Sep 17", topScore: 92, medianScore: 90 },
-  { label: "Sep 18", topScore: 92, medianScore: 91 },
+  { label: "Sep 18", topScore: 94, medianScore: 91.5 },
 ];

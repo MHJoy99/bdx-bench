@@ -5,7 +5,7 @@ import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 export const metadata: Metadata = {
   title: "Leaderboard",
   description:
-    "Ranked Showdown Scores for Muse Spark 1.3 and Gemini 3.8 Flash on Zombie Flamethrower Showdown.",
+    "Ranked Showdown Scores for four verified builds on Zombie Flamethrower Showdown.",
 };
 
 export default function LeaderboardPage() {

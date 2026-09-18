@@ -11,10 +11,12 @@ export function ModelHistoryChart({
     slug === "muse-spark-1-3"
       ? 92
       : slug === "deepseek-v4-1-flash"
-        ? 91
-        : slug === "gemini-3-8-flash"
-          ? 88
-          : null;
+        ? 94
+        : slug === "gpt-5-6-luna"
+          ? 91
+          : slug === "gemini-3-8-flash"
+            ? 88
+            : null;
   return (
     <section aria-labelledby="model-history-heading">
       <h2

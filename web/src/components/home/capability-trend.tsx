@@ -26,12 +26,12 @@ export function CapabilityTrend() {
         <CardContent>
           <div className="rounded-lg border border-dashed border-bdx-border bg-bdx-bg px-6 py-10 text-center">
             <p className="text-sm font-semibold text-bdx-ink">
-              September 2026: 92 vs 88
+              September 2026: 94 · 92 · 91 · 88
             </p>
             <p className="mx-auto mt-2 max-w-md text-sm text-bdx-muted">
-              Muse Spark 1.3 at 92 and Gemini 3.8 Flash at 88 on Zombie
-              Flamethrower Showdown. The next round will draw the first trend
-              line.
+              DeepSeek V4.1 Flash leads at 94, followed by Muse Spark 1.3 at
+              92, GPT Luna 5.6 at 91, and Gemini 3.8 Flash at 88. The next
+              round will draw the first trend line.
             </p>
           </div>
         </CardContent>
