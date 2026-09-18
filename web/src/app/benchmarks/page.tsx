@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Flame, Gamepad2, ArrowUpRight, Trophy, Zap, ShieldCheck } from "lucide-react";
+import { Flame, Gamepad2, ArrowUpRight, Zap, ShieldCheck } from "lucide-react";
 import { getBenchmarkEvaluations, getModel } from "@/lib/data";
 
 export const metadata: Metadata = {
