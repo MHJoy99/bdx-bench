@@ -47,6 +47,7 @@ export function Hero() {
           <Flame className="size-4 shrink-0 text-[#ffc53d]" aria-hidden="true" />
           <span>
             Latest Game-Build Showdown: <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (92)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">DeepSeek V4.1 Flash (91)</strong> vs{" "}
             <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (88)</strong>
           </span>
         </div>
@@ -94,6 +95,13 @@ export function Hero() {
           >
             <Gamepad2 className="size-3.5 text-[var(--accent)]" aria-hidden="true" />
             <span>Pyro vs Zombies (Muse Spark · 92)</span>
+          </Link>
+          <Link
+            href="/play/pyre-burn-horde"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
+          >
+            <Gamepad2 className="size-3.5 text-[#ff7847]" aria-hidden="true" />
+            <span>PYRE — Burn the Horde (DeepSeek · 91)</span>
           </Link>
           <Link
             href="/play/pyroclasm-inferno"

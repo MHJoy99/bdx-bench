@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BENCHMARKS, getBenchmarkEvaluations, getModel } from "@/lib/data";
+import ROUND from "../../../data/openrouter-free-p001.json";
 
 export const metadata: Metadata = {
   title: "Benchmarks",
@@ -84,6 +85,34 @@ export default function BenchmarksPage() {
           </Link>{" "}
           for scoring rules.
         </p>
+      </div>
+
+      <div className="mt-6 rounded-lg border border-border bg-card p-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-xl font-semibold">Open free-model round — same prompt p-001</h2>
+          <span className="text-xs text-muted-foreground">
+            {(ROUND.entries as Array<{ matchId: string | null }>).filter((e) => e.matchId).length} linked / {(ROUND.entries as unknown[]).length} attempted
+          </span>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Flamethrower prompt across OpenRouter free models. Captures link as blind arena matches —
+          no Showdown Scores invented. Vote to build Elo.
+        </p>
+        <ul className="mt-4 space-y-2">
+          {(ROUND.entries as Array<{ model: string; note: string; answerLen: number; matchId: string | null }>).map((e) => (
+            <li
+              key={e.model}
+              className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2"
+            >
+              <span className="font-mono text-xs">{e.model}</span>
+              <span className="text-xs text-muted-foreground">
+                {e.note}
+                {e.matchId ? ` · ${e.matchId} open` : ""}
+                {e.answerLen ? ` · ${e.answerLen} chars` : ""}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

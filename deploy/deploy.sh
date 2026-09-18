@@ -12,10 +12,12 @@ NEXT_PUBLIC_SITE_URL=https://bench.bdx.market npm run build
 mkdir -p .next/standalone/.next .next/standalone/public .next/standalone/data/interactive
 cp -r .next/static .next/standalone/.next/static
 cp -r public/* .next/standalone/public/ 2>/dev/null || true
+cp data/*.json .next/standalone/data/ 2>/dev/null || true
 chown -R bench:bench "$APP"
 systemctl restart bdx-bench
 for i in $(seq 1 15); do curl -sf http://127.0.0.1:8766/api/leaderboard && break || sleep 1; done
 curl -sf https://bench.bdx.market/
 curl -sf https://bench.bdx.market/play/pyro-vs-zombies > /dev/null
 curl -sf https://bench.bdx.market/play/pyroclasm-inferno > /dev/null
+curl -sf https://bench.bdx.market/play/pyre-burn-horde > /dev/null
 echo "DEPLOY OK: $(git rev-parse HEAD)"

@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>PYRE — Burn the Horde</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#07060a;
+    font-family:"Segoe UI",Roboto,system-ui,sans-serif;color:#e8e2dc;
+    user-select:none;-webkit-user-select:none}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:none;touch-action:none}
+  .layer{position:fixed;inset:0;display:none;place-items:center;z-index:10;text-align:center}
+  .layer.on{display:grid}
+
+  /* ---------- menu ---------- */
+  #menu{background:radial-gradient(ellipse at 50% 55%,rgba(60,18,4,.55),rgba(7,6,10,.94) 65%)}
+  .title{font-size:clamp(52px,11vw,132px);font-weight:900;letter-spacing:.16em;line-height:.92;
+    background:linear-gradient(180deg,#fff8e2 0%,#ffce55 38%,#ff6a17 70%,#8d1503 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 60px rgba(255,110,20,.45);filter:drop-shadow(0 0 26px rgba(255,90,10,.35))}
+  .sub{margin-top:2px;font-size:clamp(11px,1.5vw,15px);letter-spacing:.62em;text-transform:uppercase;
+    color:#ff9a44;opacity:.9;padding-left:.62em}
+  .tag{margin-top:22px;font-size:clamp(12px,1.4vw,15px);color:#a0948c;letter-spacing:.05em;line-height:1.75}
+  .tag b{color:#ffb055;font-weight:600}
+  .btn{margin-top:30px;display:inline-block;padding:15px 54px;border-radius:999px;cursor:pointer;
+    font-size:17px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:#1b0a02;
+    background:linear-gradient(180deg,#ffd268,#ff8a1f 55%,#ef5f06);
+    box-shadow:0 0 0 1px rgba(255,200,120,.5) inset,0 10px 34px rgba(255,110,20,.42),0 2px 0 #8a3400;
+    transition:transform .12s ease,box-shadow .12s ease,filter .12s ease}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.09);
+    box-shadow:0 0 0 1px rgba(255,220,150,.7) inset,0 16px 44px rgba(255,120,25,.55),0 3px 0 #8a3400}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:#ffb055;box-shadow:0 0 0 1.5px rgba(255,150,60,.45) inset;
+    padding:11px 34px;font-size:13px;letter-spacing:.16em}
+  .btn.ghost:hover{background:rgba(255,140,50,.11);filter:none}
+  .keys{margin-top:26px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:660px}
+  .key{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8d837c;letter-spacing:.08em;
+    background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);padding:7px 12px;border-radius:8px}
+  .key kbd{font:600 11px/1 ui-monospace,Consolas,monospace;color:#ffc478;background:rgba(255,150,60,.13);
+    border:1px solid rgba(255,150,60,.28);border-radius:5px;padding:3px 6px}
+
+  /* ---------- upgrade ---------- */
+  #up{background:radial-gradient(ellipse at 50% 40%,rgba(30,16,44,.72),rgba(7,6,10,.95) 70%)}
+  .up-head{font-size:clamp(20px,3.2vw,34px);font-weight:900;letter-spacing:.15em;text-transform:uppercase;
+    background:linear-gradient(180deg,#fff2cf,#ffa630);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .up-sub{margin-top:6px;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:#7f736b}
+  .cards{margin-top:30px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;padding:0 20px}
+  .card{width:212px;padding:22px 18px 20px;border-radius:15px;cursor:pointer;position:relative;
+    background:linear-gradient(180deg,rgba(38,30,44,.94),rgba(20,16,24,.96));
+    border:1px solid rgba(255,255,255,.09);transition:transform .16s cubic-bezier(.2,.9,.3,1.2),border-color .16s,box-shadow .16s}
+  .card:hover{transform:translateY(-8px) scale(1.035);border-color:rgba(255,150,60,.62);
+    box-shadow:0 20px 48px rgba(255,100,15,.28),0 0 0 1px rgba(255,150,60,.22) inset}
+  .card .ico{font-size:36px;line-height:1;filter:drop-shadow(0 0 16px rgba(255,140,40,.6))}
+  .card .nm{margin-top:13px;font-size:15.5px;font-weight:800;letter-spacing:.05em;color:#ffd79a}
+  .card .ds{margin-top:8px;font-size:12.5px;line-height:1.55;color:#a79b93}
+  .card .rar{position:absolute;top:11px;right:12px;font-size:9px;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;padding:3px 7px;border-radius:5px}
+  .r1{color:#9fd8ff;background:rgba(90,170,255,.15)}
+  .r2{color:#c9a6ff;background:rgba(160,110,255,.16)}
+  .r3{color:#ffc061;background:rgba(255,170,60,.17)}
+  .card .hot{position:absolute;inset:0;border-radius:15px;pointer-events:none;
+    background:radial-gradient(circle at 50% 0%,rgba(255,170,60,.18),transparent 62%);opacity:0;transition:opacity .16s}
+  .card:hover .hot{opacity:1}
+  #reroll{margin-top:22px}
+  .owned{margin-top:20px;font-size:11px;color:#6f655e;letter-spacing:.1em;max-width:760px;line-height:2}
+  .owned span{display:inline-block;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);
+    border-radius:6px;padding:3px 9px;margin:0 3px;color:#9c908a}
+
+  /* ---------- game over ---------- */
+  #dead{background:radial-gradient(ellipse at 50% 50%,rgba(70,6,6,.6),rgba(5,3,5,.96) 68%)}
+  .gg{font-size:clamp(38px,8vw,86px);font-weight:900;letter-spacing:.14em;
+    background:linear-gradient(180deg,#ffd9d0,#e33a1c 60%,#6d0b04);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 50px rgba(220,50,20,.45)}
+  .stats{margin-top:26px;display:flex;gap:38px;justify-content:center;flex-wrap:wrap}
+  .stat .v{font-size:clamp(24px,3.4vw,38px);font-weight:900;color:#ffb055;letter-spacing:.02em}
+  .stat .k{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#7d736c;margin-top:5px}
+  .best{margin-top:20px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#8e8279}
+  .best b{color:#ffca7a}
+  .row{margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+  #pause{background:rgba(6,5,8,.82)}
+  .pz{font-size:44px;font-weight:900;letter-spacing:.3em;color:#ffb055;text-transform:uppercase}
+  .pz small{display:block;margin-top:12px;font-size:11px;letter-spacing:.24em;color:#6f655e}
+  .fade{animation:fi .32s ease both}
+  @keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="layer on" id="menu">
+  <div class="fade">
+    <div class="title">PYRE</div>
+    <div class="sub">Burn the Horde</div>
+    <div class="tag">
+      They come in waves. You have one answer — <b>fire</b>.<br>
+      Ignite one and the whole crowd goes up. Keep the chain alive.
+    </div>
+    <div class="btn" id="play">Play</div>
+    <div class="keys">
+      <div class="key"><kbd>W A S D</kbd> move</div>
+      <div class="key"><kbd>Mouse</kbd> aim</div>
+      <div class="key"><kbd>Hold LMB</kbd> flamethrower</div>
+      <div class="key"><kbd>Space</kbd> flame nova</div>
+      <div class="key"><kbd>Shift</kbd> fire dash</div>
+      <div class="key"><kbd>P</kbd> pause</div>
+    </div>
+  </div>
+</div>
+
+<div class="layer" id="up">
+  <div class="fade" style="width:100%">
+    <div class="up-head" id="upTitle">Wave Cleared</div>
+    <div class="up-sub" id="upSub">Choose an upgrade</div>
+    <div class="cards" id="cards"></div>
+    <div id="reroll"><div class="btn ghost" id="rr">Reroll · 250 pts</div></div>
+    <div class="owned" id="owned"></div>
+  </div>
+</div>
+
+<div class="layer" id="dead">
+  <div class="fade">
+    <div class="gg">You Burned Out</div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="dWave">1</div><div class="k">Wave</div></div>
+      <div class="stat"><div class="v" id="dKills">0</div><div class="k">Kills</div></div>
+      <div class="stat"><div class="v" id="dScore">0</div><div class="k">Score</div></div>
+      <div class="stat"><div class="v" id="dTime">0:00</div><div class="k">Survived</div></div>
+    </div>
+    <div class="best" id="dBest"></div>
+    <div class="row">
+      <div class="btn" id="again">Again</div>
+      <div class="btn ghost" id="tomenu">Menu</div>
+    </div>
+  </div>
+</div>
+
+<div class="layer" id="pause">
+  <div class="fade" style="text-align:center">
+    <div class="pz">Paused<small>Press P to resume</small></div>
+    <div class="row"><div class="btn ghost" id="quit">Abandon Run</div></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+(function(){
+
+// ═══════════════════════════════ helpers ═══════════════════════════════
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp  = (a, b, t) => a + (b - a) * t;
+const rand  = (a, b) => b === undefined ? Math.random() * a : b + Math.random() * (a - b);
+const rint  = (a, b) => Math.floor(a + Math.random() * (b - a + 1));
+const pick  = a => a[(Math.random() * a.length) | 0];
+const dist2 = (x1, y1, x2, y2) => { const dx = x2 - x1, dy = y2 - y1; return dx * dx + dy * dy; };
+const sAng  = (a, b) => { let d = (b - a) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; };
+const fmt   = n => n.toLocaleString("en-US");
+// Frame-rate independent emission: converts a per-second rate into a whole
+// number of particles for this step, without a leftover accumulator.
+function emitCount(rate, dt) {
+  const v = rate * dt;
+  const n = Math.floor(v);
+  return n + (Math.random() < v - n ? 1 : 0);
+}
+
+// ═══════════════════════════════ sprites ═══════════════════════════════
+function glowSprite(c0, c1, soft) {
+  const S = 96, cv = document.createElement("canvas");
+  cv.width = cv.height = S;
+  const g = cv.getContext("2d");
+  const gr = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+  gr.addColorStop(0, c0);
+  gr.addColorStop(soft ? .35 : .5, c1);
+  gr.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = gr;
+  g.fillRect(0, 0, S, S);
+  return cv;
+}
+
+const SPR = [
+  glowSprite("rgba(255,255,242,1)", "rgba(255,246,200,.85)", 1), // 0 white-hot
+  glowSprite("rgba(255,236,150,1)", "rgba(255,198,70,.8)", 1),  // 1 yellow
+  glowSprite("rgba(255,182,60,1)",  "rgba(255,124,20,.74)", 1), // 2 orange
+  glowSprite("rgba(255,110,30,1)",  "rgba(228,58,10,.66)", 1),  // 3 red
+  glowSprite("rgba(196,44,14,1)",   "rgba(120,18,6,.5)", 1),    // 4 deep red
+  glowSprite("rgba(120,112,118,.5)", "rgba(58,52,58,.26)", 0),  // 5 smoke
+  glowSprite("rgba(255,150,50,.5)", "rgba(255,96,16,.16)", 0),  // 6 light glow
+  glowSprite("rgba(150,142,138,.85)", "rgba(96,90,88,.3)", 0),  // 7 ash
+  glowSprite("rgba(255,252,230,1)", "rgba(255,214,120,.9)", 1), // 8 ember
+  glowSprite("rgba(160,40,30,.85)", "rgba(110,14,10,.35)", 0),  // 9 blood
+  glowSprite("rgba(210,255,120,.9)", "rgba(120,220,60,.4)", 0), // 10 toxic
+];
+const S_WHITE = 0, S_YEL = 1, S_ORG = 2, S_RED = 3, S_DRED = 4, S_SMOKE = 5,
+      S_GLOW = 6, S_ASH = 7, S_EMBER = 8, S_BLOOD = 9, S_TOX = 10;
+
+// ═══════════════════════════════ canvas / camera ═══════════════════════════════
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d", { alpha: false });
+let VW = 0, VH = 0, DPR = 1;
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  VW = canvas.clientWidth; VH = canvas.clientHeight;
+  canvas.width = Math.max(1, VW * DPR | 0);
+  canvas.height = Math.max(1, VH * DPR | 0);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener("resize", resize);
+
+const WORLD = { w: 1500, h: 1050 };
+const cam = { x: 0, y: 0, sx: 0, sy: 0, shake: 0 };
+function camFollow(dt) {
+  const tx = clamp(player.x - VW / 2, 0, Math.max(0, WORLD.w - VW));
+  const ty = clamp(player.y - VH / 2, 0, Math.max(0, WORLD.h - VH));
+  const k = 1 - Math.pow(.0018, dt);
+  cam.x = lerp(cam.x, tx, k);
+  cam.y = lerp(cam.y, ty, k);
+  cam.shake = Math.max(0, cam.shake - dt * 46);
+  const s = cam.shake;
+  cam.sx = cam.x + rand(-s, s);
+  cam.sy = cam.y + rand(-s, s);
+}
+const shake = v => { cam.shake = Math.min(46, cam.shake + v); };
+
+// ═══════════════════════════════ audio ═══════════════════════════════
+const A = {
+  ctx: null, master: null, flameGain: null, flameFilter: null, ready: false,
+  musicGain: null, beatT: 0, beatN: 0,
+  init() {
+    if (this.ready) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    const c = new AC();
+    this.ctx = c;
+    const m = c.createGain(); m.gain.value = .5; m.connect(c.destination);
+    this.master = m;
+
+    // flamethrower: looping filtered noise bed
+    const len = c.sampleRate * 2;
+    const buf = c.createBuffer(1, len, c.sampleRate);
+    const d = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + .028 * w) / 1.028; d[i] = last * 3.2; }
+    const src = c.createBufferSource(); src.buffer = buf; src.loop = true;
+    const f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 620; f.Q.value = .85;
+    const g = c.createGain(); g.gain.value = 0;
+    src.connect(f); f.connect(g); g.connect(m); src.start();
+    this.flameGain = g; this.flameFilter = f;
+
+    const mg = c.createGain(); mg.gain.value = .0; mg.connect(m); this.musicGain = mg;
+    this.ready = true;
+  },
+  resume() { if (this.ctx && this.ctx.state === "suspended") this.ctx.resume(); },
+  flame(on, intensity) {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime;
+    this.flameGain.gain.setTargetAtTime(on ? .3 * intensity : 0, t, .045);
+    this.flameFilter.frequency.setTargetAtTime(on ? 520 + Math.random() * 260 : 620, t, .07);
+  },
+  blip(freq, dur, vol, type, sweep) {
+    if (!this.ready) return;
+    const c = this.ctx, t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || "sine";
+    o.frequency.setValueAtTime(freq, t);
+    if (sweep) o.frequency.exponentialRampToValueAtTime(Math.max(30, sweep), t + dur);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + .006);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(this.master); o.start(t); o.stop(t + dur + .02);
+  },
+  noise(dur, vol, freq, q, type) {
+    if (!this.ready) return;
+    const c = this.ctx, t = c.currentTime, n = Math.floor(c.sampleRate * dur);
+    const b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const s = c.createBufferSource(); s.buffer = b;
+    const f = c.createBiquadFilter(); f.type = type || "bandpass"; f.frequency.value = freq; f.Q.value = q || 1;
+    const g = c.createGain(); g.gain.value = vol;
+    s.connect(f); f.connect(g); g.connect(this.master); s.start();
+  },
+  ignite() { this.noise(.34, .3, 1500, .8); this.blip(90, .3, .16, "sawtooth", 42); },
+  hit() { this.noise(.06, .12, 2400, 1.1); },
+  splat() { this.noise(.22, .34, 380, .7); this.blip(150, .16, .1, "triangle", 60); },
+  nova() { this.blip(190, .72, .34, "sawtooth", 42); this.noise(.6, .34, 900, .6); },
+  dash() { this.noise(.24, .22, 1100, .9, "highpass"); },
+  hurt() { this.blip(190, .3, .3, "square", 54); this.noise(.2, .24, 300, .8); },
+  pick_() { this.blip(720, .16, .2, "triangle"); setTimeout(() => this.blip(1080, .3, .18, "triangle"), 78); },
+  horn() { this.blip(146, 1.0, .22, "sawtooth"); this.blip(220, 1.0, .16, "sawtooth"); },
+  boom() { this.blip(70, .8, .5, "sawtooth", 26); this.noise(.7, .5, 240, .55); },
+  music(dt, intensity) {
+    if (!this.ready) return;
+    this.beatT -= dt;
+    if (this.beatT <= 0) {
+      const spb = lerp(.56, .34, clamp(intensity, 0, 1));
+      this.beatT = spb;
+      const n = this.beatN++;
+      const c = this.ctx, t = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sawtooth";
+      const notes = [55, 55, 65.4, 55, 49, 55, 73.4, 65.4];
+      o.frequency.value = notes[n % notes.length];
+      const f = c.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 260;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(.24, t + .01);
+      g.gain.exponentialRampToValueAtTime(.001, t + spb * .92);
+      o.connect(f); f.connect(g); g.connect(this.musicGain);
+      o.start(t); o.stop(t + spb);
+      if (n % 2 === 0) { this.noise(.1, .5, 70, .7, "lowpass"); }
+    }
+  },
+  musicVol(v) { if (this.ready) this.musicGain.gain.setTargetAtTime(v, this.ctx.currentTime, .3); },
+};
+
+// ═══════════════════════════════ input ═══════════════════════════════
+const keys = Object.create(null);
+const mouse = { x: 0, y: 0, down: false, wx: 0, wy: 0 };
+const BLOCK = new Set(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab"]);
+
+addEventListener("keydown", e => {
+  if (BLOCK.has(e.code)) e.preventDefault();
+  if (!keys[e.code]) {
+    if (e.code === "Space") tryNova();
+    if (e.code === "ShiftLeft" || e.code === "ShiftRight") tryDash();
+    if (e.code === "KeyP" || e.code === "Escape") togglePause();
+  }
+  keys[e.code] = true;
+  A.resume();
+});
+addEventListener("keyup", e => { keys[e.code] = false; });
+addEventListener("blur", () => { for (const k in keys) keys[k] = false; mouse.down = false; });
+
+canvas.addEventListener("mousemove", e => {
+  const r = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+});
+canvas.addEventListener("mousedown", e => { if (e.button === 0) mouse.down = true; A.resume(); });
+addEventListener("mouseup", e => { if (e.button === 0) mouse.down = false; });
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+
+// ═══════════════════════════════ particles ═══════════════════════════════
+const MAXP = 4200;
+const px = new Float32Array(MAXP), py = new Float32Array(MAXP),
+      pvx = new Float32Array(MAXP), pvy = new Float32Array(MAXP),
+      pl = new Float32Array(MAXP), pm = new Float32Array(MAXP),
+      ps = new Float32Array(MAXP), pgr = new Float32Array(MAXP),
+      pdg = new Float32Array(MAXP), pdr = new Float32Array(MAXP);
+const psp = new Uint8Array(MAXP), pmode = new Uint8Array(MAXP);
+let pn = 0;
+let droppedP = 0;
+
+function part(x, y, vx, vy, life, size, spr, grow, drag, add) {
+  if (pn >= MAXP) { droppedP++; return; }
+  const i = pn++;
+  px[i] = x; py[i] = y; pvx[i] = vx; pvy[i] = vy;
+  pl[i] = pm[i] = life; ps[i] = size; psp[i] = spr;
+  pgr[i] = grow || 0; pdg[i] = drag === undefined ? .9 : drag;
+  pmode[i] = add === false ? 0 : 1;
+}
+function updateParticles(dt) {
+  for (let i = 0; i < pn; i++) {
+    pl[i] -= dt;
+    if (pl[i] <= 0) { pn--; if (i !== pn) {
+      px[i]=px[pn]; py[i]=py[pn]; pvx[i]=pvx[pn]; pvy[i]=pvy[pn]; pl[i]=pl[pn]; pm[i]=pm[pn];
+      ps[i]=ps[pn]; psp[i]=psp[pn]; pgr[i]=pgr[pn]; pdg[i]=pdg[pn]; pmode[i]=pmode[pn];
+    } i--; continue; }
+    const d = Math.pow(pdg[i], dt * 60);
+    pvx[i] *= d; pvy[i] *= d;
+    px[i] += pvx[i] * dt; py[i] += pvy[i] * dt;
+    ps[i] += pgr[i] * dt;
+    if (ps[i] < .3) ps[i] = .3;
+  }
+}
+function drawParticles() {
+  ctx.globalCompositeOperation = "source-over";
+  for (let i = 0; i < pn; i++) {
+    if (pmode[i]) continue;
+    const t = pl[i] / pm[i];
+    ctx.globalAlpha = t > .75 ? (1 - t) * 4 : t * 1.33;
+    const s = ps[i] * (2 - t) * 2.2;
+    ctx.drawImage(SPR[psp[i]], px[i] - s / 2, py[i] - s / 2, s, s);
+  }
+  ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < pn; i++) {
+    if (!pmode[i]) continue;
+    const t = pl[i] / pm[i];
+    ctx.globalAlpha = clamp(t * 1.5, 0, 1);
+    const s = ps[i] * (2 - t) * 2.1;
+    ctx.drawImage(SPR[psp[i]], px[i] - s / 2, py[i] - s / 2, s, s);
+  }
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+// ═══════════════════════════════ floating text ═══════════════════════════════
+const texts = [];
+function dmgText(x, y, v, col, big) {
+  if (texts.length > 90) return;
+  texts.push({ x, y, vy: big ? -62 : -44, life: big ? 1.05 : .72, m: big ? 1.05 : .72,
+    t: big ? Math.round(v) : Math.round(v), c: col || "#ffd07a", big: !!big, vx: rand(-26, 26) });
+}
+function updateTexts(dt) {
+  for (let i = texts.length - 1; i >= 0; i--) {
+    const t = texts[i];
+    t.life -= dt; t.y += t.vy * dt; t.x += t.vx * dt;
+    t.vy += 96 * dt; t.vx *= Math.pow(.06, dt);
+    if (t.life <= 0) texts.splice(i, 1);
+  }
+}
+function drawTexts() {
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const t of texts) {
+    const a = clamp(t.life / t.m * 1.6, 0, 1);
+    ctx.globalAlpha = a;
+    const sc = t.big ? 1 + (1 - t.life / t.m) * .5 : 1;
+    ctx.font = `${t.big ? 800 : 700} ${(t.big ? 21 : 14) * sc}px "Segoe UI",sans-serif`;
+    ctx.lineWidth = 3.4; ctx.strokeStyle = "rgba(8,4,2,.85)";
+    ctx.strokeText(t.t, t.x, t.y);
+    ctx.fillStyle = t.c;
+    ctx.fillText(t.t, t.x, t.y);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ═══════════════════════════════ ground fire ═══════════════════════════════
+const MAXF = 420;
+const fx = new Float32Array(MAXF), fy = new Float32Array(MAXF),
+      fr = new Float32Array(MAXF), fl = new Float32Array(MAXF),
+      fm = new Float32Array(MAXF), fd = new Float32Array(MAXF);
+let fn = 0;
+function firePatch(x, y, r, life, dps) {
+  for (let i = 0; i < fn; i++) {
+    if (dist2(fx[i], fy[i], x, y) < 900) {
+      fl[i] = Math.max(fl[i], life); fr[i] = Math.max(fr[i], r); fd[i] = Math.max(fd[i], dps);
+      return;
+    }
+  }
+  if (fn >= MAXF) return;
+  fx[fn] = x; fy[fn] = y; fr[fn] = r; fl[fn] = life; fm[fn] = life; fd[fn] = dps; fn++;
+}
+function updateFirePatches(dt) {
+  for (let i = 0; i < fn; i++) {
+    fl[i] -= dt;
+    if (fl[i] <= 0) {
+      fn--;
+      if (i !== fn) { fx[i]=fx[fn]; fy[i]=fy[fn]; fr[i]=fr[fn]; fl[i]=fl[fn]; fm[i]=fm[fn]; fd[i]=fd[fn]; }
+      i--; continue;
+    }
+    const t = fl[i] / fm[i];
+    for (let k = 0, n = emitCount(95, dt); k < n; k++) {
+      const a = rand(TAU), d = Math.sqrt(Math.random()) * fr[i];
+      const hot = Math.random();
+      part(fx[i] + Math.cos(a) * d, fy[i] + Math.sin(a) * d * .6,
+        rand(-16, 16), rand(-78, -30), rand(.3, .7), rand(5, 11),
+        hot < .22 ? S_YEL : S_ORG, 10, .93);
+    }
+    for (let k = 0, n = emitCount(26, dt); k < n; k++) {
+      const a = rand(TAU), d = Math.sqrt(Math.random()) * fr[i];
+      part(fx[i] + Math.cos(a) * d, fy[i] + Math.sin(a) * d * .6,
+        rand(-12, 12), rand(-40, -16), rand(.8, 1.7), rand(9, 16), S_SMOKE, 18, .95, false);
+    }
+    for (let k = 0, n = emitCount(14, dt); k < n; k++) {
+      const a = rand(TAU), d = Math.sqrt(Math.random()) * fr[i];
+      part(fx[i] + Math.cos(a) * d, fy[i] + Math.sin(a) * d * .6,
+        rand(-10, 10), rand(-40, -14), rand(.6, 1.3), rand(2, 3.6), S_EMBER, 0, .96);
+    }
+  }
+}
+function drawFirePatches() {
+  ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < fn; i++) {
+    const t = fl[i] / fm[i];
+    const p = .55 + Math.sin(perf * 7 + i) * .16;
+    const s = fr[i] * 4.4 * (1.1 - t * .32) * p;
+    ctx.globalAlpha = clamp(t * .62, 0, .66);
+    ctx.drawImage(SPR[S_GLOW], fx[i] - s / 2, fy[i] - s / 2, s, s);
+  }
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = 1;
+}
+function fireDpsAt(x, y) {
+  let d = 0;
+  for (let i = 0; i < fn; i++) {
+    if (dist2(x, y, fx[i], fy[i]) < fr[i] * fr[i]) d += fd[i] * (fl[i] / fm[i] > .2 ? 1 : .5);
+  }
+  return d * (1 + (window.__napalm || 0));
+}
+
+// ═══════════════════════════════ zombie types ═══════════════════════════════
+const TYPES = {
+  shambler: { hp: 26,  spd: 62,  r: 16, dmg: 7,  mass: 1,   pts: 10, ash: .9,  scor: "#a2cf5e", cloth: "#3d4c36" },
+  runner:   { hp: 16,  spd: 138, r: 13, dmg: 6,  mass: .7,  pts: 16, ash: .7,  scor: "#ecc763", cloth: "#4c4130" },
+  brute:    { hp: 170, spd: 46,  r: 27, dmg: 18, mass: 3.1, pts: 45, ash: 1.7, scor: "#d4715c", cloth: "#4d302c" },
+  bloater:  { hp: 62,  spd: 54,  r: 22, dmg: 9,  mass: 1.5, pts: 30, ash: 1.2, scor: "#aede62", cloth: "#3a4a2d", boom: true },
+  spitter:  { hp: 34,  spd: 68,  r: 16, dmg: 7,  mass: 1,   pts: 25, ash: .9,  scor: "#c894ee", cloth: "#3e3452", ranged: true },
+  titan:    { hp: 1250, spd: 48, r: 52, dmg: 32, mass: 11,  pts: 700, ash: 4.5, scor: "#e35c40", cloth: "#4c2820", boom: true, boss: true },
+};
+
+const MAXZ = 260;
+const Z = [];
+for (let i = 0; i < MAXZ; i++) Z.push({
+  on: false, t: "shambler", x: 0, y: 0, vx: 0, vy: 0, hp: 1, mhp: 1, r: 14, spd: 50, mass: 1,
+  dmg: 10, pts: 10, flash: 0, heat: 0, fire: 0, burn: 0, wob: 0, atkCd: 0, shotCd: 0, spreadCd: 0,
+  knock: 0, kx: 0, ky: 0, pt: 0, fogT: 0, scor: "#a2cf5e", cloth: "#3d4c36", ash: 1, boom: false, ranged: false,
+  boss: false, seed: 0, panic: 0, stun: 0, dying: false,
+});
+let zn = 0;
+const spawnQueue = [];
+
+function spawnZ(type, x, y) {
+  if (zn >= MAXZ) return null;
+  const T = TYPES[type], z = Z[zn++];
+  const hpS = 1 + (wave - 1) * .155, spS = 1 + Math.min((wave - 1) * .017, .5);
+  z.on = true; z.t = type;
+  z.x = x; z.y = y; z.vx = 0; z.vy = 0;
+  z.mhp = z.hp = T.hp * hpS;
+  z.r = T.r; z.spd = T.spd * spS; z.mass = T.mass; z.dmg = T.dmg * (1 + (wave - 1) * .045);
+  z.pts = T.pts; z.flash = 0; z.heat = 0; z.fire = 0; z.burn = 0;
+  z.wob = rand(TAU); z.atkCd = 0; z.shotCd = rand(1, 2.4); z.spreadCd = rand(.3, .9);
+  z.knock = 0; z.kx = 0; z.ky = 0; z.pt = 0; z.fogT = 0;
+  z.scor = T.scor; z.cloth = T.cloth; z.ash = T.ash; z.boom = !!T.boom; z.ranged = !!T.ranged; z.boss = !!T.boss;
+  z.seed = rand(TAU); z.panic = 0; z.stun = 0; z.dying = false;
+  if (z.boss) z.fogT = 4;
+  return z;
+}
+// Removal is deferred to compactZ() so array indices stay valid for the whole
+// frame. Killers may recursively damage other zombies (chain explosions) and
+// would otherwise corrupt or double-free slots mid-iteration.
+function killZ(i) { Z[i].on = false; Z[i].dying = true; }
+function liveCount() {
+  let n = 0;
+  for (let i = 0; i < zn; i++) if (Z[i].on) n++;
+  return n;
+}
+function compactZ() {
+  for (let i = 0; i < zn; i++) {
+    if (!Z[i].on) {
+      zn--;
+      if (i !== zn) {
+        const s = Z[i], e = Z[zn];
+        for (const k in e) s[k] = e[k];
+      }
+      i--;
+    }
+  }
+}
+
+// ═══════════════════════════════ player ═══════════════════════════════
+const player = {
+  x: WORLD.w / 2, y: WORLD.h / 2, vx: 0, vy: 0, r: 17,
+  hp: 140, mhp: 140, ang: 0,
+  fuel: 160, mfuel: 160, regenDelay: 0,
+  novaCd: 0, dashCd: 0, dashT: 0, dashA: 0,
+  inv: 0, hurtFlash: 0, walk: 0, firing: false, flicker: 0, downs: 0, lastHurt: -99,
+  overheated: false,
+};
+
+const FUEL_REARM = 45;   // fuel needed to resume spraying after running dry
+
+
+const ST = {
+  range: 1, cone: 1, heat: 1, burnDps: 1, fuelMax: 1, fuelRegen: 1, drain: 1,
+  speed: 1, contagion: 1, igniteNeed: 1, novaR: 1, novaCd: 1, dashCd: 1,
+  lifesteal: 0, afterburn: 0, dmg: 1, spreadR: 1, panic: 0,
+};
+function resetStats() {
+  for (const k in ST) ST[k] = 1;
+  ST.lifesteal = 0; ST.afterburn = 0; ST.dmg = 1; ST.panic = 0;
+}
+
+// ═══════════════════════════════ upgrades ═══════════════════════════════
+const UPG = [
+  { id: "nozzle", n: "Wide Nozzle",    i: "🔥", r: 1, d: "+22% flame cone width. Hits more of the crowd at once.",
+    f: () => ST.cone += .22 },
+  { id: "barrel", n: "Long Barrel",    i: "🎯", r: 1, d: "+26% flamethrower range. Burn them before they reach you.",
+    f: () => ST.range += .26 },
+  { id: "hotter", n: "Hotter Fuel",    i: "🌡️", r: 2, d: "+30% burn damage per second.",
+    f: () => ST.burnDps += .3 },
+  { id: "pyro",   n: "Pyromaniac",     i: "💥", r: 2, d: "+16% ALL fire damage.",
+    f: () => ST.dmg += .16 },
+  { id: "tank",   n: "Extra Tank",     i: "⛽", r: 1, d: "+40 max fuel and +30% fuel regen.",
+    f: () => { ST.fuelMax += .4; ST.fuelRegen += .3; } },
+  { id: "inj",    n: "Fuel Injector",  i: "⚙️", r: 1, d: "-22% fuel drain while spraying.",
+    f: () => ST.drain -= .22 },
+  { id: "adren",  n: "Adrenaline",     i: "👟", r: 1, d: "+13% movement speed.",
+    f: () => ST.speed += .13 },
+  { id: "kev",    n: "Riot Gear",      i: "🛡️", r: 1, d: "+34 max HP and heal 34 instantly.",
+    f: () => { player.mhp += 34; player.hp = Math.min(player.mhp, player.hp + 34); } },
+  { id: "dash",   n: "Quick Feet",     i: "💨", r: 1, d: "-28% Fire Dash cooldown.",
+    f: () => ST.dashCd -= .28 },
+  { id: "nova",   n: "Nova Core",      i: "☀️", r: 2, d: "-26% Flame Nova cooldown, +18% radius.",
+    f: () => { ST.novaCd -= .26; ST.novaR += .18; } },
+  { id: "cont",   n: "Contagion",      i: "🦠", r: 2, d: "+45% fire spread radius. Watch the chain react.",
+    f: () => ST.contagion += .45 },
+  { id: "kindle", n: "Kindling",       i: "🪵", r: 2, d: "Zombies ignite 30% more easily.",
+    f: () => ST.igniteNeed -= .3 },
+  { id: "leech",  n: "Cauterize",      i: "❤️", r: 3, d: "Heal 2 HP for every zombie that dies burning.",
+    f: () => ST.lifesteal += 2 },
+  { id: "after",  n: "Afterburn",      i: "🕯️", r: 3, d: "Burning zombies leave lingering ground fire behind them.",
+    f: () => ST.afterburn += 1 },
+  { id: "napalm", n: "Napalm",         i: "🧨", r: 3, d: "Ground fire deals +55% damage, and +10% to all fire damage.",
+    f: () => { ST.dmg += .1; window.__napalm = (window.__napalm || 0) + .55; } },
+  { id: "panic",  n: "Panic Bloom",    i: "🌀", r: 3, d: "Ignited zombies explode in a small fireburst when they die.",
+    f: () => ST.panic += 1 },
+  { id: "blaze",  n: "Blaze Walker",   i: "🏃‍♂️", r: 2, d: "Fire Dash leaves a burning trail behind you.",
+    f: () => ST.afterburn += 1 },
+  { id: "crit",   n: "Flashpoint",     i: "⚡", r: 3, d: "+25% damage to already-burning zombies.",
+    f: () => window.__flashpoint = (window.__flashpoint || 0) + .25 },
+  { id: "over",   n: "Overpressure",   i: "🌊", r: 2, d: "Flame Nova knocks zombies back much harder and stuns them.",
+    f: () => ST.novaR += .1, g: () => window.__over = 1 },
+  { id: "wide",   n: "Firebreak",      i: "🚧", r: 1, d: "+18% fire spread radius and +22% ignition rate.",
+    f: () => ST.contagion += .18, g: () => ST.heat += .22 },
+];
+let taken = {};
+
+function rollUpgrades() {
+  const pool = UPG.filter(u => !taken[u.id]);
+  const out = [];
+  const rw = w => { const a = pool.filter(u => u.r === w && !out.includes(u)); return a.length ? pick(a) : null; };
+  const wts = [[1, 3], [2, 1], [3, wave >= 3 ? 1 : 0]];
+  while (out.length < 3 && pool.length > out.length) {
+    let tot = 0; for (const [w, n] of wts) tot += n;
+    let r = Math.random() * tot, w = 1;
+    for (const [ww, n] of wts) { r -= n; if (r <= 0) { w = ww; break; } }
+    let u = rw(w) || rw(1) || rw(2) || rw(3);
+    if (!u) break;
+    out.push(u);
+  }
+  return out;
+}
+
+// ═══════════════════════════════ game state ═══════════════════════════════
+let state = "menu";
+let wave = 1, score = 0, kills = 0, combo = 0, comboT = 0, runTime = 0, best = 0;
+let waveTimer = 0, spawnTimer = 0, toSpawn = 0, waveActive = false, interT = 0;
+let intensity = 0, perf = 0, hitStop = 0, igniteSfxCd = 0;
+let offers = [], rerolls = 1;
+
+try { best = +(localStorage.getItem("pyre_best") || 0); } catch (e) { best = 0; }
+
+// ═══════════════════════════════ spawning ═══════════════════════════════
+function edgePos() {
+  const m = 60, side = rint(0, 3);
+  if (side === 0) return { x: rand(m, WORLD.w - m), y: m };
+  if (side === 1) return { x: WORLD.w - m, y: rand(m, WORLD.h - m) };
+  if (side === 2) return { x: rand(m, WORLD.w - m), y: WORLD.h - m };
+  return { x: m, y: rand(m, WORLD.h - m) };
+}
+function farPos(minD) {
+  for (let k = 0; k < 40; k++) {
+    const p = edgePos();
+    if (dist2(p.x, p.y, player.x, player.y) > minD * minD) return p;
+  }
+  return edgePos();
+}
+
+function startWave(n) {
+  wave = n; waveActive = true; waveTimer = 0; spawnTimer = 0;
+  spawnQueue.length = 0;
+  const budget = 7 + n * 3.8 + n * n * .3;
+  let b = budget;
+  const boss = n % 5 === 0;
+  if (boss) { spawnQueue.push("titan"); b -= 26; b = Math.max(b, 4); }
+  const avail = [];
+  avail.push(["shambler", 100]);
+  if (n >= 2) avail.push(["runner", Math.min(24 + n * 4, 68)]);
+  if (n >= 3) avail.push(["spitter", Math.min(10 + n * 2.6, 34)]);
+  if (n >= 4) avail.push(["bloater", Math.min(8 + n * 2.4, 30)]);
+  if (n >= 6) avail.push(["brute", Math.min(6 + n * 2.2, 30)]);
+  const tw = avail.reduce((s, a) => s + a[1], 0);
+  while (b > 0) {
+    let r = Math.random() * tw, t = "shambler";
+    for (const [nm, w] of avail) { r -= w; if (r <= 0) { t = nm; break; } }
+    spawnQueue.push(t);
+    const cost = t === "shambler" ? 1 : t === "runner" ? .72 : t === "brute" ? 5.2 : t === "titan" ? 26 : 1.7;
+    b -= cost;
+  }
+  toSpawn = spawnQueue.length;
+  A.horn();
+  if (boss) { A.boom(); shake(20); banner("⚠ WAVE " + n + " — TITAN INCOMING", "#ff5a3c"); }
+  else banner("WAVE " + n, "#ffb055");
+}
+
+const banners = [];
+function banner(text, col) { banners.push({ text, col, life: 2.1, m: 2.1 }); }
+
+function updateSpawner(dt) {
+  if (!waveActive) return;
+  waveTimer += dt;
+  const live = liveCount();
+  intensity = clamp(live / 40, 0, 1);
+  const targetConcurrent = Math.min(14 + wave * 3.1, 78);
+  spawnTimer -= dt;
+  if (spawnTimer <= 0 && spawnQueue.length) {
+    const burst = live < targetConcurrent ? rint(2, 3 + Math.floor(wave / 2)) : 0;
+    for (let i = 0; i < burst && spawnQueue.length; i++) {
+      const t = spawnQueue.shift();
+      // the opening seconds of a wave spawn closer so there is no long dead walk-in
+      const minD = waveTimer < 3 ? 290 : (t === "titan" ? 330 : 430);
+      const p = farPos(minD);
+      const z = spawnZ(t, p.x, p.y);
+      if (z && t === "titan") { shake(16); }
+    }
+    spawnTimer = Math.max(.12, .5 - wave * .03);
+  }
+  if (live === 0 && spawnQueue.length === 0 && waveTimer > 1.2) endWave();
+}
+
+function endWave() {
+  waveActive = false;
+  score += 150 + wave * 60;
+  A.pick_();
+  offerUpgrades();
+}
+
+// ═══════════════════════════════ weapons ═══════════════════════════════
+function spray(dt) {
+  const range = 235 * ST.range;
+  const half = .46 * ST.cone;
+  const ang = player.ang;
+  const ox = player.x + Math.cos(ang) * 16, oy = player.y + Math.sin(ang) * 16;
+
+  let sizzling = false;
+  for (let i = 0; i < zn; i++) {
+    const z = Z[i];
+    if (z.dying || !z.on) continue;
+    const dx = z.x - player.x, dy = z.y - player.y;
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    if (d > range + z.r) continue;
+    const a = Math.atan2(dy, dx);
+    const lim = half + z.r / Math.max(d, 30) * 1.5;
+    if (Math.abs(sAng(ang, a)) > lim) continue;
+    const falloff = 1 - clamp((d - z.r) / range, 0, 1);
+    z.heat = Math.min(2.4, z.heat + ST.heat * (0.70 + falloff * 1.5) * dt);
+    sizzling = true;
+  }
+  if (sizzling && Math.random() < dt * 7) A.hit();
+  // flame visuals — dense jet with a hot core near the nozzle
+  for (let i = 0, n = emitCount(300, dt); i < n; i++) {
+    const a = ang + rand(-half, half) * (0.7 + Math.random() * .5);
+    const sp = rand(300, 620) * ST.range;
+    const jx = ox + Math.cos(a) * rand(0, 10), jy = oy + Math.sin(a) * rand(0, 10);
+    const life = rand(.22, .44) * (0.7 + ST.range * .3);
+    const hot = Math.random();
+    part(jx, jy, Math.cos(a) * sp + rand(-40, 40), Math.sin(a) * sp + rand(-40, 40),
+      life, rand(6, 14), hot < .18 ? S_WHITE : hot < .45 ? S_YEL : hot < .78 ? S_ORG : S_RED,
+      -11, .955);
+  }
+  for (let i = 0, n = emitCount(60, dt); i < n; i++) {
+    const a = ang + rand(-half, half) * .8;
+    part(ox + Math.cos(a) * rand(0, 22), oy + Math.sin(a) * rand(0, 22),
+      Math.cos(a) * rand(160, 340), Math.sin(a) * rand(160, 340), rand(.08, .17),
+      rand(7, 13), S_WHITE, -14, .93);
+  }
+  for (let i = 0, n = emitCount(48, dt); i < n; i++) {
+    const a = ang + rand(-half, half) * .6;
+    part(ox + Math.cos(a) * rand(0, 26), oy + Math.sin(a) * rand(0, 26),
+      Math.cos(a) * rand(90, 220), Math.sin(a) * rand(90, 220) - 18,
+      rand(.5, 1.15), rand(11, 20), S_SMOKE, 28, .94, false);
+  }
+  for (let i = 0, n = emitCount(30, dt); i < n; i++) {
+    const a = ang + rand(-half, half);
+    part(ox, oy, Math.cos(a) * rand(180, 460), Math.sin(a) * rand(180, 460),
+      rand(.3, .75), rand(2, 4.5), S_EMBER, 0, .975);
+  }
+}
+
+function tryNova() {
+  if (state !== "play" || player.novaCd > 0) return;
+  const R = 250 * ST.novaR;
+  player.novaCd = 9 * ST.novaCd;
+  A.nova(); shake(17); hitStop = .055;
+  const ang0 = player.ang;
+  for (let i = 0; i < zn; i++) {
+    const z = Z[i];
+    if (z.dying || !z.on) continue;
+    const d = Math.sqrt(dist2(z.x, z.y, player.x, player.y));
+    if (d > R + z.r) continue;
+    const a = Math.atan2(z.y - player.y, z.x - player.x);
+    z.heat = Math.min(2.6, z.heat + 1.5 * ST.heat);
+    z.knock = window.__over ? .55 : .3;
+    z.kx = Math.cos(a); z.ky = Math.sin(a);
+    z.stun = window.__over ? .9 : .35;
+    z.vx += Math.cos(a) * 320; z.vy += Math.sin(a) * 320;
+    hurtZ(i, (46 + 22 * ST.novaR) * ST.dmg, z.x, z.y, false);
+  }
+  for (let i = 0; i < 190; i++) {
+    const a = rand(TAU);
+    const sp = rand(260, 900);
+    part(player.x, player.y, Math.cos(a) * sp, Math.sin(a) * sp, rand(.3, .75),
+      rand(5, 13), Math.random() < .3 ? S_YEL : Math.random() < .5 ? S_ORG : S_RED, -14, .87);
+  }
+  for (let i = 0; i < 70; i++) {
+    const a = rand(TAU), d = rand(40, R * 1.05);
+    part(player.x + Math.cos(a) * d, player.y + Math.sin(a) * d,
+      Math.cos(a) * 90, Math.sin(a) * 90 - 30, rand(.6, 1.5), rand(12, 22), S_SMOKE, 30, .92, false);
+  }
+  for (let i = 0; i < 26; i++) {
+    const a = (i / 26) * TAU;
+    firePatch(player.x + Math.cos(a) * R * .7, player.y + Math.sin(a) * R * .7, 40, 4.2, 24 * ST.dmg);
+  }
+  firePatch(player.x, player.y, 70, 3.4, 20 * ST.dmg);
+  dmgText(player.x, player.y - 40, "NOVA", "#ffd76a", true);
+}
+
+function tryDash() {
+  if (state !== "play" || player.dashCd > 0 || player.dashT > 0) return;
+  player.dashCd = 3.0 * ST.dashCd;
+  player.dashT = .21;
+  player.dashA = player.ang;
+  player.inv = Math.max(player.inv, .32);
+  A.dash();
+  for (let i = 0; i < 26; i++) {
+    const a = player.ang + Math.PI + rand(-.7, .7);
+    part(player.x, player.y, Math.cos(a) * rand(60, 260), Math.sin(a) * rand(60, 260),
+      rand(.2, .5), rand(4, 10), rand(0, 1) < .4 ? S_BLOOD : S_ORG, -8, .88);
+  }
+}
+
+// ═══════════════════════════════ damage ═══════════════════════════════
+function hurtZ(i, amount, sx, sy, showNum) {
+  const z = Z[i];
+  if (z.dying || !z.on) return false;
+  let dmg = amount * ST.dmg;
+  if (window.__flashpoint && z.fire > 0) dmg *= 1 + window.__flashpoint;
+  z.hp -= dmg;
+  z.flash = 1;
+  if (showNum !== false && (dmg >= 1)) dmgText(z.x + rand(-8, 8), z.y - z.r - 6, dmg, z.fire > 0 ? "#ffb055" : "#ffd9a8");
+  if (z.hp <= 0) { dieZ(i, sx, sy); return true; }
+  return false;
+}
+
+function dieZ(i, sx, sy) {
+  const z = Z[i];
+  if (z.dying) return;
+  z.dying = true;
+  const wasBurning = z.fire > 0;
+  const rr = z.r;
+  A.splat();
+  if (z.boom) {
+    explode(z.x, z.y, rr, z.boss);
+  } else {
+    for (let k = 0; k < (wasBurning ? 22 : 14) * z.ash; k++) {
+      const a = rand(TAU), sp = rand(30, 240);
+      part(z.x, z.y, Math.cos(a) * sp, Math.sin(a) * sp, rand(.3, .9),
+        rand(3, 8), wasBurning ? (Math.random() < .4 ? S_EMBER : S_ASH) : (Math.random() < .3 ? S_BLOOD : S_ASH),
+        -4, .9, !wasBurning && Math.random() < .3 ? false : true);
+    }
+    for (let k = 0; k < 10 * z.ash; k++) {
+      const a = rand(TAU);
+      part(z.x, z.y, Math.cos(a) * rand(10, 60), rand(-60, -20), rand(.7, 1.6), rand(8, 18), S_SMOKE, 26, .93, false);
+    }
+    if (wasBurning) {
+      for (let k = 0; k < 26; k++) {
+        const a = rand(TAU);
+        part(z.x, z.y, Math.cos(a) * rand(60, 320), Math.sin(a) * rand(60, 320) - 40, rand(.3, .7),
+          rand(5, 12), Math.random() < .35 ? S_YEL : S_ORG, -13, .88);
+      }
+      firePatch(z.x, z.y, rr * 2.0 + 16, 3.6, 20 * ST.dmg);
+      if (ST.lifesteal) { player.hp = Math.min(player.mhp, player.hp + ST.lifesteal); }
+    }
+  }
+  if (ST.panic && wasBurning) {
+    for (let k = 0; k < zn; k++) {
+      const o = Z[k];
+      if (k === i || o.dying || !o.on) continue;
+      const d = Math.sqrt(dist2(o.x, o.y, z.x, z.y));
+      if (d < 96 + rr * 2) {
+        o.heat = Math.min(2.4, o.heat + 1.0 * ST.heat);
+        hurtZ(k, 22 * ST.dmg, o.x, o.y, false);
+      }
+    }
+    for (let k = 0; k < 34; k++) {
+      const a = rand(TAU);
+      part(z.x, z.y, Math.cos(a) * rand(120, 460), Math.sin(a) * rand(120, 460), rand(.25, .5),
+        rand(5, 11), Math.random() < .3 ? S_WHITE : S_ORG, -12, .87);
+    }
+    shake(4);
+  }
+
+  combo++; comboT = 3.2;
+  const mult = 1 + Math.min(combo, 60) * .045;
+  const gained = Math.round(z.pts * mult * (1 + wave * .04));
+  score += gained;
+  kills++;
+  if (combo > 0 && combo % 10 === 0) {
+    dmgText(player.x, player.y - 56, "x" + combo + " CHAIN", "#ff8a3c", true);
+  }
+  killZ(i);
+}
+
+function explode(x, y, r, boss) {
+  const R = boss ? 330 : 128;
+  A.boom(); shake(boss ? 32 : 13); if (boss) hitStop = .09;
+  for (let i = 0; i < zn; i++) {
+    const z = Z[i];
+    if (z.dying || !z.on) continue;
+    const d = Math.sqrt(dist2(z.x, z.y, x, y));
+    if (d > R + z.r) continue;
+    const a = Math.atan2(z.y - y, z.x - x);
+    z.heat = Math.min(2.6, z.heat + (boss ? 2.2 : 1.2) * ST.heat);
+    z.knock = boss ? .5 : .28;
+    z.kx = Math.cos(a); z.ky = Math.sin(a);
+    z.vx += Math.cos(a) * (boss ? 620 : 300);
+    z.vy += Math.sin(a) * (boss ? 620 : 300);
+    hurtZ(i, (boss ? 190 : 62) * ST.dmg, z.x, z.y, false);
+  }
+  for (let k = 0; k < (boss ? 30 : 12); k++) {
+    const a = rand(TAU), d = rand(0, R * .8);
+    firePatch(x + Math.cos(a) * d, y + Math.sin(a) * d, 34 + (boss ? 22 : 0), 4.5, 22 * ST.dmg);
+  }
+  const N = boss ? 320 : 130;
+  for (let i = 0; i < N; i++) {
+    const a = rand(TAU), sp = rand(140, boss ? 1250 : 720);
+    part(x, y, Math.cos(a) * sp, Math.sin(a) * sp, rand(.3, 1.0),
+      rand(5, boss ? 22 : 14), Math.random() < .25 ? S_WHITE : Math.random() < .5 ? S_YEL : S_ORG, -14, .88);
+  }
+  for (let i = 0; i < (boss ? 120 : 50); i++) {
+    const a = rand(TAU), sp = rand(40, boss ? 420 : 260);
+    part(x, y, Math.cos(a) * sp, Math.sin(a) * sp - 30, rand(.8, 2.0),
+      rand(14, boss ? 40 : 26), S_SMOKE, 34, .93, false);
+  }
+  const pd = Math.sqrt(dist2(player.x, player.y, x, y));
+  if (pd < R && player.inv <= 0) hurtPlayer((boss ? 34 : 15) * (1 - pd / R) * .9);
+}
+
+function hurtPlayer(d) {
+  if (player.inv > 0 || state !== "play") return;
+  player.hp -= d;
+  player.hurtFlash = 1;
+  player.inv = .62;
+  player.lastHurt = perf;
+  A.hurt(); shake(6.5);
+  combo = 0;
+  dmgText(player.x, player.y - 34, "-" + Math.round(d), "#ff5a4a");
+  for (let i = 0; i < 14; i++) {
+    const a = rand(TAU);
+    part(player.x, player.y, Math.cos(a) * rand(60, 250), Math.sin(a) * rand(60, 250), rand(.2, .5),
+      rand(3, 7), S_BLOOD, -6, .9);
+  }
+  if (player.hp <= 0) { player.hp = 0; gameOver(); }
+}
+
+// ═══════════════════════════════ update ═══════════════════════════════
+function updateZombies(dt) {
+  const pr = player.r;
+  for (let i = 0; i < zn; i++) {
+    const z = Z[i];
+    if (!z.on) continue;
+    z.flash = Math.max(0, z.flash - dt * 5.5);
+    z.atkCd = Math.max(0, z.atkCd - dt);
+    z.stun = Math.max(0, z.stun - dt);
+    z.pt += dt * (1 + (z.fire > 0 ? 1.7 : 0));
+
+    // burning
+    if (z.heat >= ST.igniteNeed && z.fire <= 0) {
+      z.fire = .001;
+      // one whoosh per burst, not one per zombie: a chain reaction igniting
+      // 40 bodies at once must not stack 40 identical sounds and labels.
+      if (igniteSfxCd <= 0) { A.ignite(); igniteSfxCd = .22; }
+      if (z.r > 20) {
+        shake(1.2);
+        dmgText(z.x + rand(-12, 12), z.y - z.r - 4, "IGNITED", "#ff9a3c");
+      }
+    }
+    if (z.fire > 0) {
+      z.fire += dt;
+      const DUR = 7.2;
+      const t = z.fire / DUR;
+      z.burn = t < .55 ? 1 : clamp(1 - (t - .55) / .45, 0, 1);
+      z.heat = Math.max(z.heat, ST.igniteNeed);
+      if (t >= 1) { z.fire = 0; z.heat = .42; z.burn = 0; }
+
+      const dps = 32 * ST.burnDps * z.burn;
+      z.hp -= dps * dt;
+      if (Math.random() < dt * 34) {
+        const a = rand(TAU);
+        part(z.x + Math.cos(a) * z.r * .7, z.y + Math.sin(a) * z.r * .7, rand(-16, 16), rand(-90, -40),
+          rand(.25, .55), rand(z.r * .28, z.r * .68), Math.random() < .28 ? S_YEL : S_ORG, -11, .9);
+      }
+      if (Math.random() < dt * 9) {
+        part(z.x, z.y - z.r * .4, rand(-14, 14), rand(-64, -28), rand(.6, 1.4), rand(7, 14), S_SMOKE, 22, .93, false);
+      }
+      if (Math.random() < dt * 3) {
+        part(z.x, z.y - z.r * .5, rand(-22, 22), rand(-40, -14), rand(.5, 1.1), rand(1.6, 3.2), S_EMBER, 0, .95);
+      }
+      z.spreadCd -= dt;
+      if (z.spreadCd <= 0) {
+        z.spreadCd = .22;
+        const R = 108 * ST.contagion * ST.spreadR;
+        for (let k = 0; k < zn; k++) {
+          if (k === i) continue;
+          const o = Z[k];
+          if (o.fire > 0) continue;
+          if (dist2(o.x, o.y, z.x, z.y) < R * R) {
+            o.heat = Math.min(2.4, o.heat + 1.25 * ST.heat * (1 + ST.contagion * .2));
+          }
+        }
+        if (ST.afterburn) firePatch(z.x, z.y, z.r * .85 + 8, 2.6, 15 * ST.dmg);
+      }
+      const fd = fireDpsAt(z.x, z.y);
+      if (fd) z.hp -= fd * dt * .5;
+      if (z.hp <= 0) { dieZ(i, z.x, z.y); continue; }
+    } else {
+      z.heat = Math.max(0, z.heat - dt * .28);
+      const fd = fireDpsAt(z.x, z.y);
+      if (fd) {
+        z.heat += fd * 1.4 * dt / 20;
+        z.hp -= fd * dt;
+        if (Math.random() < dt * 14) {
+          part(z.x + rand(-8, 8), z.y - z.r * .3, rand(-20, 20), rand(-70, -20), rand(.2, .45), rand(3, 7), S_ORG, -8, .9);
+        }
+        if (z.hp <= 0) { dieZ(i, z.x, z.y); continue; }
+      }
+    }
+
+    // AI
+    const dx = player.x - z.x, dy = player.y - z.y;
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    let ax = 0, ay = 0;
+    if (z.stun <= 0) {
+      if (z.ranged && d < 460 && d > 170) {
+        z.shotCd -= dt;
+        const nx = dx / d, ny = dy / d;
+        ax = nx; ay = ny;
+        if (z.shotCd <= 0) {
+          z.shotCd = rand(1.9, 3.0);
+          spit(z, Math.atan2(dy, dx));
+        }
+      } else {
+        let nx = dx / d, ny = dy / d;
+        if (!z.boss) {
+          z.wob += dt * (z.fire > 0 ? 5 : 2.2);
+          const w = Math.sin(z.wob) * (z.fire > 0 ? .55 : .3);
+          const px2 = -ny, py2 = nx;
+          nx += px2 * w; ny += py2 * w;
+          const L = Math.hypot(nx, ny) || 1;
+          nx /= L; ny /= L;
+        }
+        // separation
+        for (let k = 0; k < zn; k += 1) {
+          if (k === i) continue;
+          const o = Z[k];
+          if (!o.on || o.dying) continue;
+          const ox = z.x - o.x, oy = z.y - o.y;
+          const dd = ox * ox + oy * oy;
+          const minD = z.r + o.r;
+          if (dd < minD * minD && dd > .01) {
+            const dl = Math.sqrt(dd), push = (minD - dl) / minD;
+            nx += (ox / dl) * push * 1.9; ny += (oy / dl) * push * 1.9;
+          }
+        }
+        // personal space: surround the player instead of stacking on top of them.
+        // dx/dy point zombie -> player, so subtract to push away.
+        const prMin = pr + z.r + 8;
+        const pd2 = dx * dx + dy * dy;
+        if (pd2 < prMin * prMin && pd2 > .01) {
+          const dl = Math.sqrt(pd2), push = (prMin - dl) / prMin;
+          nx -= (dx / dl) * push * 2.4; ny -= (dy / dl) * push * 2.4;
+        }
+        const L2 = Math.hypot(nx, ny) || 1;
+        ax = nx / L2; ay = ny / L2;
+      }
+    }
+
+    let sp = z.spd * (z.fire > 0 ? 1.34 : 1) * (z.stun > 0 ? .1 : 1);
+    const accel = 620 / z.mass;
+    z.vx += ax * accel * dt;
+    z.vy += ay * accel * dt;
+
+    if (z.knock > 0) {
+      z.knock -= dt;
+      z.vx += z.kx * 900 * dt;
+      z.vy += z.ky * 900 * dt;
+      if (Math.random() < dt * 20) {
+        part(z.x, z.y, rand(-40, 40), rand(-40, 40), rand(.2, .5), rand(3, 8), S_ASH, 0, .9);
+      }
+    }
+
+    const spd = Math.hypot(z.vx, z.vy);
+    if (spd > sp) { z.vx = z.vx / spd * sp; z.vy = z.vy / spd * sp; }
+    const fr2 = Math.pow(.0009, dt);
+    if (spd < sp * .35) { z.vx *= fr2; z.vy *= fr2; }
+
+    z.x += z.vx * dt; z.y += z.vy * dt;
+    z.x = clamp(z.x, z.r, WORLD.w - z.r);
+    z.y = clamp(z.y, z.r, WORLD.h - z.r);
+
+    // contact
+    if (d < pr + z.r && z.atkCd <= 0 && z.stun <= 0) {
+      z.atkCd = .85;
+      hurtPlayer(z.dmg * (z.fire > 0 ? 1.2 : 1));
+      const a = Math.atan2(-dy, -dx);
+      player.vx += Math.cos(a) * 140 / z.mass;
+      player.vy += Math.sin(a) * 140 / z.mass;
+    }
+  }
+}
+
+const shots = [];
+function spit(z, a) {
+  shots.push({ x: z.x, y: z.y, vx: Math.cos(a) * 300, vy: Math.sin(a) * 300, life: 3, r: 7 });
+  A.blip(320, .18, .07, "sawtooth", 120);
+}
+function updateShots(dt) {
+  for (let i = shots.length - 1; i >= 0; i--) {
+    const s = shots[i];
+    s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt;
+    if (Math.random() < dt * 30) {
+      part(s.x, s.y, rand(-24, 24), rand(-24, 24), rand(.2, .5), rand(3, 7), S_TOX, -6, .92);
+    }
+    if (dist2(s.x, s.y, player.x, player.y) < (player.r + s.r) * (player.r + s.r)) {
+      hurtPlayer(9);
+      for (let k = 0; k < 16; k++) { const a = rand(TAU); part(s.x, s.y, Math.cos(a) * rand(40, 200), Math.sin(a) * rand(40, 200), rand(.2, .5), rand(3, 8), S_TOX, -5, .9); }
+      shots.splice(i, 1); continue;
+    }
+    if (s.life <= 0 || s.x < 0 || s.y < 0 || s.x > WORLD.w || s.y > WORLD.h) {
+      for (let k = 0; k < 8; k++) { const a = rand(TAU); part(s.x, s.y, Math.cos(a) * rand(30, 120), Math.sin(a) * rand(30, 120), rand(.2, .5), rand(3, 7), S_TOX, -5, .9); }
+      shots.splice(i, 1);
+    }
+  }
+}
+
+function updatePlayer(dt) {
+  let ix = 0, iy = 0;
+  if (keys.KeyA || keys.ArrowLeft) ix -= 1;
+  if (keys.KeyD || keys.ArrowRight) ix += 1;
+  if (keys.KeyW || keys.ArrowUp) iy -= 1;
+  if (keys.KeyS || keys.ArrowDown) iy += 1;
+  const L = Math.hypot(ix, iy);
+  if (L > 0) { ix /= L; iy /= L; }
+
+  const base = 218 * ST.speed;
+  let sp = base;
+  if (player.dashT > 0) {
+    player.dashT -= dt;
+    sp = base * 4.4;
+    ix = Math.cos(player.dashA); iy = Math.sin(player.dashA);
+    if (Math.random() < dt * 90) {
+      part(player.x, player.y, rand(-50, 50), rand(-50, 50), rand(.25, .6), rand(5, 12), S_ORG, -9, .88);
+    }
+  }
+  const acc = 2400;
+  player.vx += (ix * sp - player.vx) * Math.min(1, acc * dt / Math.max(sp, 1));
+  player.vy += (iy * sp - player.vy) * Math.min(1, acc * dt / Math.max(sp, 1));
+  const drag = Math.pow(.0002, dt);
+  if (L === 0 && player.dashT <= 0) { player.vx *= drag; player.vy *= drag; }
+  player.x = clamp(player.x + player.vx * dt, player.r, WORLD.w - player.r);
+  player.y = clamp(player.y + player.vy * dt, player.r, WORLD.h - player.r);
+
+  const mv = Math.hypot(player.vx, player.vy);
+  player.walk += dt * (3 + mv * .035);
+
+  player.inv = Math.max(0, player.inv - dt);
+  player.hurtFlash = Math.max(0, player.hurtFlash - dt * 2.6);
+  // out-of-combat recovery: rewards clean kiting and keeps long runs alive
+  if (state === "play" && perf - player.lastHurt > 6 && player.hp < player.mhp) {
+    player.hp = Math.min(player.mhp, player.hp + 5 * dt);
+  }
+  player.novaCd = Math.max(0, player.novaCd - dt);
+  player.dashCd = Math.max(0, player.dashCd - dt);
+  player.flicker += dt;
+
+  // aim
+  mouse.wx = mouse.x + cam.sx;
+  mouse.wy = mouse.y + cam.sy;
+  player.ang = Math.atan2(mouse.wy - player.y, mouse.wx - player.x);
+
+  // fuel + fire
+  // Running dry locks the nozzle until the tank has recovered, so holding the
+  // trigger does not stutter-fire one-frame bursts while fuel trickles in.
+  if (player.overheated) {
+    if (player.fuel >= FUEL_REARM) player.overheated = false;
+  } else if (player.fuel <= 0.5) {
+    player.overheated = true;
+  }
+  const wantFire = mouse.down && state === "play";
+  const canFire = !player.overheated && player.fuel > 0.5;
+  player.firing = wantFire && canFire;
+  if (player.firing) {
+    const drain = 15 * ST.drain * dt;
+    player.fuel -= drain;
+    player.regenDelay = .4;
+    spray(dt);
+    A.flame(true, .8 + Math.random() * .2);
+    cam.shake = Math.min(cam.shake + dt * 26, 2.6);
+    intensity = Math.max(intensity, .3);
+  } else {
+    A.flame(false, 0);
+    player.regenDelay -= dt;
+    if (player.regenDelay <= 0) {
+      player.fuel = Math.min(player.mfuel * ST.fuelMax, player.fuel + 46 * ST.fuelRegen * dt);
+    }
+  }
+  player.fuel = clamp(player.fuel, 0, player.mfuel * ST.fuelMax);
+
+  // muzzle glow
+  if (player.firing && Math.random() < dt * 60) {
+    const a = player.ang + rand(-.3, .3);
+    part(player.x + Math.cos(player.ang) * 22, player.y + Math.sin(player.ang) * 22,
+      Math.cos(a) * rand(80, 260), Math.sin(a) * rand(80, 260), rand(.1, .22), rand(7, 13), S_WHITE, -12, .8);
+  }
+}
+
+// ═══════════════════════════════ drawing ═══════════════════════════════
+const groundCv = document.createElement("canvas");
+function buildGround() {
+  groundCv.width = WORLD.w; groundCv.height = WORLD.h;
+  const g = groundCv.getContext("2d");
+  const grd = g.createLinearGradient(0, 0, WORLD.w, WORLD.h);
+  grd.addColorStop(0, "#232028"); grd.addColorStop(.5, "#1a1722"); grd.addColorStop(1, "#241f29");
+  g.fillStyle = grd; g.fillRect(0, 0, WORLD.w, WORLD.h);
+
+  for (let i = 0; i < 1300; i++) {
+    const x = Math.random() * WORLD.w, y = Math.random() * WORLD.h, r = rand(20, 190);
+    g.globalAlpha = rand(.02, .062);
+    g.fillStyle = Math.random() < .5 ? "#4d4055" : "#0d0a12";
+    g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+  }
+  g.globalAlpha = .085; g.strokeStyle = "#7d6f66"; g.lineWidth = 1;
+  for (let x = 0; x <= WORLD.w; x += 70) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, WORLD.h); g.stroke(); }
+  for (let y = 0; y <= WORLD.h; y += 70) { g.beginPath(); g.moveTo(0, y); g.lineTo(WORLD.w, y); g.stroke(); }
+
+  g.globalAlpha = .3; g.strokeStyle = "#332a30"; g.lineWidth = 3;
+  for (let i = 0; i < 70; i++) {
+    const x = Math.random() * WORLD.w, y = Math.random() * WORLD.h, a = rand(TAU);
+    g.beginPath(); g.moveTo(x, y);
+    g.lineTo(x + Math.cos(a) * rand(30, 120), y + Math.sin(a) * rand(30, 120)); g.stroke();
+  }
+  g.globalAlpha = .18;
+  for (let i = 0; i < 420; i++) {
+    g.fillStyle = Math.random() < .5 ? "#5b4a52" : "#0f0c14";
+    const x = Math.random() * WORLD.w, y = Math.random() * WORLD.h;
+    g.fillRect(x, y, rand(3, 14), rand(3, 10));
+  }
+  // static warm light pools so the arena reads as a lit place, not a void
+  g.globalCompositeOperation = "lighter";
+  for (let i = 0; i < 22; i++) {
+    const x = rand(120, WORLD.w - 120), y = rand(120, WORLD.h - 120), r = rand(150, 330);
+    const lg = g.createRadialGradient(x, y, 0, x, y, r);
+    const warm = Math.random() < .7;
+    lg.addColorStop(0, warm ? "rgba(255,164,74,.20)" : "rgba(150,190,255,.15)");
+    lg.addColorStop(.45, warm ? "rgba(255,120,30,.075)" : "rgba(110,150,230,.06)");
+    lg.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = lg;
+    g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+  }
+  g.globalCompositeOperation = "source-over";
+  g.globalAlpha = 1;
+
+  g.strokeStyle = "#3a2c1e"; g.lineWidth = 18;
+  g.strokeRect(9, 9, WORLD.w - 18, WORLD.h - 18);
+  g.strokeStyle = "#59452c"; g.lineWidth = 3;
+  g.strokeRect(19, 19, WORLD.w - 38, WORLD.h - 38);
+  for (let x = 20; x < WORLD.w - 20; x += 46) {
+    g.fillStyle = (x / 46 | 0) % 2 ? "#2e2419" : "#4a3a22";
+    g.save(); g.translate(x, 12); g.rotate(-.45); g.fillRect(0, 0, 26, 8); g.restore();
+    g.save(); g.translate(x, WORLD.h - 20); g.rotate(-.45); g.fillRect(0, 0, 26, 8); g.restore();
+  }
+  for (let y = 20; y < WORLD.h - 20; y += 46) {
+    g.fillStyle = (y / 46 | 0) % 2 ? "#2e2419" : "#4a3a22";
+    g.fillRect(12, y, 8, 26); g.fillRect(WORLD.w - 20, y, 8, 26);
+  }
+}
+
+function shadowBlob(x, y, r, a) {
+  ctx.globalAlpha = a;
+  ctx.fillStyle = "#000";
+  ctx.beginPath(); ctx.ellipse(x, y + r * .62, r * 1.05, r * .5, 0, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1;
+}
+
+function drawZombie(z) {
+  const wob = Math.sin(z.pt * 6 + z.seed) * (z.fire > 0 ? .34 : .2);
+  const facing = Math.atan2(player.y - z.y, player.x - z.x) + wob * .5;
+  const fx2 = Math.cos(facing), fy2 = Math.sin(facing);
+  const px2 = -fy2, py2 = fx2;
+  const r = z.r;
+
+  shadowBlob(z.x, z.y, r, z.boss ? .5 : .34);
+
+  const cloth = z.fire > 0 ? "#4a2a16" : z.cloth;
+  const skin = z.fire > 0 ? "#94501f" : z.scor;
+
+  // legs (behind the body)
+  ctx.strokeStyle = z.fire > 0 ? "#33200f" : "#2c3129";
+  ctx.lineWidth = r * .40; ctx.lineCap = "round";
+  for (const s of [-1, 1]) {
+    const sw = Math.sin(z.pt * 8 + (s > 0 ? 0 : Math.PI) + z.seed) * r * .38;
+    ctx.beginPath();
+    ctx.moveTo(z.x + px2 * s * r * .42, z.y + py2 * s * r * .42);
+    ctx.lineTo(z.x - fx2 * r * .85 + px2 * s * r * .5 + px2 * sw,
+               z.y - fy2 * r * .85 + py2 * s * r * .5 + py2 * sw);
+    ctx.stroke();
+  }
+  // arms reaching forward, drawn with a dark keyline so they read against the ground
+  for (const s of [-1, 1]) {
+    const sw = Math.sin(z.pt * 7 + (s > 0 ? 0 : 1.6) + z.seed) * r * .22;
+    const ex = z.x + fx2 * r * 1.22 + px2 * s * r * .82 + px2 * sw;
+    const ey = z.y + fy2 * r * 1.22 + py2 * s * r * .82 + py2 * sw;
+    const sx0 = z.x + px2 * s * r * .70, sy0 = z.y + py2 * s * r * .70;
+    ctx.strokeStyle = "rgba(0,0,0,.55)"; ctx.lineWidth = r * .42;
+    ctx.beginPath(); ctx.moveTo(sx0, sy0); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.strokeStyle = skin; ctx.lineWidth = r * .27;
+    ctx.beginPath(); ctx.moveTo(sx0, sy0); ctx.lineTo(ex, ey); ctx.stroke();
+  }
+  // torso: clothing with a lit upper edge
+  ctx.fillStyle = cloth;
+  ctx.beginPath(); ctx.ellipse(z.x, z.y, r * .95, r * .82, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,.62)"; ctx.lineWidth = Math.max(1.4, r * .13); ctx.stroke();
+  ctx.fillStyle = "rgba(255,255,255,.09)";
+  ctx.beginPath(); ctx.ellipse(z.x - fx2 * r * .12, z.y - fy2 * r * .12, r * .70, r * .58, 0, 0, TAU); ctx.fill();
+  // hunched head, pushed forward of the shoulders
+  const hx = z.x + fx2 * r * .34, hy = z.y + fy2 * r * .34;
+  ctx.fillStyle = "rgba(0,0,0,.6)";
+  ctx.beginPath(); ctx.arc(hx, hy, r * .60, 0, TAU); ctx.fill();
+  ctx.fillStyle = skin;
+  ctx.beginPath(); ctx.arc(hx, hy, r * .52, 0, TAU); ctx.fill();
+  ctx.fillStyle = "rgba(0,0,0,.26)";
+  ctx.beginPath(); ctx.arc(hx - fx2 * r * .14, hy - fy2 * r * .14, r * .40, 0, TAU); ctx.fill();
+  // eyes
+  const glowCol = z.boss ? "#ff3a1a" : z.ranged ? "#d18aff" : "#c9ff5a";
+  ctx.fillStyle = glowCol;
+  ctx.globalAlpha = .95;
+  ctx.beginPath(); ctx.arc(hx + fx2 * r * .3 + px2 * r * .22, hy + fy2 * r * .3 + py2 * r * .22, r * .11, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(hx + fx2 * r * .3 - px2 * r * .22, hy + fy2 * r * .3 - py2 * r * .22, r * .11, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  if (z.boom) {
+    ctx.strokeStyle = "rgba(180,255,90,.35)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(z.x, z.y, r * (1.15 + Math.sin(z.pt * 4) * .07), 0, TAU); ctx.stroke();
+  }
+
+  // burning overlay + glow
+  if (z.fire > 0) {
+    const f = .55 + Math.sin(perf * 22 + z.seed) * .3;
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = clamp(.4 + f * .3, 0, .8);
+    const gs = r * 7;
+    ctx.drawImage(SPR[S_GLOW], z.x - gs / 2, z.y - gs / 2 - r * .3, gs, gs);
+    ctx.globalAlpha = .30 * z.burn + .12;
+    ctx.fillStyle = "#ff8a2a";
+    ctx.beginPath(); ctx.arc(z.x, z.y - r * .2, r * 1.15, 0, TAU); ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+  }
+
+  if (z.heat > .12 && z.fire <= 0) {
+    ctx.globalAlpha = clamp(z.heat * .5, 0, .45);
+    ctx.fillStyle = "#ff5c1a";
+    ctx.beginPath(); ctx.arc(z.x, z.y, r * 1.05, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  if (z.flash > 0) {
+    ctx.globalAlpha = z.flash * .82;
+    ctx.fillStyle = "#fff6e0";
+    ctx.beginPath(); ctx.arc(z.x, z.y, r * 1.25, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // health bar
+  if (z.hp < z.mhp && !z.boss) {
+    const w = r * 2.1, h = 3.4;
+    const p = clamp(z.hp / z.mhp, 0, 1);
+    ctx.fillStyle = "rgba(0,0,0,.6)";
+    ctx.fillRect(z.x - w / 2, z.y - r - 11, w, h);
+    ctx.fillStyle = z.fire > 0 ? "#ff8a2a" : "#8fd23c";
+    ctx.fillRect(z.x - w / 2, z.y - r - 11, w * p, h);
+  }
+  if (z.boss) {
+    const w = 260, p = clamp(z.hp / z.mhp, 0, 1);
+    ctx.fillStyle = "rgba(0,0,0,.72)";
+    ctx.fillRect(z.x - w / 2, z.y - r - 30, w, 12);
+    const gt = ctx.createLinearGradient(z.x - w / 2, 0, z.x + w / 2, 0);
+    gt.addColorStop(0, "#ff3a1a"); gt.addColorStop(1, "#ffb03c");
+    ctx.fillStyle = gt;
+    ctx.fillRect(z.x - w / 2, z.y - r - 30, w * p, 12);
+    ctx.strokeStyle = "rgba(255,180,90,.7)"; ctx.lineWidth = 1.5;
+    ctx.strokeRect(z.x - w / 2, z.y - r - 30, w, 12);
+    ctx.fillStyle = "#ffd9a8"; ctx.font = '800 11px "Segoe UI",sans-serif';
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    ctx.fillText("TITAN", z.x, z.y - r - 34);
+  }
+}
+
+function drawPlayer() {
+  const p = player;
+  const a = p.ang;
+  const fx2 = Math.cos(a), fy2 = Math.sin(a);
+  const px2 = -fy2, py2 = fx2;
+  shadowBlob(p.x, p.y, p.r, .42);
+
+  // warm rim: keeps the player readable even on top of a burning horde
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = .5 + Math.sin(perf * 2.6) * .07;
+  const rg = p.r * 6.4;
+  ctx.drawImage(SPR[S_GLOW], p.x - rg / 2, p.y - rg / 2, rg, rg);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = 1;
+
+  if (p.inv > 0 && Math.floor(perf * 22) % 2 === 0) ctx.globalAlpha = .42;
+
+  // legs
+  const wk = Math.sin(p.walk) * 8;
+  ctx.strokeStyle = "#2f3a46"; ctx.lineWidth = 7.6; ctx.lineCap = "round";
+  for (const s of [-1, 1]) {
+    ctx.beginPath();
+    ctx.moveTo(p.x + px2 * s * 6.5, p.y + py2 * s * 6.5);
+    ctx.lineTo(p.x - fx2 * 10 + px2 * s * 7.6 + px2 * wk * s * .5, p.y - fy2 * 10 + py2 * s * 7.6 + py2 * wk * s * .5);
+    ctx.stroke();
+  }
+  // body
+  ctx.fillStyle = "#46525f";
+  ctx.beginPath(); ctx.ellipse(p.x, p.y, 15.4, 13.6, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,.6)"; ctx.lineWidth = 2.2; ctx.stroke();
+  ctx.fillStyle = "#5b6a7a";
+  ctx.beginPath(); ctx.ellipse(p.x - fx2 * 2, p.y - fy2 * 2, 13, 11.4, 0, 0, TAU); ctx.fill();
+  // armor plate
+  ctx.fillStyle = "#75879a";
+  ctx.beginPath(); ctx.ellipse(p.x - fx2 * 3.4, p.y - fy2 * 3.4, 9.4, 8.2, 0, 0, TAU); ctx.fill();
+  // head/helmet
+  ctx.fillStyle = "#a3b4c5";
+  ctx.beginPath(); ctx.arc(p.x + fx2 * 2, p.y + fy2 * 2, 10, 0, TAU); ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,.5)"; ctx.lineWidth = 1.8; ctx.stroke();
+  ctx.fillStyle = "#232e37";
+  ctx.beginPath(); ctx.ellipse(p.x + fx2 * 6.5, p.y + fy2 * 6.5, 6.6, 4.9, a, 0, TAU); ctx.fill();
+  // visor
+  ctx.fillStyle = Math.random() < .5 ? "#ffbe5c" : "#ff8a2a";
+  ctx.globalAlpha = .95;
+  ctx.beginPath(); ctx.ellipse(p.x + fx2 * 7.6 + px2 * 2.8, p.y + fy2 * 7.6 + py2 * 2.8, 2.8, 2.3, a, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(p.x + fx2 * 7.6 - px2 * 2.8, p.y + fy2 * 7.6 - py2 * 2.8, 2.8, 2.3, a, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // flamethrower
+  const gx = p.x + fx2 * 4, gy = p.y + fy2 * 4;
+  ctx.save();
+  ctx.translate(gx, gy); ctx.rotate(a);
+  ctx.fillStyle = "#333b45"; ctx.fillRect(2, -3.8, 30, 7.6);
+  ctx.fillStyle = "#525d6a"; ctx.fillRect(28, -5.4, 10, 10.8);
+  ctx.fillStyle = "#1c2228"; ctx.fillRect(31, -6.6, 4.6, 13.2);
+  ctx.fillStyle = "#6b4620"; ctx.fillRect(-1, 3.4, 13, 7);
+  ctx.restore();
+
+  // firing cone glow
+  if (p.firing) {
+    ctx.globalCompositeOperation = "lighter";
+    const R = 200 * ST.range;
+    const half = .46 * ST.cone;
+    const g = ctx.createRadialGradient(gx + fx2 * 20, gy + fy2 * 20, 0, gx + fx2 * 20, gy + fy2 * 20, R);
+    g.addColorStop(0, "rgba(255,200,110,.30)");
+    g.addColorStop(.4, "rgba(255,110,25,.15)");
+    g.addColorStop(1, "rgba(180,30,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(gx, gy);
+    ctx.arc(gx, gy, R, a - half, a + half);
+    ctx.closePath(); ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  // dash cooldown ring
+  ctx.globalAlpha = 1;
+}
+
+function drawHUD() {
+  const pad = 22;
+  const bw = Math.min(330, VW * .34);
+
+  // health
+  const hp = clamp(player.hp / player.mhp, 0, 1);
+  ctx.fillStyle = "rgba(0,0,0,.5)";
+  roundRect(pad, pad, bw, 17, 5); ctx.fill();
+  const hg = ctx.createLinearGradient(pad, 0, pad + bw, 0);
+  hg.addColorStop(0, "#ff3b2a"); hg.addColorStop(1, "#ff8c3a");
+  ctx.fillStyle = hg;
+  roundRect(pad, pad, bw * hp, 17, 5); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.16)"; ctx.lineWidth = 1;
+  roundRect(pad, pad, bw, 17, 5); ctx.stroke();
+  ctx.fillStyle = "#fff"; ctx.font = '800 11px "Segoe UI",sans-serif';
+  ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  ctx.fillText("❤ " + Math.ceil(player.hp) + " / " + player.mhp, pad + 8, pad + 9.5);
+
+  // fuel
+  const fy0 = pad + 23;
+  const mx = player.mfuel * ST.fuelMax;
+  const fp = clamp(player.fuel / mx, 0, 1);
+  ctx.fillStyle = "rgba(0,0,0,.5)";
+  roundRect(pad, fy0, bw, 15, 5); ctx.fill();
+  const fg = ctx.createLinearGradient(pad, 0, pad + bw, 0);
+  if (fp > .25) { fg.addColorStop(0, "#ffb03c"); fg.addColorStop(1, "#ffe27a"); }
+  else { fg.addColorStop(0, "#c43a1a"); fg.addColorStop(1, "#ff6a2a"); }
+  ctx.fillStyle = fg;
+  roundRect(pad, fy0, bw * fp, 15, 5); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 1;
+  roundRect(pad, fy0, bw, 15, 5); ctx.stroke();
+  const overheated = player.overheated;
+  ctx.fillStyle = fp > .18 ? "#2a1600" : "#fff";
+  ctx.font = '800 10px "Segoe UI",sans-serif';
+  ctx.fillText("FUEL", pad + 8, fy0 + 8.5);
+  if (overheated) {
+    ctx.globalAlpha = .55 + Math.sin(perf * 7) * .35;
+    ctx.fillStyle = "#ffd0a0"; ctx.font = '800 10px "Segoe UI",sans-serif';
+    ctx.textAlign = "right";
+    ctx.fillText("RECHARGING", pad + bw - 8, fy0 + 8.5);
+    ctx.textAlign = "left";
+    ctx.globalAlpha = 1;
+  } else if (fp <= .18) {
+    ctx.fillStyle = "#ff7a4a"; ctx.font = '800 10px "Segoe UI",sans-serif';
+    ctx.fillText("LOW", pad + bw - 32, fy0 + 8.5);
+  }
+
+  // abilities
+  const abY = fy0 + 24;
+  const abilities = [
+    { k: "SPACE", n: "NOVA", cd: player.novaCd, max: 9 * ST.novaCd, col: "#ffce55" },
+    { k: "SHIFT", n: "DASH", cd: player.dashCd, max: 3 * ST.dashCd, col: "#6fd8ff" },
+  ];
+  let ax = pad;
+  for (const ab of abilities) {
+    const w = 96, h = 26;
+    ctx.fillStyle = "rgba(0,0,0,.5)";
+    roundRect(ax, abY, w, h, 6); ctx.fill();
+    const ready = ab.cd <= 0;
+    const pr = ready ? 1 : 1 - ab.cd / ab.max;
+    ctx.fillStyle = ready ? ab.col : "rgba(255,255,255,.16)";
+    if (ready) {
+      ctx.globalAlpha = .28 + Math.sin(perf * 5) * .08;
+    }
+    roundRect(ax, abY, w * pr, h, 6); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = ready ? ab.col : "rgba(255,255,255,.16)"; ctx.lineWidth = 1.4;
+    roundRect(ax, abY, w, h, 6); ctx.stroke();
+    ctx.fillStyle = ready ? "#12100e" : "#8b8280";
+    ctx.font = '800 10.5px "Segoe UI",sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText(ab.n, ax + w / 2, abY + 13);
+    ctx.font = '700 8px "Segoe UI",sans-serif';
+    ctx.globalAlpha = .7;
+    ctx.fillText(ready ? ab.k : (ab.cd).toFixed(1) + "s", ax + w / 2, abY + 21);
+    ctx.globalAlpha = 1;
+    ax += w + 8;
+  }
+  ctx.textAlign = "left";
+
+  // wave + score (top right)
+  ctx.textAlign = "right";
+  ctx.fillStyle = "rgba(0,0,0,.42)";
+  roundRect(VW - pad - 200, pad, 200, 60, 8); ctx.fill();
+  ctx.fillStyle = "#ffb055"; ctx.font = '900 27px "Segoe UI",sans-serif';
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText(fmt(score), VW - pad - 14, pad + 34);
+  ctx.fillStyle = "#8b7f77"; ctx.font = '700 10px "Segoe UI",sans-serif';
+  ctx.fillText("SCORE", VW - pad - 14, pad + 48);
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#ffd9a8"; ctx.font = '900 17px "Segoe UI",sans-serif';
+  ctx.fillText("WAVE " + wave, VW - pad - 186, pad + 22);
+  ctx.fillStyle = "#6f6560"; ctx.font = '700 10px "Segoe UI",sans-serif';
+  const remaining = zn + spawnQueue.length;
+  ctx.fillText(waveActive ? remaining + " REMAINING" : "INCOMING…", VW - pad - 186, pad + 38);
+  ctx.fillStyle = "#a89c94"; ctx.font = '700 10px "Segoe UI",sans-serif';
+  ctx.fillText("KILLS " + kills, VW - pad - 186, pad + 52);
+
+  // combo
+  if (combo > 4) {
+    const a = clamp(comboT / 3.2, 0, 1);
+    ctx.globalAlpha = .35 + a * .65;
+    const s = 1 + Math.min(combo, 60) / 60 * .3 + Math.sin(perf * 9) * .03;
+    ctx.textAlign = "center";
+    ctx.font = `900 ${Math.round(26 * s)}px "Segoe UI",sans-serif`;
+    ctx.fillStyle = combo > 30 ? "#ff5a2a" : "#ffb055";
+    ctx.fillText("x" + combo, VW / 2, pad + 34);
+    ctx.font = '800 10px "Segoe UI",sans-serif';
+    ctx.fillStyle = "#a8927e";
+    ctx.fillText("CHAIN", VW / 2, pad + 48);
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "left";
+  }
+
+  // banners
+  ctx.textAlign = "center";
+  for (let i = banners.length - 1; i >= 0; i--) {
+    const b = banners[i];
+    const t = b.life / b.m;
+    const a = t > .8 ? (1 - t) * 5 : Math.min(1, t * 2.4);
+    ctx.globalAlpha = clamp(a, 0, 1);
+    const sc = 1 + (1 - t) * .06;
+    ctx.font = `900 ${Math.round(Math.min(46, VW * .055) * sc)}px "Segoe UI",sans-serif`;
+    ctx.lineWidth = 6; ctx.strokeStyle = "rgba(6,4,2,.8)";
+    ctx.strokeText(b.text, VW / 2, VH * .24);
+    ctx.fillStyle = b.col;
+    ctx.fillText(b.text, VW / 2, VH * .24);
+    ctx.globalAlpha = 1;
+  }
+  ctx.textAlign = "left";
+
+  // off-screen zombie markers
+  const m = 26;
+  ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < zn; i++) {
+    const z = Z[i];
+    if (!z.on) continue;
+    const sx = z.x - cam.sx, sy = z.y - cam.sy;
+    if (sx > -20 && sx < VW + 20 && sy > -20 && sy < VH + 20) continue;
+    const cx = VW / 2, cy = VH / 2;
+    const a = Math.atan2(z.y - (cam.sy + cy), z.x - (cam.sx + cx));
+    const rx = Math.min(cx - m, cy - m);
+    const mxp = cx + Math.cos(a) * rx, myp = cy + Math.sin(a) * rx;
+    const al = clamp(.28 + (z.boss ? .5 : 0) + (z.fire > 0 ? .3 : 0), 0, .8);
+    ctx.globalAlpha = al;
+    const sz = z.boss ? 30 : z.fire > 0 ? 22 : 14;
+    ctx.drawImage(z.fire > 0 ? SPR[S_ORG] : SPR[S_BLOOD], mxp - sz / 2, myp - sz / 2, sz, sz);
+  }
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = 1;
+
+  // low hp vignette
+  const lh = clamp(1 - player.hp / (player.mhp * .34), 0, 1);
+  if (lh > 0) {
+    const g = ctx.createRadialGradient(VW / 2, VH / 2, Math.min(VW, VH) * .26, VW / 2, VH / 2, Math.max(VW, VH) * .62);
+    g.addColorStop(0, "rgba(140,0,0,0)");
+    g.addColorStop(1, `rgba(150,0,0,${.62 * lh})`);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+  }
+  if (player.hurtFlash > 0) {
+    ctx.fillStyle = `rgba(255,40,20,${player.hurtFlash * .28})`;
+    ctx.fillRect(0, 0, VW, VH);
+  }
+  // heat vignette while firing
+  if (player.firing) {
+    const g = ctx.createRadialGradient(VW / 2, VH / 2, Math.min(VW, VH) * .3, VW / 2, VH / 2, Math.max(VW, VH) * .7);
+    g.addColorStop(0, "rgba(255,80,0,0)");
+    g.addColorStop(1, "rgba(255,90,10,.09)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+  }
+}
+
+function roundRect(x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawCrosshair() {
+  const x = mouse.x, y = mouse.y;
+  const ready = player.fuel > 1;
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = ready ? .85 : .35;
+  const s = 34 + Math.sin(perf * 6) * 3;
+  ctx.drawImage(SPR[S_ORG], x - s / 2, y - s / 2, s, s);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = ready ? .95 : .4;
+  ctx.strokeStyle = ready ? "#ffd07a" : "#7a6a5a";
+  ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.arc(x, y, 11, 0, TAU); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x - 18, y); ctx.lineTo(x - 5, y);
+  ctx.moveTo(x + 5, y); ctx.lineTo(x + 18, y);
+  ctx.moveTo(x, y - 18); ctx.lineTo(x, y - 5);
+  ctx.moveTo(x, y + 5); ctx.lineTo(x, y + 18);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+// ═══════════════════════════════ render ═══════════════════════════════
+function render() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = "#07060a";
+  ctx.fillRect(0, 0, VW, VH);
+  ctx.save();
+  ctx.translate(-Math.round(cam.sx), -Math.round(cam.sy));
+
+  ctx.drawImage(groundCv, 0, 0);
+
+  // player-carried light: lifts the area around the player so the arena reads
+  ctx.globalCompositeOperation = "lighter";
+  const plr = 340 + Math.sin(perf * 3.1) * 14;
+  const plg = ctx.createRadialGradient(player.x, player.y, 0, player.x, player.y, plr);
+  plg.addColorStop(0, "rgba(255,172,92,.17)");
+  plg.addColorStop(.5, "rgba(255,118,38,.075)");
+  plg.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = plg;
+  ctx.beginPath(); ctx.arc(player.x, player.y, plr, 0, TAU); ctx.fill();
+  ctx.globalCompositeOperation = "source-over";
+
+  drawFirePatches();
+
+  // shots
+  ctx.globalCompositeOperation = "lighter";
+  for (const s of shots) {
+    ctx.globalAlpha = .8;
+    ctx.drawImage(SPR[S_TOX], s.x - 18, s.y - 18, 36, 36);
+  }
+  ctx.globalCompositeOperation = "source-over";
+  ctx.globalAlpha = 1;
+
+  for (let i = 0; i < zn; i++) { const z = Z[i]; if (z.on) drawZombie(z); }
+  drawPlayer();
+  drawParticles();
+  drawTexts();
+
+  // arena vignette over world
+  ctx.restore();
+
+  ctx.globalCompositeOperation = "source-over";
+  if (state !== "menu") {
+    drawHUD();
+    drawCrosshair();
+  }
+}
+
+// ═══════════════════════════════ main loop ═══════════════════════════════
+let last = performance.now();
+let acc = 0;
+const STEP = 1 / 120;
+let paused = false;
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  let dt = (now - last) / 1000;
+  last = now;
+  if (dt > .25) dt = .25;
+  perf += dt;
+
+  // timers always tick (menus animate)
+  for (let i = banners.length - 1; i >= 0; i--) {
+    banners[i].life -= dt;
+    if (banners[i].life <= 0) banners.splice(i, 1);
+  }
+
+  if (state === "play" && !paused) {
+    runTime += dt;
+    comboT -= dt;
+    if (comboT <= 0 && combo > 0) combo = 0;
+
+    if (hitStop > 0) { hitStop -= dt; dt *= .18; }
+
+    acc += dt;
+    let steps = 0;
+    while (acc >= STEP && steps < 8) { simulate(STEP); acc -= STEP; steps++; }
+    if (steps >= 8) acc = 0;
+    camFollow(Math.max(dt, .0001));
+  } else if (state === "menu") {
+    // ambient embers on menu
+    if (Math.random() < dt * 22) {
+      part(rand(VW) + cam.sx, VH + 20 + cam.sy, rand(-30, 30), rand(-90, -30),
+        rand(1.4, 3), rand(3, 8), Math.random() < .4 ? S_YEL : S_ORG, -6, .96);
+    }
+    updateParticles(dt);
+    camFollow(dt);
+  } else {
+    updateParticles(dt);
+  }
+
+  updateTexts(dt);
+  A.music(dt, state === "play" ? .35 + intensity * .65 : 0);
+  if (state === "play") A.musicVol(.5);
+
+  render();
+}
+
+function simulate(dt) {
+  igniteSfxCd -= dt;
+  updatePlayer(dt);
+  updateSpawner(dt);
+  updateZombies(dt);
+  updateShots(dt);
+  updateFirePatches(dt);
+  updateParticles(dt);
+  compactZ();
+}
+
+// ═══════════════════════════════ flow ═══════════════════════════════
+const $ = id => document.getElementById(id);
+const menuEl = $("menu"), upEl = $("up"), deadEl = $("dead"), pauseEl = $("pause");
+
+function show(el, on) { el.classList.toggle("on", on); }
+
+function newGame() {
+  A.init(); A.resume();
+  for (const k in taken) delete taken[k];
+  delete window.__napalm; delete window.__flashpoint; delete window.__over;
+  resetStats();
+  zn = 0; fn = 0; pn = 0; shots.length = 0; texts.length = 0; banners.length = 0;
+  spawnQueue.length = 0;
+  player.x = WORLD.w / 2; player.y = WORLD.h / 2;
+  player.vx = player.vy = 0;
+  player.hp = player.mhp = 140;
+  player.fuel = player.mfuel = 160;
+  player.novaCd = player.dashCd = player.dashT = player.inv = 0;
+  player.lastHurt = perf;
+  player.overheated = false;
+  player.firing = false; player.walk = 0;
+  score = 0; kills = 0; combo = 0; comboT = 0; runTime = 0; state = "play";
+  paused = false;
+  cam.x = clamp(player.x - VW / 2, 0, Math.max(0, WORLD.w - VW));
+  cam.y = clamp(player.y - VH / 2, 0, Math.max(0, WORLD.h - VH));
+  show(menuEl, false); show(upEl, false); show(deadEl, false); show(pauseEl, false);
+  startWave(1);
+  A.musicVol(.5);
+}
+
+function offerUpgrades() {
+  state = "upgrade";
+  offers = rollUpgrades();
+  rerolls = 1;
+  renderCards();
+  show(upEl, true);
+  A.flame(false, 0);
+}
+function renderCards() {
+  $("upTitle").textContent = "Wave " + wave + " Cleared";
+  $("upSub").textContent = "Choose an upgrade";
+  const c = $("cards");
+  c.innerHTML = "";
+  offers.forEach((u, idx) => {
+    const d = document.createElement("div");
+    d.className = "card";
+    d.innerHTML = `<div class="rar r${u.r}">${["", "Common", "Rare", "Epic"][u.r]}</div>
+      <div class="ico">${u.i}</div><div class="nm">${u.n}</div><div class="ds">${u.d}</div>
+      <div class="hot"></div>`;
+    d.onclick = () => { takeUpgrade(u); };
+    c.appendChild(d);
+  });
+  const rr = $("rr");
+  rr.style.display = rerolls > 0 ? "" : "none";
+  rr.textContent = "Reroll · 250 pts";
+  const own = $("owned");
+  const list = Object.keys(taken);
+  own.innerHTML = list.length ? "Upgrades: " + list.map(id => {
+    const u = UPG.find(x => x.id === id);
+    return `<span>${u ? u.i + " " + u.n : id}</span>`;
+  }).join("") : "";
+}
+$("rr").onclick = () => {
+  if (rerolls <= 0 || score < 250) return;
+  score -= 250; rerolls--;
+  offers = rollUpgrades(); renderCards();
+  A.blip(520, .1, .14, "square", 900);
+};
+
+function takeUpgrade(u) {
+  taken[u.id] = (taken[u.id] || 0) + 1;
+  u.f && u.f();
+  if (u.g) u.g();
+  A.pick_();
+  show(upEl, false);
+  state = "play";
+  player.fuel = player.mfuel * ST.fuelMax;
+  player.overheated = false;
+  startWave(wave + 1);
+}
+
+function gameOver() {
+  state = "dead";
+  A.flame(false, 0); A.musicVol(0);
+  A.blip(140, 1.4, .3, "sawtooth", 34);
+  shake(22);
+  for (let i = 0; i < 120; i++) {
+    const a = rand(TAU);
+    part(player.x, player.y, Math.cos(a) * rand(60, 480), Math.sin(a) * rand(60, 480), rand(.5, 1.6),
+      rand(4, 14), Math.random() < .3 ? S_ASH : S_SMOKE, 18, .93, Math.random() < .3);
+  }
+  if (score > best) { best = score; try { localStorage.setItem("pyre_best", best); } catch (e) {} }
+  $("dWave").textContent = wave;
+  $("dKills").textContent = fmt(kills);
+  $("dScore").textContent = fmt(score);
+  const mm = Math.floor(runTime / 60), ss = Math.floor(runTime % 60);
+  $("dTime").textContent = mm + ":" + (ss < 10 ? "0" : "") + ss;
+  $("dBest").innerHTML = "Best <b>" + fmt(best) + "</b>";
+  setTimeout(() => show(deadEl, true), 700);
+}
+
+function togglePause() {
+  if (state !== "play") return;
+  paused = !paused;
+  show(pauseEl, paused);
+  if (paused) A.flame(false, 0);
+  A.musicVol(paused ? .1 : .5);
+}
+
+$("play").onclick = newGame;
+$("again").onclick = newGame;
+$("tomenu").onclick = () => { state = "menu"; show(deadEl, false); show(menuEl, true); };
+$("quit").onclick = () => { paused = false; show(pauseEl, false); state = "menu"; show(menuEl, true); A.musicVol(0); };
+
+// ═══════════════════════════════ boot ═══════════════════════════════
+// Debug/console handles (harmless in normal play, used by automated smoke tests).
+window.__pyre = {
+  Z, TYPES, player, ST,
+  get zn() { return zn; }, liveCount, spawnZ, hurtZ, dieZ, explode, firePatch,
+  killAll() { for (let i = 0; i < zn; i++) Z[i].on && dieZ(i, Z[i].x, Z[i].y); compactZ(); },
+  counts() { const c = {}; for (let i = 0; i < zn; i++) if (Z[i].on) c[Z[i].t] = (c[Z[i].t] || 0) + 1; return c; },
+  stats() { return { state, wave, score, kills, zn, live: liveCount(), firePatches: fn, particles: pn, queue: spawnQueue.length }; },
+};
+resize();
+buildGround();
+cam.x = cam.sx = 0; cam.y = cam.sy = 0;
+for (let i = 0; i < 60; i++) {
+  part(rand(VW), rand(VH), rand(-20, 20), rand(-60, -20), rand(1, 3), rand(3, 9),
+    Math.random() < .4 ? S_YEL : S_ORG, -6, .96);
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>

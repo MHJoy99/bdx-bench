@@ -2,7 +2,7 @@
  * BDX Bench canonical dataset — hand-maintained local evaluation data.
  *
  * Real values from the Zombie Flamethrower Showdown (manual game-build
- * evaluation, 2026-09-17): two models, one shared prompt, binary playability
+ * evaluation): three models, one shared prompt, binary playability
  * check + feature checklist, community vote open (match m-001).
  * Scores surfaced from this file are Showdown Score (manual game-build
  * evaluation). Every other BDX dimension is `null` = "Not evaluated";
@@ -31,9 +31,9 @@ import type {
 
 export const DEMO_DATA_LABEL = "SHOWDOWN DATA" as const;
 export const METHODOLOGY_VERSION = "v1" as const;
-export const DEMO_RETRIEVED_AT = "2026-09-17" as const;
-export const DEMO_DATASET_REFRESH_LABEL = "2026-09-17" as const;
-export const DEMO_EVAL_AT = "2026-09-17" as const;
+export const DEMO_RETRIEVED_AT = "2026-09-18" as const;
+export const DEMO_DATASET_REFRESH_LABEL = "2026-09-18" as const;
+export const DEMO_EVAL_AT = "2026-09-18" as const;
 
 /** Human label for every Showdown Score surfacing. */
 export const SHOWDOWN_SCORE_LABEL =
@@ -150,6 +150,20 @@ export const EVALUATIONS: DemoEvaluation[] = [
     benchmarkVersion: "v1",
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "deepseek-v4-1-flash",
+    benchmarkSlug: "zombie-flamethrower-showdown",
+    raw: 91,
+    normalized: 91,
+    ciLow: 91,
+    ciHigh: 91,
+    runs: 1,
+    variance: 0,
+    evaluatedAt: "2026-09-18",
+    sourceId: "local-manual-eval",
+    benchmarkVersion: "v1",
+    methodologyVersion: "v1",
+  },
 ];
 
 export interface SpeedEntry {
@@ -185,6 +199,17 @@ export const PRICE_SNAPSHOTS: PriceEntry[] = [
       outputPer1M: null,
       currency: "USD",
       effectiveDate: "2026-09-17",
+      source: "local-manual-eval",
+    },
+    sourceId: "local-manual-eval",
+  },
+  {
+    modelSlug: "deepseek-v4-1-flash",
+    price: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-18",
       source: "local-manual-eval",
     },
     sourceId: "local-manual-eval",
@@ -239,6 +264,26 @@ export const SCORE_SNAPSHOTS: SnapshotEntry[] = [
     imputedDims: [],
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "deepseek-v4-1-flash",
+    snapshot: {
+      overall: 91,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 91,
+      evaluatedAt: "2026-09-18",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+    evalCount: 1,
+    imputedDims: [],
+    methodologyVersion: "v1",
+  },
 ];
 
 export const SOURCES: Source[] = [
@@ -246,9 +291,9 @@ export const SOURCES: Source[] = [
     id: "local-manual-eval",
     label: "Local manual evaluation — Zombie Flamethrower Showdown",
     kind: "manual",
-    retrievedAt: "2026-09-17",
+    retrievedAt: "2026-09-18",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist, community vote open (match m-001). Playable builds: /play/pyro-vs-zombies and /play/pyroclasm-inferno.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist, community vote open (match m-001). Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno and /play/pyre-burn-horde (PYRE by DeepSeek V4.1 Flash, 91, builder-verified 2026-09-18: wave 1 clears in ~15s, 60 FPS with 120 zombies live).",
   },
 ];
 
@@ -327,14 +372,56 @@ export const MODELS: Model[] = [
       benchmark: "zombie-flamethrower-showdown",
     },
   },
+  {
+    id: "bdx-ai/deepseek-v4.1-flash",
+    slug: "deepseek-v4-1-flash",
+    name: "DeepSeek V4.1 Flash",
+    family: "DeepSeek",
+    provider: "bdx-ai",
+    context: null,
+    released: null,
+    openWeights: false,
+    capabilities: {
+      vision: false,
+      tools: false,
+      audio: false,
+      multimodal: false,
+    },
+    prices: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-18",
+      source: "local-manual-eval",
+    },
+    scores: {
+      overall: 91,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 91,
+      evaluatedAt: "2026-09-18",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+  },
 ];
 
-/** Single-snapshot trend: mean Showdown Score across both builds (90.0). */
+/** Trend snapshots: mean Showdown Score per round. */
 export const TRENDS: TrendPoint[] = [
   {
     date: "2026-09-17",
     avgBdxScore: 90,
     modelCount: 2,
+  },
+  {
+    date: "2026-09-18",
+    avgBdxScore: 90.3,
+    modelCount: 3,
   },
 ];
 
@@ -357,6 +444,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       provider: "bdx-ai",
       score: 88,
       delta: -2,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "deepseek-v4-1-flash",
+      name: "DeepSeek V4.1 Flash",
+      provider: "bdx-ai",
+      score: 91,
+      delta: 0,
       pricePer1M: null,
       speedTps: null,
       contextK: null,
@@ -393,14 +490,19 @@ export const DEMO_TREND_SERIES: HomeTrendPoint[] = [
     topScore: 92,
     medianScore: 90,
   },
+  {
+    label: "Sep 18",
+    topScore: 92,
+    medianScore: 91,
+  },
 ];
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 2,
+  modelsTracked: 3,
   benchmarks: 1,
-  evalRuns: 2,
+  evalRuns: 3,
   providers: 1,
-  datasetRefresh: "2026-09-17",
+  datasetRefresh: "2026-09-18",
 };
 
 /** Canonical leaderboard rows (Showdown Score desc). */
@@ -416,6 +518,15 @@ export const demoLeaderboard: LeaderboardRow[] = [
   },
   {
     rank: 2,
+    modelSlug: "deepseek-v4-1-flash",
+    modelName: "DeepSeek V4.1 Flash",
+    provider: "bdx-ai",
+    bdxScore: 91,
+    overall: 91,
+    pricePer1MBlended: null,
+  },
+  {
+    rank: 3,
     modelSlug: "gemini-3-8-flash",
     modelName: "Gemini 3.8 Flash",
     provider: "bdx-ai",
@@ -434,13 +545,13 @@ export interface Freshness {
   refreshLabel: string;
 }
 export const FRESHNESS: Freshness = {
-  evalDate: "2026-09-17",
+  evalDate: "2026-09-18",
   benchmarkVersions: {
     "zombie-flamethrower-showdown": "v1",
   },
   methodologyVersion: "v1",
-  retrievedDate: "2026-09-17",
-  refreshLabel: "2026-09-17",
+  retrievedDate: "2026-09-18",
+  refreshLabel: "2026-09-18",
 };
 
 export interface ProvenanceItem {
@@ -457,9 +568,9 @@ export const PROVENANCE: ProvenanceItem[] = [
     sourceId: "local-manual-eval",
     label: "Local manual evaluation — Zombie Flamethrower Showdown",
     kind: "manual",
-    retrievedAt: "2026-09-17",
+    retrievedAt: "2026-09-18",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist, community vote open (match m-001). Playable builds: /play/pyro-vs-zombies and /play/pyroclasm-inferno.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist, community vote open (match m-001). Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno and /play/pyre-burn-horde (PYRE by DeepSeek V4.1 Flash, 91, builder-verified 2026-09-18: wave 1 clears in ~15s, 60 FPS with 120 zombies live).",
   },
 ];
 
@@ -473,7 +584,7 @@ export interface UncertaintySummary {
 }
 export const UNCERTAINTY: UncertaintySummary = {
   methodologyVersion: "v1",
-  evalCount: 2,
+  evalCount: 3,
   avgCiHalfWidth: 0,
   minRuns: 1,
   maxRuns: 1,

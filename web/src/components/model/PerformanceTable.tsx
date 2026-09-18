@@ -19,9 +19,11 @@ export function PerformanceTable({
   const fallbackRaw =
     modelSlug === "muse-spark-1-3"
       ? 92
-      : modelSlug === "gemini-3-8-flash"
-        ? 88
-        : null;
+      : modelSlug === "deepseek-v4-1-flash"
+        ? 91
+        : modelSlug === "gemini-3-8-flash"
+          ? 88
+          : null;
 
   const rows =
     stored.length > 0

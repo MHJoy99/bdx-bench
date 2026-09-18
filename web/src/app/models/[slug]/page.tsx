@@ -17,7 +17,7 @@ import StarRating from "@/components/interactive/StarRating";
 import Comments from "@/components/interactive/Comments";
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  return [{ slug: "muse-spark-1-3" }, { slug: "gemini-3-8-flash" }];
+  return [{ slug: "muse-spark-1-3" }, { slug: "deepseek-v4-1-flash" }, { slug: "gemini-3-8-flash" }];
 }
 
 interface PageProps {
@@ -26,7 +26,14 @@ interface PageProps {
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "muse-spark-1-3": 92,
+  "deepseek-v4-1-flash": 91,
   "gemini-3-8-flash": 88,
+};
+
+const PLAY_LINKS: Record<string, string> = {
+  "muse-spark-1-3": "/play/pyro-vs-zombies",
+  "deepseek-v4-1-flash": "/play/pyre-burn-horde",
+  "gemini-3-8-flash": "/play/pyroclasm-inferno",
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -63,12 +70,11 @@ export default async function ModelPage({ params }: PageProps) {
       <section aria-label="Community feedback" className="flex flex-wrap items-center gap-4">
         <LikeButton modelSlug={model.slug} />
         <StarRating modelSlug={model.slug} />
-        <Link
-          href={model.slug === "muse-spark-1-3" ? "/play/pyro-vs-zombies" : "/play/pyroclasm-inferno"}
-          className="underline underline-offset-4"
-        >
-          Play this build
-        </Link>
+        {PLAY_LINKS[model.slug] ? (
+          <Link href={PLAY_LINKS[model.slug] as string} className="underline underline-offset-4">
+            Play this build
+          </Link>
+        ) : null}
       </section>
 
       <PerformanceTable modelSlug={model.slug} modelName={model.name} />

@@ -1,11 +1,11 @@
 // Homepage aggregates — real local evaluation data (Zombie Flamethrower
-// Showdown, 2026-09-17). Home components import the shared dataset first
+// Showdown). Home components import the shared dataset first
 // (`@/lib/data`) and read these aggregates for section-level rollups.
 // Unmeasured fields stay null ("Not evaluated"/"Not measured").
 
 export const DEMO_DATA_LABEL = "SHOWDOWN DATA" as const;
 
-export const DEMO_DATASET_REFRESH_LABEL = "2026-09-17";
+export const DEMO_DATASET_REFRESH_LABEL = "2026-09-18";
 
 export interface HomeModel {
   id: string;
@@ -29,9 +29,9 @@ export interface GlobalStats {
 }
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 2,
+  modelsTracked: 3,
   benchmarks: 1,
-  evalRuns: 2,
+  evalRuns: 3,
   providers: 1,
   datasetRefresh: DEMO_DATASET_REFRESH_LABEL,
 };
@@ -56,6 +56,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       provider: "bdx-ai",
       score: 88,
       delta: -2,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "deepseek-v4-1-flash",
+      name: "DeepSeek V4.1 Flash",
+      provider: "bdx-ai",
+      score: 91,
+      delta: 0,
       pricePer1M: null,
       speedTps: null,
       contextK: null,
@@ -107,4 +117,5 @@ export interface TrendPoint {
 
 export const DEMO_TREND_SERIES: TrendPoint[] = [
   { label: "Sep 17", topScore: 92, medianScore: 90 },
+  { label: "Sep 18", topScore: 92, medianScore: 91 },
 ];

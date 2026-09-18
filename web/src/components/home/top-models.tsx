@@ -13,6 +13,7 @@ type Tab = (typeof TOP_MODEL_TABS)[number];
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "muse-spark-1-3": 92,
+  "deepseek-v4-1-flash": 91,
   "gemini-3-8-flash": 88,
 };
 

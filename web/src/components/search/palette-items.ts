@@ -75,6 +75,7 @@ export interface PalettePageDef {
 /** Static page index — mirrors web/README.md route table. */
 export const CANONICAL_MODELS: PaletteModelInput[] = [
   { slug: "muse-spark-1-3", name: "Muse Spark 1.3", family: "Muse Spark", provider: "other" },
+  { slug: "deepseek-v4-1-flash", name: "DeepSeek V4.1 Flash", family: "DeepSeek", provider: "deepseek" },
   { slug: "gemini-3-8-flash", name: "Gemini 3.8 Flash", family: "Gemini Flash", provider: "google" },
 ];
 

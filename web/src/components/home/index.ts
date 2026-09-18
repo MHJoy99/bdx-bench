@@ -9,3 +9,5 @@ export { BenchmarkCoverage } from "./benchmark-coverage";
 export { MethodologyTeaser } from "./methodology-teaser";
 export { HomeFooter, HOME_DISCLAIMER_VERBATIM } from "./home-footer";
 export { HomeTableSkeleton, HomeCardsSkeleton, HomeEmptyState } from "./home-skeletons";
+export { OpenFreeRound } from "./open-free-round";
+export { BuildsGallery } from "./builds-gallery";

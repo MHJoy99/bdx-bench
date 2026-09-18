@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { BuildsGallery } from "@/components/home";
 import { MODELS } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -11,11 +12,13 @@ export const metadata: Metadata = {
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "muse-spark-1-3": 92,
+  "deepseek-v4-1-flash": 91,
   "gemini-3-8-flash": 88,
 };
 
 const PLAY_LINKS: Record<string, string> = {
   "muse-spark-1-3": "/play/pyro-vs-zombies",
+  "deepseek-v4-1-flash": "/play/pyre-burn-horde",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
 };
 
@@ -101,6 +104,7 @@ export default function ModelsIndexPage() {
           </Card>
         ))}
       </div>
+      <BuildsGallery />
     </main>
   );
 }

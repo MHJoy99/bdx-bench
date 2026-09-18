@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const SHOWDOWN_SCORES = [
   { label: "Muse Spark 1.3", slug: "muse-spark-1-3", score: 92 },
+  { label: "DeepSeek V4.1 Flash", slug: "deepseek-v4-1-flash", score: 91 },
   { label: "Gemini 3.8 Flash", slug: "gemini-3-8-flash", score: 88 },
 ];
 

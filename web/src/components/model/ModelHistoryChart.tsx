@@ -10,9 +10,11 @@ export function ModelHistoryChart({
   const score =
     slug === "muse-spark-1-3"
       ? 92
-      : slug === "gemini-3-8-flash"
-        ? 88
-        : null;
+      : slug === "deepseek-v4-1-flash"
+        ? 91
+        : slug === "gemini-3-8-flash"
+          ? 88
+          : null;
   return (
     <section aria-labelledby="model-history-heading">
       <h2

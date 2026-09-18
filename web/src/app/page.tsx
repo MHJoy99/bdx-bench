@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   BenchmarkCoverage,
+  BuildsGallery,
   CapabilityTrend,
   CategoryLeaders,
   GlobalStats,
@@ -8,6 +9,7 @@ import {
   HomeFooter,
   LatestModels,
   MethodologyTeaser,
+  OpenFreeRound,
   PricePerformance,
   TopModels,
 } from "@/components/home";
@@ -26,6 +28,8 @@ export default function HomePage() {
       <Hero />
       <GlobalStats />
       <TopModels />
+      <BuildsGallery />
+      <OpenFreeRound />
       <PricePerformance />
       <CategoryLeaders />
       <LatestModels />
