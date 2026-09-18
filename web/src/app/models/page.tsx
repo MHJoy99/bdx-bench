@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 };
 
 const SHOWDOWN_SCORES: Record<string, number> = {
+  "deepseek-v4-1-flash": 94,
   "muse-spark-1-3": 92,
-  "deepseek-v4-1-flash": 91,
   "gemini-3-8-flash": 88,
 };
 

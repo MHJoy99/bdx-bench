@@ -153,10 +153,10 @@ export const EVALUATIONS: DemoEvaluation[] = [
   {
     modelSlug: "deepseek-v4-1-flash",
     benchmarkSlug: "zombie-flamethrower-showdown",
-    raw: 91,
-    normalized: 91,
-    ciLow: 91,
-    ciHigh: 91,
+    raw: 94,
+    normalized: 94,
+    ciLow: 94,
+    ciHigh: 94,
     runs: 1,
     variance: 0,
     evaluatedAt: "2026-09-18",
@@ -267,7 +267,7 @@ export const SCORE_SNAPSHOTS: SnapshotEntry[] = [
   {
     modelSlug: "deepseek-v4-1-flash",
     snapshot: {
-      overall: 91,
+      overall: 94,
       reasoning: null,
       coding: null,
       math: null,
@@ -276,7 +276,7 @@ export const SCORE_SNAPSHOTS: SnapshotEntry[] = [
       agentic: null,
       longContext: null,
       efficiency: null,
-      bdxScore: 91,
+      bdxScore: 94,
       evaluatedAt: "2026-09-18",
       benchmark: "zombie-flamethrower-showdown",
     },
@@ -395,7 +395,7 @@ export const MODELS: Model[] = [
       source: "local-manual-eval",
     },
     scores: {
-      overall: 91,
+      overall: 94,
       reasoning: null,
       coding: null,
       math: null,
@@ -404,7 +404,7 @@ export const MODELS: Model[] = [
       agentic: null,
       longContext: null,
       efficiency: null,
-      bdxScore: 91,
+      bdxScore: 94,
       evaluatedAt: "2026-09-18",
       benchmark: "zombie-flamethrower-showdown",
     },
@@ -429,31 +429,21 @@ export const TRENDS: TrendPoint[] = [
 export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
   Overall: [
     {
+      id: "deepseek-v4-1-flash",
+      name: "DeepSeek V4.1 Flash",
+      provider: "bdx-ai",
+      score: 94,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
       id: "muse-spark-1-3",
       name: "Muse Spark 1.3",
       provider: "bdx-ai",
       score: 92,
       delta: 2,
-      pricePer1M: null,
-      speedTps: null,
-      contextK: null,
-    },
-    {
-      id: "gemini-3-8-flash",
-      name: "Gemini 3.8 Flash",
-      provider: "bdx-ai",
-      score: 88,
-      delta: -2,
-      pricePer1M: null,
-      speedTps: null,
-      contextK: null,
-    },
-    {
-      id: "deepseek-v4-1-flash",
-      name: "DeepSeek V4.1 Flash",
-      provider: "bdx-ai",
-      score: 91,
-      delta: 0,
       pricePer1M: null,
       speedTps: null,
       contextK: null,
@@ -492,8 +482,8 @@ export const DEMO_TREND_SERIES: HomeTrendPoint[] = [
   },
   {
     label: "Sep 18",
-    topScore: 92,
-    medianScore: 91,
+    topScore: 94,
+    medianScore: 92,
   },
 ];
 
@@ -509,20 +499,20 @@ export const DEMO_GLOBAL_STATS: GlobalStats = {
 export const demoLeaderboard: LeaderboardRow[] = [
   {
     rank: 1,
+    modelSlug: "deepseek-v4-1-flash",
+    modelName: "DeepSeek V4.1 Flash",
+    provider: "bdx-ai",
+    bdxScore: 94,
+    overall: 94,
+    pricePer1MBlended: null,
+  },
+  {
+    rank: 2,
     modelSlug: "muse-spark-1-3",
     modelName: "Muse Spark 1.3",
     provider: "bdx-ai",
     bdxScore: 92,
     overall: 92,
-    pricePer1MBlended: null,
-  },
-  {
-    rank: 2,
-    modelSlug: "deepseek-v4-1-flash",
-    modelName: "DeepSeek V4.1 Flash",
-    provider: "bdx-ai",
-    bdxScore: 91,
-    overall: 91,
     pricePer1MBlended: null,
   },
   {

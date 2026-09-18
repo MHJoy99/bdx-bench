@@ -43,7 +43,7 @@ export const REAL_MODEL_PYRE = {
   name: "DeepSeek V4.1 Flash",
   id: "bdx-ai/deepseek-v4.1-flash",
   /** 0–100 showdown score. */
-  raw: 91,
+  raw: 94,
 } as const;
 
 export const REAL_SLUGS: readonly string[] = [

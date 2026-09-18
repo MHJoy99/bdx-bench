@@ -25,7 +25,7 @@ const VERIFIED = [
   {
     name: "PYRE — Burn the Horde",
     model: "DeepSeek V4.1 Flash",
-    score: 91,
+    score: 94,
     href: "/play/pyre-burn-horde",
     blurb: "Dark-arena wave survival built on chain reactions: ignited zombies spread fire, six enemy types, Titan boss every 5th wave, upgrades between waves. Verified 60 FPS with 120 zombies live.",
   },

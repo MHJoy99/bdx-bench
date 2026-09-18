@@ -47,7 +47,7 @@ export function Hero() {
           <Flame className="size-4 shrink-0 text-[#ffc53d]" aria-hidden="true" />
           <span>
             Latest Game-Build Showdown: <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (92)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">DeepSeek V4.1 Flash (91)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">DeepSeek V4.1 Flash (94)</strong> vs{" "}
             <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (88)</strong>
           </span>
         </div>
