@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     absolute: "BDX Bench — AI Model Benchmarks, Rankings & Intelligence",
   },
   description:
-    "Game-build evaluation for four verified models on Zombie Flamethrower Showdown, with Showdown Scores, play links, and methodology.",
+    "Game-build evaluation for five verified models on Zombie Flamethrower Showdown, with Showdown Scores, play links, and methodology.",
 };
 
 export default function HomePage() {

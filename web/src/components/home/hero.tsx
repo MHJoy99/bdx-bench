@@ -49,6 +49,7 @@ export function Hero() {
             Latest Game-Build Showdown: <strong className="font-semibold text-[var(--text)]">DeepSeek V4.1 Flash (94)</strong> vs{" "}
             <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (92)</strong> vs{" "}
             <strong className="font-semibold text-[var(--text)]">GPT Luna 5.6 (91)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">GPT Luna 6 (89.5)</strong> vs{" "}
             <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (88)</strong>
           </span>
         </div>
@@ -110,6 +111,13 @@ export function Hero() {
           >
             <Gamepad2 className="size-3.5 text-[#b8ff5a]" aria-hidden="true" />
             <span>GPT Luna 5.6 (91)</span>
+          </Link>
+          <Link
+            href="/play/emberfall"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
+          >
+            <Gamepad2 className="size-3.5 text-[#d7ff79]" aria-hidden="true" />
+            <span>GPT Luna 6 (89.5)</span>
           </Link>
           <Link
             href="/play/pyroclasm-inferno"

@@ -7,19 +7,21 @@ import { MODELS } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Models",
   description:
-    "Profiles for four verified game-build models with Showdown Scores and instant play links.",
+    "Profiles for five verified game-build models with Showdown Scores and instant play links.",
 };
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "deepseek-v4-1-flash": 94,
   "muse-spark-1-3": 92,
   "gpt-5-6-luna": 91,
+  "gpt-6-luna": 89.5,
   "gemini-3-8-flash": 88,
 };
 
 const PLAY_LINKS: Record<string, string> = {
   "muse-spark-1-3": "/play/pyro-vs-zombies",
   "deepseek-v4-1-flash": "/play/pyre-burn-horde",
+  "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
 };

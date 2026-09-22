@@ -20,6 +20,7 @@ const SHOWDOWN_SCORES: Record<string, number> = {
   "deepseek-v4-1-flash": 94,
   "muse-spark-1-3": 92,
   "gpt-5-6-luna": 91,
+  "gpt-6-luna": 89.5,
   "gemini-3-8-flash": 88,
 };
 

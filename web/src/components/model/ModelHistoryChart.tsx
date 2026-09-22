@@ -14,6 +14,8 @@ export function ModelHistoryChart({
         ? 94
         : slug === "gpt-5-6-luna"
           ? 91
+          : slug === "gpt-6-luna"
+            ? 89.5
           : slug === "gemini-3-8-flash"
             ? 88
             : null;

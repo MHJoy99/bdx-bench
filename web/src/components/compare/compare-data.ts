@@ -42,6 +42,7 @@ export const DEMO_MODEL_SLUGS: readonly string[] = [
   "muse-spark-1-3",
   "deepseek-v4-1-flash",
   "gpt-5-6-luna",
+  "gpt-6-luna",
   "gemini-3-8-flash",
 ];
 

@@ -5,6 +5,7 @@ const SHOWDOWN_SCORES = [
   { label: "DeepSeek V4.1 Flash", slug: "deepseek-v4-1-flash", score: 94 },
   { label: "Muse Spark 1.3", slug: "muse-spark-1-3", score: 92 },
   { label: "GPT Luna 5.6", slug: "gpt-5-6-luna", score: 91 },
+  { label: "GPT Luna 6", slug: "gpt-6-luna", score: 89.5 },
   { label: "Gemini 3.8 Flash", slug: "gemini-3-8-flash", score: 88 },
 ];
 

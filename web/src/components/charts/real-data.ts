@@ -3,7 +3,7 @@
 /**
  * Measured evaluations backing every Agent E chart.
  *
- * Four models, one benchmark (single snapshot each, except the Sep 17 pair).
+ * Five models, one benchmark (single snapshot each, except the Sep 17 pair).
  * Everything else is unmeasured and must render as "Not evaluated" — never invented.
  */
 
@@ -54,10 +54,19 @@ export const REAL_MODEL_LUNA = {
   raw: 91,
 } as const;
 
+export const REAL_MODEL_LUNA6 = {
+  slug: "gpt-6-luna",
+  name: "GPT Luna 6",
+  id: "bdx-ai/gpt-6-luna",
+  /** 0–100 showdown score. */
+  raw: 89.5,
+} as const;
+
 export const REAL_SLUGS: readonly string[] = [
   REAL_MODEL_SPARK.slug,
   REAL_MODEL_PYRE.slug,
   REAL_MODEL_LUNA.slug,
+  REAL_MODEL_LUNA6.slug,
   REAL_MODEL_FLASH.slug,
 ];
 
@@ -65,6 +74,7 @@ export const REAL_MODEL_NAMES: readonly string[] = [
   REAL_MODEL_SPARK.name,
   REAL_MODEL_PYRE.name,
   REAL_MODEL_LUNA.name,
+  REAL_MODEL_LUNA6.name,
   REAL_MODEL_FLASH.name,
 ];
 
@@ -73,15 +83,28 @@ export const REAL_SCORES_01: readonly number[] = [
   REAL_MODEL_SPARK.raw / 100,
   REAL_MODEL_PYRE.raw / 100,
   REAL_MODEL_LUNA.raw / 100,
+  REAL_MODEL_LUNA6.raw / 100,
   REAL_MODEL_FLASH.raw / 100,
 ];
 
 export function isRealModelSlug(slug: string): boolean {
-  return slug === REAL_MODEL_SPARK.slug || slug === REAL_MODEL_PYRE.slug || slug === REAL_MODEL_LUNA.slug || slug === REAL_MODEL_FLASH.slug;
+  return (
+    slug === REAL_MODEL_SPARK.slug ||
+    slug === REAL_MODEL_PYRE.slug ||
+    slug === REAL_MODEL_LUNA.slug ||
+    slug === REAL_MODEL_LUNA6.slug ||
+    slug === REAL_MODEL_FLASH.slug
+  );
 }
 
 export function isRealModelName(name: string): boolean {
-  return name === REAL_MODEL_SPARK.name || name === REAL_MODEL_PYRE.name || name === REAL_MODEL_LUNA.name || name === REAL_MODEL_FLASH.name;
+  return (
+    name === REAL_MODEL_SPARK.name ||
+    name === REAL_MODEL_PYRE.name ||
+    name === REAL_MODEL_LUNA.name ||
+    name === REAL_MODEL_LUNA6.name ||
+    name === REAL_MODEL_FLASH.name
+  );
 }
 
 function norm(raw100: number): number {
@@ -106,6 +129,11 @@ export const REAL_BAR_SERIES: BarSeries[] = [
   {
     name: REAL_MODEL_LUNA.name,
     data: [norm(REAL_MODEL_LUNA.raw)],
+    runs: [1],
+  },
+  {
+    name: REAL_MODEL_LUNA6.name,
+    data: [norm(REAL_MODEL_LUNA6.raw)],
     runs: [1],
   },
   {
@@ -136,13 +164,18 @@ export const REAL_RADAR: RadarDatum[] = [
     runs: 1,
   },
   {
+    model: REAL_MODEL_LUNA6.name,
+    values: [norm(REAL_MODEL_LUNA6.raw)],
+    runs: 1,
+  },
+  {
     model: REAL_MODEL_FLASH.name,
     values: [norm(REAL_MODEL_FLASH.raw)],
     runs: 1,
   },
 ];
 
-/* ---------- Heatmap (1 benchmark x 4 models) ---------- */
+/* ---------- Heatmap (1 benchmark x 5 models) ---------- */
 
 export const REAL_HEATMAP_MODELS: readonly string[] = [...REAL_MODEL_NAMES];
 export const REAL_HEATMAP_BENCHMARKS: readonly string[] = [REAL_BENCHMARK_SLUG];
@@ -173,6 +206,14 @@ export const REAL_HEATMAP_CELLS: HeatmapCell[] = [
     runs: 1,
   },
   {
+    model: REAL_MODEL_LUNA6.name,
+    benchmark: REAL_BENCHMARK_SLUG,
+    raw: norm(REAL_MODEL_LUNA6.raw),
+    normalized: norm(REAL_MODEL_LUNA6.raw),
+    date: "2026-09-22",
+    runs: 1,
+  },
+  {
     model: REAL_MODEL_FLASH.name,
     benchmark: REAL_BENCHMARK_SLUG,
     raw: norm(REAL_MODEL_FLASH.raw),
@@ -196,6 +237,10 @@ export const REAL_TRENDS: TrendSeries[] = [
   {
     model: REAL_MODEL_LUNA.name,
     points: [{ date: "2026-09-18", value: norm(REAL_MODEL_LUNA.raw), runs: 1 }],
+  },
+  {
+    model: REAL_MODEL_LUNA6.name,
+    points: [{ date: "2026-09-22", value: norm(REAL_MODEL_LUNA6.raw), runs: 1 }],
   },
   {
     model: REAL_MODEL_FLASH.name,

@@ -5,7 +5,7 @@
 
 export const DEMO_DATA_LABEL = "SHOWDOWN DATA" as const;
 
-export const DEMO_DATASET_REFRESH_LABEL = "2026-09-18";
+export const DEMO_DATASET_REFRESH_LABEL = "2026-09-22";
 
 export interface HomeModel {
   id: string;
@@ -29,9 +29,9 @@ export interface GlobalStats {
 }
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 4,
+  modelsTracked: 5,
   benchmarks: 1,
-  evalRuns: 4,
+  evalRuns: 5,
   providers: 1,
   datasetRefresh: DEMO_DATASET_REFRESH_LABEL,
 };
@@ -65,6 +65,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       name: "GPT Luna 5.6",
       provider: "bdx-ai",
       score: 91,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "gpt-6-luna",
+      name: "GPT Luna 6",
+      provider: "bdx-ai",
+      score: 89.5,
       delta: 0,
       pricePer1M: null,
       speedTps: null,
@@ -128,4 +138,5 @@ export interface TrendPoint {
 export const DEMO_TREND_SERIES: TrendPoint[] = [
   { label: "Sep 17", topScore: 92, medianScore: 90 },
   { label: "Sep 18", topScore: 94, medianScore: 91.5 },
+  { label: "Sep 22", topScore: 94, medianScore: 91 },
 ];

@@ -56,6 +56,21 @@ const PLAYABLE_BUILDS: Record<
     fps: "58 KB standalone Canvas 2D build",
     tech: "Static code + browser-start verified · no external assets or network calls",
   },
+  "gpt-6-luna": {
+    title: "GPT Luna 6",
+    playUrl: "/play/emberfall",
+    badge: "FOURTH · #4",
+    tagline: "Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups, and escalating nights.",
+    features: [
+      "Twin-stick WASD + mouse aim / hold Space or click to spray fire",
+      "2 zombie tiers: standard horde + armored tough zombies",
+      "Dynamic fuel drain & recharge loop with fuel pickups",
+      "Touch joystick and touch burn button for mobile",
+      "Procedural Web Audio sound effects with mute toggle",
+    ],
+    fps: "60 FPS · 37 KB clean zero-dependency Canvas build",
+    tech: "Syntax verified & browser-tested · pure standalone Canvas 2D",
+  },
   "muse-spark-1-3": {
     title: "PYRO vs ZOMBIES",
     playUrl: "/play/pyro-vs-zombies",
@@ -130,11 +145,11 @@ export default function BenchmarksPage() {
             </p>
           </div>
           <span className="font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
-            3 Evaluated Models
+            5 Evaluated Models
           </span>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
           {display.map((e, idx) => {
             const m = getModel(e.modelSlug);
             const build = PLAYABLE_BUILDS[e.modelSlug];

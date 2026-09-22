@@ -28,6 +28,13 @@ const VERIFIED = [
     blurb: "Street survival with spreading fire, four enemy types, Solar Burst, fire dash, fuel and health pickups, touch controls, and endless waves.",
   },
   {
+    name: "GPT Luna 6",
+    model: "GPT Luna 6",
+    score: 89.5,
+    href: "/play/emberfall",
+    blurb: "Dark woods survivor with smooth twin-stick controls, fuel pickups, escalating nights, mobile touch controls, and sound synthesis.",
+  },
+  {
     name: "PYROCLASM: Zombie Inferno",
     model: "Gemini 3.8 Flash",
     score: 88,
