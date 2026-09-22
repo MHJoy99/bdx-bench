@@ -5,119 +5,73 @@
 [![Issues](https://img.shields.io/github/issues/MHJoy99/bdx-bench)](https://github.com/MHJoy99/bdx-bench/issues)
 [![License](https://img.shields.io/github/license/MHJoy99/bdx-bench)](https://github.com/MHJoy99/bdx-bench/blob/main/LICENSE)
 
-> Blind arena + prompt bank + manual leaderboard for benchmarking our models — zero-dependency Node.js, local-first.
+> Independent local benchmark harness, real-time leaderboard, and playable browser-game showcase — testing AI models against identical real-world software briefs.
 
-Live: https://bench.bdx.market/ (VPS second drive, port 8766, systemd `bdx-bench`) · Local dev: http://127.0.0.1:8765 (`npm start`)
+**Live Production:** [https://bench.bdx.market/](https://bench.bdx.market/)  
+**Telemetry & SEO:** Google Analytics 4 (`G-8P7CD6V133`), Microsoft Clarity (`ymfkbzmbcr`), Dynamic Sitemap (`/sitemap.xml`), and Google Search Console verification.
 
-`[status: v0.1]` `[stack: node built-ins only]` `[suites: swe-mini + terminal-mini]` `[modes: mock · live]` `[gui: :8765 local · :8766 prod]`
+---
 
-## Live demo — play it now
+## 🎮 The Zombie Flamethrower Showdown (`p-001`)
 
-Zombie flamethrower showdown (p-001 / m-001) is live first:
+Every model receives the exact same unprimed user brief:
+> *"make me a video game where i am killing zombies with fire and all please? a nice wonderfull game i can play for fun okay?"*
 
-- Prompt p-001: `make me a video game where i am killing zombies with fire and all please?`
-- Match m-001: Muse Spark 1.3 (0.92, playable [/zombie-pyro-vs-zombies/](https://bench.bdx.market/zombie-pyro-vs-zombies/)) vs Gemini 3.8 Flash (0.88, PYROCLASM design writeup)
-- Vote in [Arena](https://bench.bdx.market/arena.html), comment via scores notes in [Prompt bank](https://bench.bdx.market/prompts.html). Verdict auto-finalizes at 2-vote majority or 3 votes, Elo K=32 from 1000.
+### Verified Leaderboard & Instant Playable Builds:
 
-## Deployment (VPS second drive)
+| Rank | Model | Showdown Score | Playable Build | Description |
+|:---:|:---|:---:|:---:|:---|
+| **#1** | **DeepSeek V4.1 Flash** | **94.0** | [Play PYRE ↗](https://bench.bdx.market/play/pyre-burn-horde) | Thermodynamic fire contagion, 6 enemy classes, Titan bosses & 19 card upgrades. |
+| **#2** | **Muse Spark 1.3** | **92.0** | [Play Pyro vs Zombies ↗](https://bench.bdx.market/play/pyro-vs-zombies) | Pure arcade twin-stick shooter with high-contrast particles & rapid pick-up-and-play. |
+| **#3** | **GPT Luna 5.6** | **91.0** | [Play Firebreak ↗](https://bench.bdx.market/play/firebreak-night-shift) | Dark street survival with 4 enemy types, spreading flame, Solar Burst & fire dash. |
+| **#4** | **GPT Luna 6** | **89.5** | [Play Emberfall ↗](https://bench.bdx.market/play/emberfall) | Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups & mobile sticks. |
+| **#5** | **Gemini 3.8 Flash** | **88.0** | [Play Pyroclasm ↗](https://bench.bdx.market/play/pyroclasm-inferno) | High-particle survivor with secondary fireball unlockables & edge-spawning swarms. |
 
-Deployed from this repo to `/srv/bot-storage/sites/bench.bdx.market` (36G free, not root 9.9G). Systemd `bdx-bench` on `127.0.0.1:8766` reverse-proxied to https. See `deploy/` for unit + nginx template + `deploy.sh`. Never bind `:8765` in tests — use `$env:BDX_BENCH_PORT="18765"`.
+---
 
-## What is this?
+## 🏗️ Architecture & Stack
 
-BDX Bench compares our models on small, deterministic, auto-gradable coding and shell tasks through one OpenAI-compatible gateway — with three ways to evaluate:
+1. **Production Web Application (`web/`)**:
+   - Modern Next.js 16 app with React 19, Tailwind CSS, TypeScript, and standalone output.
+   - Comprehensive model pages (`/models/[slug]`), interactive comparison views (`/compare`), full methodology breakdown (`/methodology`), and trend visualization (`/trends`).
+   - Integrated with Google Analytics 4 (`G-8P7CD6V133`) and Microsoft Clarity (`ymfkbzmbcr`).
+   - Automated dynamic `sitemap.xml` and `robots.txt`.
 
-- **Blind arena** — A/B matches with hidden model identities, named judges (up to 3 votes), majority verdicts, and Elo rankings.
-- **Prompt bank** — a shared library of prompts you run against any model (Kilo, Claude, Codex, gateway) and score manually.
-- **Manual leaderboard** — human scores (0–10 → 0.0–1.0) merged with auto-run results, ranked per model.
+2. **Harness Backend (`server/server.js`)**:
+   - Zero-dependency Node.js HTTP server (`node:http`, `node:fs`, `node:crypto`).
+   - Runs on port `8765` for deterministic evaluation, CLI runs, and local-first benchmarking.
+   - Manages prompts (`data/prompts.json`), scores (`data/scores.json`), blind arena pairings (`data/matches.json`), and Elo ratings.
 
-No cloud account, no database, no `npm install`. Server + static GUI + CLI runner, all local.
+3. **Production VPS Deployment (`deploy/`)**:
+   - Hosted on RackNerd VPS (`/srv/bot-storage/sites/bench.bdx.market`).
+   - Systemd service `bdx-bench` behind Nginx reverse proxy with SSL.
+   - Automated build & deployment script (`deploy/deploy.sh`).
 
-## Pages at a glance
+---
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  BDX Bench  (:8765)                                     │
-│  ┌───────────┐  ┌───────────┐  ┌───────────────────┐     │
-│  │  /        │  │ arena.html│  │ prompts.html      │     │
-│  │ Dashboard │  │ Blind A/B │  │ Prompt bank       │     │
-│  │           │  │           │  │                   │     │
-│  │ • queue   │  │ • A vs B  │  │ • New prompt form │     │
-│  │   runs    │  │   answers │  │ • prompt list     │     │
-│  │ • run list│  │ • 3 votes │  │ • Add score       │     │
-│  │ • leader- │  │ • verdict │  │   (model+0-10)    │     │
-│  │   board   │  │ • Elo     │  │ • manual board    │     │
-│  └───────────┘  └───────────┘  └───────────────────┘     │
-└─────────────────────────────────────────────────────────┘
-```
+## 🚀 Quickstart
 
-## Features
-
-- **Two auto-gradable suites** — `swe-mini` (code-fix) and `terminal-mini` (shell tasks) with `file-contains` / `file-exists` / `shell` checks.
-- **Fair-by-default methodology** — identical prompt per task, temperature 0, one attempt, 60s timeout, isolated workdir.
-- **Mock vs live modes** — offline reproducible mock runs for CI/UI dev; gateway-backed live runs for real benchmarking (never mixed on the leaderboard).
-- **Blind arena workflow** — seeded pairings, hidden identities until verdict, majority-wins judging, journal-first persistence, Elo from 1000 (K=32).
-- **Manual scoring** — 0.9–1.0 correct + insightful down to 0.0–0.2 nonsense; prompt bank seeds included in `tasks/*/`.
-- **Crash-safe JSON storage** — `data/` + `results/` files only; delete to reset.
-- **npm scripts** — `start`, `mock`, `aggregate`, `seed`, `verify` (see `package.json`).
-
-## Repo layout
-
-```
-BDX BENCH/
-├── README.md               <- you are here
-├── package.json            <- scripts: start · mock · aggregate · seed · verify
-├── server/
-│   └── server.js           <- HTTP server + static GUI (:8765)
-├── runner/
-│   ├── run.js              <- CLI runner (mock|live)
-│   └── lib/                <- client · checks · patch helpers
-├── tasks/
-│   ├── swe-mini/           <- 6 code-fix tasks (*.json)
-│   └── terminal-mini/      <- 6 shell tasks (*.json)
-├── public/
-│   ├── index.html          <- dashboard: runs + leaderboard
-│   ├── arena.html          <- blind A/B matches + votes + Elo
-│   ├── prompts.html        <- prompt bank + manual scores
-│   ├── app.js
-│   └── styles.css
-├── docs/
-│   ├── METHODOLOGY.md
-│   ├── ARENA.md
-│   ├── PROMPTS.md
-│   ├── API.md
-│   ├── QUICKSTART.md
-│   └── SPEC.md
-├── models/
-│   └── models.json         <- model ids + effort tiers
-├── scripts/                <- aggregate · seed-demo · verify · run-server
-├── results/                <- run outputs + leaderboard.json (demo runs marked "demo":true)
-├── data/                   <- prompts.json · scores.json · matches.json · ratings.json
-└── tests/
-    └── smoke.js
+### 1. Run the Next.js Production Web App:
+```bash
+cd web
+npm install
+npm run dev
+# Open http://localhost:3000
 ```
 
-## 5-minute quickstart
-
-**0. Prereqs** — a working `node`, nothing else. No `npm install`.
-
-```powershell
-node --version
-```
-
-**1. Start the server** (default port `8765`, override with `$env:BDX_BENCH_PORT`):
-
-```powershell
+### 2. Run the Zero-Dependency Harness Server:
+```bash
 npm start
-# equivalent: node server/server.js
-curl http://127.0.0.1:8765/api/health
+# Open http://127.0.0.1:8765
 ```
 
-**2. Open the GUI:**
+---
 
-```
-http://127.0.0.1:8765
-```
+## 📜 Methodology Guarantee
+
+- **Zero Cherry-Picking:** All games run from single-shot model generations without per-model prompt tuning.
+- **Hands-On Human Review:** Playability, control smoothness, audio synthesis, and performance are judged in real browser environments.
+- **Self-Contained Code:** All builds are 100% client-side HTML5/Canvas with zero external tracking scripts injected into the game canvases.
 
 **3. Bank a prompt** — GUI: `prompts.html` → "New prompt" form. Or API:
 
