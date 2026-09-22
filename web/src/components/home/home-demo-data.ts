@@ -29,9 +29,9 @@ export interface GlobalStats {
 }
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 5,
+  modelsTracked: 6,
   benchmarks: 1,
-  evalRuns: 5,
+  evalRuns: 6,
   providers: 1,
   datasetRefresh: DEMO_DATASET_REFRESH_LABEL,
 };
@@ -56,6 +56,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       provider: "bdx-ai",
       score: 92,
       delta: 2,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "gpt-6-sol",
+      name: "GPT 6 Sol",
+      provider: "bdx-ai",
+      score: 91.5,
+      delta: 0,
       pricePer1M: null,
       speedTps: null,
       contextK: null,

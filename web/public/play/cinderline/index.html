@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#11191b">
+  <title>GPT 6 Sol — Zombie Flamethrower Build</title>
+  <style>
+    :root { color-scheme: dark; --paper: #f4f0df; --muted: #9baaa6; --ember: #ffad45; --hot: #f45b35; --mint: #9bc8b9; --dark: #11191b; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--dark); font-family: "Trebuchet MS", Arial, sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+    #game { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+    .screen-grain { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: .24; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,.11) 4px 5px); }
+    .vignette { position: fixed; inset: 0; pointer-events: none; z-index: 2; box-shadow: inset 0 0 145px 26px rgba(3,9,12,.72); }
+    .hud { position: fixed; inset: 0; pointer-events: none; z-index: 3; color: var(--paper); }
+    .hud button { pointer-events: auto; }
+    .topbar { position: absolute; left: 28px; right: 28px; top: 22px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 11px; min-height: 40px; font-family: Impact, "Arial Narrow", sans-serif; font-size: 25px; line-height: 1; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 2px 14px #000; white-space: nowrap; }
+    .brand-mark { position: relative; width: 24px; height: 24px; border: 3px solid var(--ember); transform: rotate(45deg); }
+    .brand-mark:after { content: ""; position: absolute; width: 9px; height: 9px; background: var(--hot); left: 5px; top: 5px; }
+    .brand span:last-child { color: var(--ember); }
+    .top-right { display: flex; align-items: center; gap: 20px; }
+    .top-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 74px; text-shadow: 0 2px 12px #000; }
+    .top-stat small, .meter-label, .ability-label, .overlay-kicker, .overlay-meta, .wave-kicker { font-family: Consolas, "Courier New", monospace; font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+    .top-stat strong { font-family: Impact, "Arial Narrow", sans-serif; font-size: 24px; font-weight: normal; letter-spacing: 1px; line-height: 1; }
+    .top-stat.wave-stat strong { color: var(--ember); }
+    .icon-btn { width: 39px; height: 39px; flex: 0 0 39px; display: grid; place-items: center; border: 1px solid rgba(205,226,216,.36); background: rgba(17,26,28,.72); color: var(--paper); border-radius: 4px; font-size: 21px; line-height: 1; backdrop-filter: blur(8px); }
+    .icon-btn:hover { background: rgba(65,85,84,.8); border-color: var(--mint); }
+    .icon-btn svg, .touch-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .bottom-hud { position: absolute; left: 28px; right: 28px; bottom: 24px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+    .vitals { width: min(290px, 31vw); display: grid; gap: 12px; padding: 15px 17px 13px; background: rgba(12,23,25,.78); border: 1px solid rgba(151,193,180,.18); border-left: 3px solid var(--ember); backdrop-filter: blur(10px); }
+    .meter-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+    .meter-head strong { color: var(--paper); font: 15px Consolas, monospace; }
+    .meter-track { height: 6px; background: rgba(205,221,213,.15); overflow: hidden; }
+    .meter-fill { height: 100%; width: 100%; transition: width .13s linear; }
+    #health-fill { background: linear-gradient(90deg, #ec684c, #ffad5d); }
+    #fuel-fill { background: linear-gradient(90deg, #6bbba8, #e3c969); }
+    .bottom-right { display: flex; flex-direction: column; align-items: flex-end; gap: 11px; }
+    .combo { height: 24px; color: var(--ember); font: 18px Impact, sans-serif; letter-spacing: 1px; text-shadow: 0 2px 10px #000; opacity: 0; transition: opacity .2s; }
+    .combo.visible { opacity: 1; }
+    .abilities { display: flex; gap: 8px; }
+    .ability { width: 88px; height: 58px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 5px; padding: 9px 11px; background: rgba(12,23,25,.78); border: 1px solid rgba(151,193,180,.24); backdrop-filter: blur(10px); }
+    .ability:before { content: ""; position: absolute; inset: auto 0 0; height: 3px; background: var(--ember); transform-origin: left; transform: scaleX(var(--ready, 1)); }
+    .ability.cooling { opacity: .68; }
+    .ability strong { font: 18px Impact, sans-serif; line-height: 1; letter-spacing: .7px; }
+    .ability-label { font-size: 9px; letter-spacing: 1px; }
+    .ability kbd { position: absolute; top: 6px; right: 7px; color: #9baaa6; font: 10px Consolas, monospace; }
+    .center-message { position: absolute; top: 19%; left: 50%; transform: translateX(-50%); text-align: center; opacity: 0; transition: opacity .3s; text-shadow: 0 3px 24px #000; white-space: nowrap; }
+    .center-message.visible { opacity: 1; }
+    .center-message .wave-kicker { display: block; color: var(--mint); margin-bottom: 7px; }
+    .center-message strong { font: 58px Impact, "Arial Narrow", sans-serif; letter-spacing: 2px; }
+    .center-message em { display: block; margin-top: 3px; color: var(--ember); font: normal 12px Consolas, monospace; letter-spacing: 3px; }
+    .overlay { position: fixed; inset: 0; z-index: 5; display: flex; align-items: stretch; background: rgba(2,8,10,.23); transition: opacity .22s; }
+    .overlay.hidden { opacity: 0; pointer-events: none; }
+    .overlay-panel { position: relative; width: min(470px, 100%); padding: max(40px, 7vh) 48px 40px; display: flex; flex-direction: column; justify-content: space-between; background: rgba(11,20,23,.91); border-right: 1px solid rgba(183,210,197,.22); backdrop-filter: blur(15px); color: var(--paper); }
+    .overlay-panel:before { content: ""; position: absolute; top: 0; left: 48px; width: 52px; height: 4px; background: var(--ember); }
+    .overlay-kicker { color: var(--ember); letter-spacing: 3px; }
+    .overlay-body h1 { margin: 23px 0 14px; font: normal 76px/.88 Impact, "Arial Narrow", sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+    .overlay-body h1 span { display: block; color: var(--ember); }
+    .overlay-body p { max-width: 300px; margin: 0; color: #c8d1c7; font-size: 17px; line-height: 1.5; }
+    .primary-action { margin-top: 34px; min-width: 185px; height: 54px; padding: 0 21px; display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; border: 0; border-radius: 3px; background: var(--ember); color: #142023; font: 18px Impact, sans-serif; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 8px 26px rgba(255,137,44,.18); }
+    .primary-action:hover { background: #ffca76; transform: translateY(-1px); }
+    .primary-action span { font: 24px Arial, sans-serif; }
+    .secondary-action { display: none; margin: 13px 0 0; padding: 8px 0; background: none; border: 0; color: var(--mint); font: 12px Consolas, monospace; letter-spacing: 2px; text-transform: uppercase; }
+    .secondary-action:hover { color: var(--paper); }
+    .overlay-meta { display: flex; flex-wrap: wrap; gap: 13px 21px; padding-top: 20px; border-top: 1px solid rgba(170,199,187,.22); line-height: 1.8; letter-spacing: 1px; }
+    .overlay-meta b { color: var(--paper); font-weight: normal; }
+    .help { position: fixed; z-index: 7; right: 28px; top: 74px; width: min(270px, calc(100vw - 36px)); padding: 15px 17px; background: #142024; border: 1px solid rgba(169,202,190,.32); color: var(--paper); box-shadow: 0 20px 42px #0008; font: 12px/1.9 Consolas, monospace; }
+    .help[hidden] { display: none; }
+    .help h2 { font: 17px Impact, sans-serif; letter-spacing: 1px; margin: 0 0 7px; }
+    .help dl { margin: 0; }
+    .help div { display: flex; justify-content: space-between; gap: 14px; }
+    .help dt { color: var(--muted); }
+    .help dd { margin: 0; text-align: right; }
+    .help .touch-help { display: none; }
+    .touch-buttons { position: fixed; z-index: 4; right: 18px; bottom: 139px; display: none; gap: 10px; }
+    .touch-btn { width: 55px; height: 55px; display: grid; place-items: center; color: var(--paper); background: rgba(14,26,28,.62); border: 1px solid rgba(191,214,201,.52); border-radius: 50%; backdrop-filter: blur(8px); touch-action: none; }
+    .touch-btn:active { color: #162126; background: var(--ember); }
+    .touch-btn:disabled { opacity: .32; }
+    @media (pointer: coarse) { .touch-buttons { display: flex; } .help .desktop-help { display: none; } .help .touch-help { display: block; } #game { cursor: default; } .ability kbd { display: none; } }
+    @media (max-width: 650px) {
+      .topbar { left: 14px; right: 14px; top: 13px; gap: 8px; }
+      .brand { font-size: 19px; gap: 8px; min-height: 36px; }
+      .brand-mark { width: 18px; height: 18px; border-width: 2px; }
+      .brand-mark:after { width: 7px; height: 7px; left: 4px; top: 4px; }
+      .top-right { gap: 10px; }
+      .top-stat { min-width: 45px; }
+      .top-stat small { font-size: 8px; letter-spacing: 1px; }
+      .top-stat strong { font-size: 18px; }
+      .top-stat.score-stat { display: none; }
+      .icon-btn { width: 34px; height: 34px; flex-basis: 34px; }
+      .bottom-hud { left: 14px; right: 14px; bottom: 14px; align-items: flex-end; gap: 8px; }
+      .vitals { width: min(210px, 50vw); padding: 10px; gap: 9px; }
+      .meter-label { font-size: 8px; letter-spacing: 1px; }
+      .meter-head strong { font-size: 12px; }
+      .ability { width: 61px; height: 47px; padding: 7px 6px; }
+      .ability strong { font-size: 14px; }
+      .ability-label { font-size: 8px; }
+      .combo { font-size: 14px; height: 18px; }
+      .center-message { top: 21%; }
+      .center-message strong { font-size: 42px; }
+      .overlay-panel { padding: max(36px, 8vh) 30px 26px; }
+      .overlay-panel:before { left: 30px; }
+      .overlay-body h1 { font-size: 62px; }
+      .overlay-body p { font-size: 16px; }
+      .help { right: 14px; top: 59px; }
+    }
+    @media (max-width: 370px) { .brand { font-size: 17px; } .top-right { gap: 6px; } .ability { width: 54px; } .vitals { width: 47vw; } }
+    @media (max-height: 580px) { .overlay-panel { padding-top: 25px; padding-bottom: 22px; } .overlay-body h1 { font-size: 56px; margin: 12px 0; } .primary-action { margin-top: 18px; } .touch-buttons { bottom: 95px; } }
+  </style>
+</head>
+<body>
+  <canvas id="game" aria-label="Top-down zombie survival game"></canvas>
+  <div class="screen-grain"></div><div class="vignette"></div>
+  <div class="hud" aria-live="off">
+    <div class="topbar">
+      <div class="brand"><span class="brand-mark"></span><span>GPT <span>6 SOL</span></span></div>
+      <div class="top-right">
+        <div class="top-stat wave-stat"><small>WAVE</small><strong id="wave-value">01</strong></div>
+        <div class="top-stat score-stat"><small>SCORE</small><strong id="score-value">0</strong></div>
+        <button class="icon-btn" id="sound-btn" aria-label="Mute audio" title="Mute audio"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15 9a5 5 0 0 1 0 6M18 6a9 9 0 0 1 0 12"/></svg></button>
+        <button class="icon-btn" id="help-btn" aria-label="Controls" title="Controls">?</button>
+        <button class="icon-btn" id="pause-btn" aria-label="Pause game" title="Pause game"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+      </div>
+    </div>
+    <div id="center-message" class="center-message"><span class="wave-kicker">SURVIVE THE NIGHT</span><strong id="message-title">WAVE 01</strong><em id="message-subtitle">THEY ARE COMING</em></div>
+    <div class="bottom-hud">
+      <div class="vitals">
+        <div><div class="meter-head"><span class="meter-label">VITAL SIGNS</span><strong id="health-value">100 / 100</strong></div><div class="meter-track"><div class="meter-fill" id="health-fill"></div></div></div>
+        <div><div class="meter-head"><span class="meter-label">FIRE RESERVE</span><strong id="fuel-value">100%</strong></div><div class="meter-track"><div class="meter-fill" id="fuel-fill"></div></div></div>
+      </div>
+      <div class="bottom-right"><div class="combo" id="combo-value">x2 HEAT CHAIN</div><div class="abilities"><div class="ability" id="bomb-ability"><strong id="bomb-text">READY</strong><span class="ability-label">FIREBOMB</span><kbd>F / RMB</kbd></div><div class="ability" id="dash-ability"><strong id="dash-text">READY</strong><span class="ability-label">DASH</span><kbd>SPACE</kbd></div></div></div>
+    </div>
+  </div>
+  <div class="touch-buttons" id="touch-buttons">
+    <button class="touch-btn" id="touch-bomb" aria-label="Throw firebomb" title="Firebomb"><svg viewBox="0 0 24 24"><path d="m13 3 2 4 4 2-3 2 2 3-3 1-2 5-4-3-4 1 1-5-2-3 5-2 4-5Z"/><path d="m10 10 3 4"/></svg></button>
+    <button class="touch-btn" id="touch-dash" aria-label="Dash" title="Dash"><svg viewBox="0 0 24 24"><path d="m13 3-8 10h6l-1 8 9-11h-6V3Z"/></svg></button>
+  </div>
+  <aside class="help" id="help" hidden><h2>CONTROLS</h2><dl class="desktop-help"><div><dt>MOVE</dt><dd>W A S D / ARROWS</dd></div><div><dt>AIM + FIRE</dt><dd>MOUSE + HOLD CLICK</dd></div><div><dt>FIREBOMB</dt><dd>F / RIGHT CLICK</dd></div><div><dt>DASH</dt><dd>SPACE</dd></div><div><dt>PAUSE</dt><dd>P / ESC</dd></div></dl><dl class="touch-help"><div><dt>MOVE</dt><dd>DRAG LEFT SIDE</dd></div><div><dt>AIM + FIRE</dt><dd>DRAG RIGHT SIDE</dd></div><div><dt>FIREBOMB + DASH</dt><dd>BUTTONS</dd></div></dl></aside>
+  <div class="overlay" id="overlay">
+      <div class="overlay-panel">
+        <div class="overlay-kicker" id="overlay-kicker">GPT 6 SOL / VERIFIED BUILD</div>
+        <div class="overlay-body"><h1 id="overlay-title">CINDER<span>LINE</span></h1><p id="overlay-description">The city is gone. The fire is yours.</p><button class="primary-action" id="main-action">BEGIN RUN <span>↗</span></button><br><button class="secondary-action" id="secondary-action">RESTART RUN</button></div>
+      <div class="overlay-meta"><span>PERSONAL BEST <b id="best-value">0</b></span><span>FURTHEST WAVE <b id="best-wave">01</b></span></div>
+    </div>
+  </div>
+  <script>
+  (() => {
+    'use strict';
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const $ = id => document.getElementById(id);
+    const el = {
+      overlay: $('overlay'), kicker: $('overlay-kicker'), title: $('overlay-title'), description: $('overlay-description'),
+      main: $('main-action'), secondary: $('secondary-action'), best: $('best-value'), bestWave: $('best-wave'),
+      wave: $('wave-value'), score: $('score-value'), health: $('health-value'), healthFill: $('health-fill'),
+      fuel: $('fuel-value'), fuelFill: $('fuel-fill'), combo: $('combo-value'), message: $('center-message'),
+      messageTitle: $('message-title'), messageSubtitle: $('message-subtitle'), bomb: $('bomb-ability'),
+      bombText: $('bomb-text'), dash: $('dash-ability'), dashText: $('dash-text'), help: $('help'),
+      sound: $('sound-btn'), pause: $('pause-btn'), touchBomb: $('touch-bomb'), touchDash: $('touch-dash')
+    };
+    const WORLD = { w: 2400, h: 1600 };
+    const TAU = Math.PI * 2;
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    const hash = (x, y) => { let v = Math.imul(x + 307, 374761393) ^ Math.imul(y + 179, 668265263); v = Math.imul(v ^ v >>> 13, 1274126177); return ((v ^ v >>> 16) >>> 0) / 4294967295; };
+    let width = innerWidth, height = innerHeight, dpr = 1, phase = 'menu', lastTime = 0, clock = 0;
+    let player, zombies = [], particles = [], pickups = [], bombs = [], pools = [], floaters = [];
+    let wave = 1, waveGoal = 0, spawned = 0, spawnTimer = 0, nextWaveTimer = -1, score = 0;
+    let combo = 0, comboTimer = 0, shake = 0, flash = 0, messageTimer = 0, fireTick = 0, soundTick = 0;
+    let best = 0, bestWave = 1, muted = false, audio;
+    const camera = { x: 0, y: 0 };
+    const keys = new Set();
+    const pointer = { x: width * .7, y: height * .5, firing: false, moved: false };
+    const touch = { moveId: null, aimId: null, moveBase: null, movePoint: null, aimBase: null, aimPoint: null, dx: 0, dy: 0 };
+    const defs = {
+      walker: { hp: 76, speed: 66, radius: 17, damage: 11, color: '#8faa80' },
+      runner: { hp: 49, speed: 128, radius: 13, damage: 8, color: '#c5b978' },
+      brute: { hp: 245, speed: 43, radius: 25, damage: 20, color: '#7893a0' }
+    };
+    try { best = Number(localStorage.getItem('cinderline-best')) || 0; bestWave = Number(localStorage.getItem('cinderline-wave')) || 1; } catch (_) {}
+    function storeRecord() { try { localStorage.setItem('cinderline-best', String(best)); localStorage.setItem('cinderline-wave', String(bestWave)); } catch (_) {} }
+    function resize() {
+      width = innerWidth; height = innerHeight; dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+      canvas.style.width = width + 'px'; canvas.style.height = height + 'px';
+      camera.x = clamp(player.x - width / 2, 0, Math.max(0, WORLD.w - width));
+      camera.y = clamp(player.y - height / 2, 0, Math.max(0, WORLD.h - height));
+    }
+    function reset() {
+      player = { x: WORLD.w / 2, y: WORLD.h / 2, hp: 100, fuel: 100, facing: -.45, invuln: 0, dash: 0, dashCd: 0, dashX: 0, dashY: 0, bombCd: 0, step: 0 };
+      zombies = []; particles = []; pickups = []; bombs = []; pools = []; floaters = [];
+      wave = 1; waveGoal = 0; spawned = 0; spawnTimer = .15; nextWaveTimer = -1;
+      score = 0; combo = 0; comboTimer = 0; shake = 0; flash = 0; fireTick = 0; soundTick = 0;
+      pointer.firing = false; touch.dx = touch.dy = 0;
+      camera.x = clamp(player.x - width / 2, 0, Math.max(0, WORLD.w - width));
+      camera.y = clamp(player.y - height / 2, 0, Math.max(0, WORLD.h - height));
+      updateHud();
+    }
+    function sound(freq, end, duration, kind = 'sine', volume = .06) {
+      if (muted) return;
+      try {
+        audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+        if (audio.state === 'suspended') audio.resume();
+        const osc = audio.createOscillator(), gain = audio.createGain(), now = audio.currentTime;
+        osc.type = kind; osc.frequency.setValueAtTime(freq, now); osc.frequency.exponentialRampToValueAtTime(Math.max(end, 20), now + duration);
+        gain.gain.setValueAtTime(volume, now); gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+        osc.connect(gain); gain.connect(audio.destination); osc.start(now); osc.stop(now + duration);
+      } catch (_) {}
+    }
+    function announce(title, subtitle, duration = 2.2) {
+      el.messageTitle.textContent = title; el.messageSubtitle.textContent = subtitle;
+      messageTimer = duration; el.message.classList.add('visible');
+    }
+    function showOverlay(kind) {
+      el.overlay.classList.remove('hidden');
+      el.best.textContent = best.toLocaleString(); el.bestWave.textContent = String(bestWave).padStart(2, '0');
+      el.secondary.style.display = kind === 'pause' ? 'inline-block' : 'none';
+      if (kind === 'pause') {
+        el.kicker.textContent = 'SECTOR 07 / ON HOLD'; el.title.innerHTML = 'STAY<span>ALIVE</span>';
+        el.description.textContent = 'The dead can wait.'; el.main.innerHTML = 'RESUME <span>↗</span>';
+      } else if (kind === 'over') {
+        el.kicker.textContent = 'SIGNAL LOST / RUN COMPLETE'; el.title.innerHTML = 'LAST<span>LIGHT</span>';
+        el.description.textContent = `You reached wave ${wave} with ${score.toLocaleString()} points.`;
+        el.main.innerHTML = 'TRY AGAIN <span>↗</span>';
+      } else {
+        el.kicker.textContent = 'LAST LIGHT / SECTOR 07'; el.title.innerHTML = 'CINDER<span>LINE</span>';
+        el.description.textContent = 'The city is gone. The fire is yours.';
+        el.main.innerHTML = 'BEGIN RUN <span>↗</span>';
+      }
+    }
+    function start() {
+      reset(); phase = 'playing'; el.overlay.classList.add('hidden'); el.help.hidden = true;
+      startWave(); sound(330, 600, .25, 'sawtooth', .06);
+    }
+    function startWave() {
+      waveGoal = 7 + wave * 4; spawned = 0; spawnTimer = .15; nextWaveTimer = -1;
+      player.hp = Math.min(100, player.hp + (wave > 1 ? 16 : 0));
+      player.fuel = Math.min(100, player.fuel + (wave > 1 ? 35 : 0));
+      bestWave = Math.max(bestWave, wave); storeRecord();
+      announce('WAVE ' + String(wave).padStart(2, '0'), wave === 1 ? 'THEY ARE COMING' : 'HOLD THE LINE');
+      updateHud();
+    }
+    function pause() {
+      if (phase === 'playing') { phase = 'pause'; pointer.firing = false; showOverlay('pause'); }
+      else if (phase === 'pause') { phase = 'playing'; el.overlay.classList.add('hidden'); }
+    }
+    function gameOver() {
+      phase = 'over'; pointer.firing = false; best = Math.max(best, score); storeRecord();
+      showOverlay('over'); sound(170, 38, .8, 'sawtooth', .1);
+    }
+    function spawnZombie() {
+      const roll = Math.random(), type = wave >= 3 && roll < Math.min(.1 + wave * .018, .26) ? 'brute' : wave >= 2 && roll < Math.min(.27 + wave * .025, .47) ? 'runner' : 'walker';
+      const angle = rand(0, TAU), radius = Math.max(width, height) * .62 + rand(70, 190);
+      let x = clamp(player.x + Math.cos(angle) * radius, 45, WORLD.w - 45);
+      let y = clamp(player.y + Math.sin(angle) * radius, 45, WORLD.h - 45);
+      const bounds = { left: camera.x, right: camera.x + width, top: camera.y, bottom: camera.y + height };
+      if (x > bounds.left + 30 && x < bounds.right - 30 && y > bounds.top + 30 && y < bounds.bottom - 30) {
+        const edge = Math.floor(rand(0, 4));
+        if (edge === 0) x = clamp(bounds.left - 45, 40, WORLD.w - 40);
+        if (edge === 1) x = clamp(bounds.right + 45, 40, WORLD.w - 40);
+        if (edge === 2) y = clamp(bounds.top - 45, 40, WORLD.h - 40);
+        if (edge === 3) y = clamp(bounds.bottom + 45, 40, WORLD.h - 40);
+      }
+      const def = defs[type], hp = def.hp * (1 + (wave - 1) * .12);
+      zombies.push({ x, y, type, hp, maxHp: hp, burn: 0, burnTick: 0, attack: 0, hit: 0, seed: rand(0, TAU), radius: def.radius, dead: false });
+    }
+    function particle(x, y, color, count, speed = 110, life = .5, size = 3) {
+      for (let i = 0; i < count; i++) {
+        const a = rand(0, TAU), v = rand(speed * .25, speed);
+        particles.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: rand(life * .5, life), max: life, size: rand(size * .5, size), color });
+      }
+      if (particles.length > 460) particles.splice(0, particles.length - 460);
+    }
+    function damageZombie(z, amount, ignite = 0) {
+      if (z.dead) return;
+      z.hp -= amount; z.hit = .13; z.burn = Math.max(z.burn, ignite);
+      if (z.hp <= 0) {
+        z.dead = true; combo = comboTimer > 0 ? Math.min(combo + 1, 8) : 1; comboTimer = 3.2;
+        const points = 100 * combo * (z.type === 'brute' ? 3 : z.type === 'runner' ? 2 : 1);
+        score += points; if (score > best) { best = score; storeRecord(); }
+        floaters.push({ x: z.x, y: z.y - 18, text: '+' + points, life: 1, color: '#ffd486' });
+        particle(z.x, z.y, z.burn ? '#ff9b3d' : '#96b99d', z.type === 'brute' ? 20 : 11, 115, .6, 4);
+        if (Math.random() < .14 || (z.type === 'brute' && Math.random() < .48)) pickups.push({ x: z.x, y: z.y, kind: Math.random() < .5 ? 'med' : 'fuel', age: 0 });
+        sound(z.type === 'brute' ? 140 : 210, 65, .13, 'triangle', .026);
+      }
+    }
+    function dash() {
+      if (phase !== 'playing' || player.dashCd > 0) return;
+      let dx = (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0) + touch.dx;
+      let dy = (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0) + touch.dy;
+      const mag = Math.hypot(dx, dy) || 1;
+      if (Math.abs(dx) + Math.abs(dy) < .05) { dx = Math.cos(player.facing); dy = Math.sin(player.facing); }
+      else { dx /= mag; dy /= mag; }
+      player.dashX = dx; player.dashY = dy; player.dash = .19; player.dashCd = 3.5; player.invuln = Math.max(player.invuln, .28);
+      particle(player.x, player.y, '#9bd8ca', 18, 200, .34, 4); shake = Math.max(shake, 5); sound(330, 90, .2, 'sawtooth', .06);
+    }
+    function bomb() {
+      if (phase !== 'playing' || player.bombCd > 0) return;
+      player.bombCd = 7;
+      const a = player.facing;
+      bombs.push({ x: player.x + Math.cos(a) * 24, y: player.y + Math.sin(a) * 24, vx: Math.cos(a) * 610, vy: Math.sin(a) * 610, time: .53, trail: 0 });
+      sound(390, 150, .23, 'triangle', .055);
+    }
+    function explode(x, y) {
+      pools.push({ x, y, radius: 145, life: 4.4, max: 4.4, tick: 0 });
+      for (const z of zombies) if (!z.dead && Math.hypot(z.x - x, z.y - y) < 155 + z.radius) damageZombie(z, 72, 3.5);
+      particle(x, y, '#ffae48', 65, 270, .9, 7); particle(x, y, '#f45b35', 32, 155, 1.2, 8);
+      shake = Math.max(shake, 13); flash = .17;
+      sound(100, 35, .42, 'sawtooth', .15);
+    }
+    function update(dt) {
+      clock += dt; shake = Math.max(0, shake - dt * 32); flash = Math.max(0, flash - dt);
+      if (messageTimer > 0) { messageTimer -= dt; if (messageTimer <= 0) el.message.classList.remove('visible'); }
+      if (phase !== 'playing') return;
+      player.invuln = Math.max(0, player.invuln - dt); player.dashCd = Math.max(0, player.dashCd - dt); player.bombCd = Math.max(0, player.bombCd - dt);
+      let mx = (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0) + touch.dx;
+      let my = (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0) + touch.dy;
+      const m = Math.hypot(mx, my); if (m > 1) { mx /= m; my /= m; }
+      if (player.dash > 0) {
+        player.dash -= dt; player.x += player.dashX * 850 * dt; player.y += player.dashY * 850 * dt;
+        particle(player.x, player.y, '#78c4b9', 2, 60, .34, 5);
+      } else { player.x += mx * 212 * dt; player.y += my * 212 * dt; }
+      player.x = clamp(player.x, 28, WORLD.w - 28); player.y = clamp(player.y, 28, WORLD.h - 28);
+      if (m > .05 || player.dash > 0) player.step += dt * (player.dash > 0 ? 24 : 13);
+      camera.x = clamp(player.x - width / 2, 0, Math.max(0, WORLD.w - width));
+      camera.y = clamp(player.y - height / 2, 0, Math.max(0, WORLD.h - height));
+      if (touch.aimId === null && pointer.moved) player.facing = Math.atan2(pointer.y + camera.y - player.y, pointer.x + camera.x - player.x);
+      if (touch.aimId !== null && touch.aimBase && touch.aimPoint) {
+        const dx = touch.aimPoint.x - touch.aimBase.x, dy = touch.aimPoint.y - touch.aimBase.y;
+        if (Math.hypot(dx, dy) > 8) player.facing = Math.atan2(dy, dx);
+      }
+      const firing = pointer.firing && player.fuel > 0;
+      if (firing) {
+        player.fuel = Math.max(0, player.fuel - dt * 26);
+        fireTick -= dt; soundTick -= dt;
+        while (fireTick <= 0) {
+          fireTick += .023;
+          for (let j = 0; j < 3; j++) {
+            const angle = player.facing + rand(-.28, .28), speed = rand(250, 510);
+            particles.push({ x: player.x + Math.cos(player.facing) * 22, y: player.y + Math.sin(player.facing) * 22,
+              vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: rand(.23, .48), max: .48, size: rand(5, 12), color: Math.random() < .38 ? '#ffe29a' : Math.random() < .58 ? '#ffac48' : '#f45a32', flame: true });
+          }
+        }
+        if (soundTick <= 0) { soundTick = .18; sound(110, 55, .16, 'sawtooth', .018); }
+        for (const z of zombies) {
+          if (z.dead) continue;
+          const dx = z.x - player.x, dy = z.y - player.y, dist = Math.hypot(dx, dy);
+          const delta = Math.atan2(Math.sin(Math.atan2(dy, dx) - player.facing), Math.cos(Math.atan2(dy, dx) - player.facing));
+          if (dist < 238 + z.radius && Math.abs(delta) < .22 + dist / 650 + z.radius / Math.max(dist, 25)) damageZombie(z, 75 * dt, 2.1);
+        }
+      } else { player.fuel = Math.min(100, player.fuel + dt * 15); fireTick = 0; soundTick = 0; }
+      if (particles.length > 460) particles.splice(0, particles.length - 460);
+      if (spawned < waveGoal) {
+        spawnTimer -= dt;
+        if (spawnTimer <= 0) { spawnZombie(); spawned++; spawnTimer = Math.max(.36, 1.05 - wave * .055) * rand(.72, 1.16); }
+      }
+      for (const z of zombies) {
+        if (z.dead) continue;
+        const def = defs[z.type]; z.attack -= dt; z.hit = Math.max(0, z.hit - dt);
+        if (z.burn > 0) {
+          z.burn -= dt; z.burnTick -= dt; damageZombie(z, 15 * dt);
+          if (z.burnTick <= 0) { z.burnTick = .09; particle(z.x + rand(-8,8), z.y - rand(8,23), '#ffad4b', 1, 55, .45, 5); }
+          if (z.dead) continue;
+        }
+        let dx = player.x - z.x, dy = player.y - z.y, dist = Math.hypot(dx, dy) || 1;
+        if (dist > z.radius + 17) {
+          let sx = 0, sy = 0;
+          for (const other of zombies) {
+            if (other === z || other.dead || Math.abs(other.x - z.x) > 48 || Math.abs(other.y - z.y) > 48) continue;
+            const ox = z.x - other.x, oy = z.y - other.y, sep = Math.hypot(ox, oy) || 1;
+            if (sep < z.radius + other.radius + 5) { sx += ox / sep; sy += oy / sep; }
+          }
+          const speed = def.speed * (1 + Math.min(wave - 1, 10) * .027) * (z.burn > 0 ? .84 : 1);
+          z.x += (dx / dist + sx * .65) * speed * dt;
+          z.y += (dy / dist + sy * .65) * speed * dt;
+        } else if (z.attack <= 0 && player.invuln <= 0) {
+          player.hp = Math.max(0, player.hp - def.damage); player.invuln = .68; z.attack = 1.05;
+          shake = Math.max(shake, 9); flash = .22; particle(player.x, player.y, '#f47455', 13, 125, .4, 4);
+          sound(155, 55, .26, 'sawtooth', .1);
+          if (player.hp <= 0) { gameOver(); break; }
+        }
+      }
+      zombies = zombies.filter(z => !z.dead);
+      for (let i = bombs.length - 1; i >= 0; i--) {
+        const b = bombs[i]; b.x += b.vx * dt; b.y += b.vy * dt; b.time -= dt; b.trail -= dt;
+        if (b.trail <= 0) { b.trail = .025; particle(b.x, b.y, '#ffad45', 2, 52, .36, 5); }
+        if (b.time <= 0 || b.x < 25 || b.x > WORLD.w - 25 || b.y < 25 || b.y > WORLD.h - 25) { explode(b.x, b.y); bombs.splice(i, 1); }
+      }
+      for (let i = pools.length - 1; i >= 0; i--) {
+        const p = pools[i]; p.life -= dt; p.tick -= dt;
+        if (p.tick <= 0) {
+          p.tick = .12;
+          for (const z of zombies) if (Math.hypot(z.x - p.x, z.y - p.y) < p.radius * .85) damageZombie(z, 4, .7);
+          for (let j = 0; j < 3; j++) { const a = rand(0, TAU), r = Math.sqrt(Math.random()) * p.radius; particle(p.x + Math.cos(a) * r, p.y + Math.sin(a) * r, '#ff9b40', 1, 45, .45, 5); }
+        }
+        if (p.life <= 0) pools.splice(i, 1);
+      }
+      for (let i = pickups.length - 1; i >= 0; i--) {
+        const p = pickups[i]; p.age += dt;
+        if (p.age > 16) { pickups.splice(i, 1); continue; }
+        if (distance(p, player) < 32) {
+          if (p.kind === 'med') player.hp = Math.min(100, player.hp + 25);
+          else player.fuel = Math.min(100, player.fuel + 40);
+          floaters.push({ x: p.x, y: p.y - 15, text: p.kind === 'med' ? '+25 HP' : '+40 FUEL', life: 1.2, color: '#b5e5c6' });
+          sound(440, 880, .28, 'sine', .07); pickups.splice(i, 1);
+        }
+      }
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 1 - Math.min(dt * (p.flame ? 1.3 : 2), .9); p.vy *= 1 - Math.min(dt * (p.flame ? 1.3 : 2), .9);
+        p.life -= dt; if (p.life <= 0) particles.splice(i, 1);
+      }
+      for (let i = floaters.length - 1; i >= 0; i--) { floaters[i].life -= dt; floaters[i].y -= dt * 28; if (floaters[i].life <= 0) floaters.splice(i, 1); }
+      if (comboTimer > 0) comboTimer -= dt; else combo = 0;
+      if (spawned >= waveGoal && zombies.length === 0 && phase === 'playing') {
+        if (nextWaveTimer < 0) { nextWaveTimer = 3; announce('SECTOR CLEAR', 'BREATHE. RELOAD. REPEAT.', 2.4); sound(490, 760, .35, 'triangle', .08); }
+        else { nextWaveTimer -= dt; if (nextWaveTimer <= 0) { wave++; startWave(); } }
+      }
+      updateHud();
+    }
+    function updateHud() {
+      el.wave.textContent = String(wave).padStart(2, '0'); el.score.textContent = score.toLocaleString();
+      el.health.textContent = Math.ceil(player.hp) + ' / 100'; el.healthFill.style.width = player.hp + '%';
+      el.fuel.textContent = Math.ceil(player.fuel) + '%'; el.fuelFill.style.width = player.fuel + '%';
+      el.combo.textContent = 'x' + combo + ' HEAT CHAIN'; el.combo.classList.toggle('visible', combo > 1 && comboTimer > 0);
+      el.bomb.style.setProperty('--ready', 1 - player.bombCd / 7); el.bomb.classList.toggle('cooling', player.bombCd > 0);
+      el.bombText.textContent = player.bombCd > 0 ? player.bombCd.toFixed(1) + 's' : 'READY';
+      el.dash.style.setProperty('--ready', 1 - player.dashCd / 3.5); el.dash.classList.toggle('cooling', player.dashCd > 0);
+      el.dashText.textContent = player.dashCd > 0 ? player.dashCd.toFixed(1) + 's' : 'READY';
+      el.touchBomb.disabled = player.bombCd > 0 || phase !== 'playing'; el.touchDash.disabled = player.dashCd > 0 || phase !== 'playing';
+    }
+    function fillCircle(x, y, r, color) { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+    function glow(x, y, radius, inner, outer = 'rgba(255,150,55,0)') {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius); g.addColorStop(0, inner); g.addColorStop(1, outer);
+      ctx.fillStyle = g; ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    }
+    function background() {
+      ctx.fillStyle = '#162226'; ctx.fillRect(0, 0, WORLD.w, WORLD.h);
+      ctx.fillStyle = '#1c2a2c'; ctx.fillRect(0, 310, WORLD.w, 970);
+      ctx.fillStyle = '#243034'; ctx.fillRect(0, 300, WORLD.w, 10); ctx.fillRect(0, 1280, WORLD.w, 10);
+      ctx.fillStyle = '#294046'; ctx.fillRect(0, 304, WORLD.w, 2); ctx.fillRect(0, 1280, WORLD.w, 2);
+      ctx.setLineDash([29, 40]); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(204,193,133,.13)';
+      for (const y of [620, 970]) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD.w, y); ctx.stroke(); }
+      ctx.setLineDash([]);
+      const x0 = Math.max(0, Math.floor(camera.x / 85) - 1), x1 = Math.min(29, Math.ceil((camera.x + width) / 85) + 1);
+      const y0 = Math.max(0, Math.floor(camera.y / 85) - 1), y1 = Math.min(20, Math.ceil((camera.y + height) / 85) + 1);
+      for (let gx = x0; gx <= x1; gx++) for (let gy = y0; gy <= y1; gy++) {
+        const x = gx * 85, y = gy * 85, h = hash(gx, gy);
+        if (h < .48) {
+          ctx.strokeStyle = h < .17 ? 'rgba(130,165,156,.12)' : 'rgba(7,17,20,.24)'; ctx.lineWidth = h < .17 ? 1.5 : 2;
+          ctx.beginPath(); ctx.moveTo(x + h * 63, y + 8); ctx.lineTo(x + 24 + h * 62, y + 37);
+          ctx.lineTo(x + 12 + h * 72, y + 42 + h * 18); ctx.stroke();
+        } else if (h > .84) {
+          ctx.fillStyle = 'rgba(108,147,138,.18)'; ctx.fillRect(x + 18 + h * 14, y + 26, 3, 5);
+          ctx.fillRect(x + 24 + h * 14, y + 34, 2, 3);
+        }
+        if (h > .68 && h < .75) { ctx.fillStyle = 'rgba(9,17,19,.23)'; ctx.beginPath(); ctx.ellipse(x + 40, y + 40, 28, 12, h * 6, 0, TAU); ctx.fill(); }
+      }
+      for (let x = 160; x < WORLD.w; x += 520) for (const y of [180, 1420]) {
+        glow(x, y, 195, 'rgba(89,190,179,.095)', 'rgba(89,190,179,0)');
+        fillCircle(x, y, 9, '#0c1517'); fillCircle(x, y, 5, '#598c86'); fillCircle(x, y, 2, '#b4e2c4');
+      }
+      ctx.strokeStyle = '#53645c'; ctx.lineWidth = 8; ctx.strokeRect(7, 7, WORLD.w - 14, WORLD.h - 14);
+      ctx.strokeStyle = 'rgba(213,204,151,.31)'; ctx.lineWidth = 2; ctx.strokeRect(19, 19, WORLD.w - 38, WORLD.h - 38);
+      // Fixed markings make the district readable as a place, not an endless scrolling texture.
+      for (const [x,y] of [[490,465],[1730,1100],[1180,450],[2130,695]]) {
+        ctx.save(); ctx.translate(x,y); ctx.rotate(-.12);
+        ctx.fillStyle = 'rgba(9,17,19,.35)'; ctx.fillRect(-31,-12,62,26);
+        ctx.fillStyle = '#455453'; for (let i = -22; i <= 22; i += 11) ctx.fillRect(i,-9,4,20);
+        ctx.restore();
+      }
+    }
+    function drawPool(p) {
+      const alpha = Math.min(1, p.life / .6); ctx.save(); ctx.globalAlpha = alpha;
+      glow(p.x, p.y, p.radius * 1.25, 'rgba(255,105,35,.2)');
+      const g = ctx.createRadialGradient(p.x,p.y,12,p.x,p.y,p.radius);
+      g.addColorStop(0,'rgba(255,128,43,.55)'); g.addColorStop(.46,'rgba(223,77,28,.25)'); g.addColorStop(1,'rgba(255,103,31,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,p.radius,0,TAU); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,169,69,.43)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x,p.y,p.radius * .66 + Math.sin(clock * 7) * 4,0,TAU); ctx.stroke(); ctx.restore();
+    }
+    function drawPickup(p) {
+      const bob = Math.sin(clock * 4 + p.x) * 4, y = p.y + bob;
+      glow(p.x, y, 34, p.kind === 'med' ? 'rgba(121,221,172,.25)' : 'rgba(255,200,86,.25)');
+      fillCircle(p.x,p.y + 11,13,'rgba(0,0,0,.25)');
+      ctx.fillStyle = p.kind === 'med' ? '#78c5a3' : '#d5af62';
+      ctx.beginPath(); ctx.moveTo(p.x,y-13); ctx.lineTo(p.x+12,y); ctx.lineTo(p.x,y+13); ctx.lineTo(p.x-12,y); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#193034';
+      if (p.kind === 'med') { ctx.fillRect(p.x-2,y-7,4,14); ctx.fillRect(p.x-7,y-2,14,4); }
+      else { ctx.beginPath(); ctx.moveTo(p.x+2,y-8); ctx.lineTo(p.x-4,y+1); ctx.lineTo(p.x+1,y+1); ctx.lineTo(p.x-2,y+8); ctx.lineTo(p.x+6,y-2); ctx.lineTo(p.x+1,y-2); ctx.fill(); }
+    }
+    function drawZombie(z) {
+      const def = defs[z.type], r = z.radius, a = Math.atan2(player.y - z.y, player.x - z.x);
+      ctx.save(); ctx.translate(z.x,z.y); ctx.rotate(a);
+      ctx.fillStyle = 'rgba(0,0,0,.36)'; ctx.beginPath(); ctx.ellipse(2, 8, r * 1.2, r * .65, 0, 0, TAU); ctx.fill();
+      const swing = Math.sin(clock * (z.type === 'runner' ? 15 : 8) + z.seed) * (z.type === 'brute' ? 3 : 5);
+      ctx.fillStyle = z.burn > 0 ? '#bd7349' : def.color;
+      fillCircle(-r * .35, -r * .7 + swing, r * .38, ctx.fillStyle);
+      fillCircle(-r * .35, r * .7 - swing, r * .38, ctx.fillStyle);
+      ctx.fillStyle = z.hit > 0 ? '#fff1c5' : z.burn > 0 ? '#895744' : z.type === 'brute' ? '#5c747b' : z.type === 'runner' ? '#816e5b' : '#556f65';
+      ctx.beginPath(); ctx.ellipse(0, 0, r * .95, r * .8, 0, 0, TAU); ctx.fill();
+      ctx.strokeStyle = 'rgba(15,32,29,.55)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-r * .35,-r * .35); ctx.lineTo(r * .25,r * .3); ctx.stroke();
+      fillCircle(r * .56, 0, r * .55, z.hit > 0 ? '#fff1c5' : def.color);
+      fillCircle(r * .79,-r * .17, z.type === 'brute' ? 2.6 : 2, '#ffbd72');
+      fillCircle(r * .79,r * .17, z.type === 'brute' ? 2.6 : 2, '#ffbd72');
+      if (z.type === 'brute') { ctx.strokeStyle = '#adc0b2'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(-3,0,r * .78,1.1,4.7); ctx.stroke(); }
+      if (z.burn > 0) { ctx.globalAlpha = .75; glow(0,0,r * 2.2,'rgba(255,107,37,.27)'); }
+      ctx.restore();
+      if (z.hp < z.maxHp && z.type === 'brute') {
+        ctx.fillStyle = '#162325'; ctx.fillRect(z.x-23,z.y-r-13,46,4);
+        ctx.fillStyle = '#f39b58'; ctx.fillRect(z.x-23,z.y-r-13,46 * Math.max(0,z.hp/z.maxHp),4);
+      }
+    }
+    function drawPlayer() {
+      const x = player.x, y = player.y, facing = player.facing;
+      glow(x,y, player.dash > 0 ? 115 : 78, player.dash > 0 ? 'rgba(120,224,206,.22)' : 'rgba(130,208,186,.13)', 'rgba(100,200,185,0)');
+      ctx.save(); ctx.translate(x,y); ctx.rotate(facing);
+      ctx.fillStyle = 'rgba(0,0,0,.46)'; ctx.beginPath(); ctx.ellipse(2,11,25,13,0,0,TAU); ctx.fill();
+      const stride = Math.sin(player.step) * 3;
+      ctx.fillStyle = '#182a2b'; fillCircle(-9, -8 + stride, 8, '#182a2b'); fillCircle(-9, 8 - stride, 8, '#182a2b');
+      ctx.fillStyle = '#508d86'; ctx.beginPath(); ctx.ellipse(-2,0,18,14,0,0,TAU); ctx.fill();
+      ctx.fillStyle = '#1d4140'; ctx.fillRect(-13,-8,14,16); ctx.fillStyle = '#f5aa48'; ctx.fillRect(-11,-6,5,12);
+      fillCircle(4,0,10,'#e2c6a1');
+      ctx.fillStyle = '#203539'; ctx.beginPath(); ctx.arc(4,0,10,Math.PI,TAU); ctx.lineTo(4,0); ctx.fill();
+      ctx.fillStyle = '#a7cec1'; ctx.fillRect(5,-8,7,4);
+      ctx.fillStyle = '#203235'; ctx.fillRect(6, -4, 24, 8); ctx.fillStyle = '#e89045'; ctx.fillRect(23,-3,10,6);
+      fillCircle(13,-8,4,'#e2c6a1'); fillCircle(13,8,4,'#e2c6a1');
+      if (pointer.firing && phase === 'playing' && player.fuel > 0) glow(34,0,32,'rgba(255,168,66,.65)');
+      ctx.restore();
+      if (player.invuln > 0) { ctx.strokeStyle = 'rgba(167,225,210,.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x,y,27 + Math.sin(clock * 15) * 2,0,TAU); ctx.stroke(); }
+    }
+    function drawAtmosphere() {
+      const cx = player.x, cy = player.y;
+      for (let i = 0; i < 16; i++) {
+        const seed = i * 23.17, x = cx + Math.sin(seed * 7.3 + clock * .15) * (160 + i * 26);
+        const y = cy + Math.cos(seed * 3.4 + clock * .1) * (90 + i * 19);
+        fillCircle(x,y, i % 4 === 0 ? 2 : 1, i % 3 ? 'rgba(255,174,73,.36)' : 'rgba(133,199,175,.27)');
+      }
+    }
+    function drawControls() {
+      if (phase !== 'playing') return;
+      if (touch.moveId !== null && touch.moveBase) {
+        const b = touch.moveBase, p = touch.movePoint;
+        ctx.strokeStyle = 'rgba(193,230,214,.32)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(b.x,b.y,46,0,TAU); ctx.stroke();
+        fillCircle(b.x + touch.dx * 40,b.y + touch.dy * 40,18,'rgba(171,224,202,.32)');
+      }
+      if (touch.aimId !== null && touch.aimBase && touch.aimPoint) {
+        const b = touch.aimBase, p = touch.aimPoint;
+        ctx.strokeStyle = 'rgba(255,179,89,.45)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(b.x,b.y,46,0,TAU); ctx.stroke();
+        fillCircle(p.x,p.y,9,'rgba(255,180,82,.5)');
+      } else if (pointer.moved && matchMedia('(pointer: fine)').matches) {
+        const x = pointer.x, y = pointer.y;
+        ctx.strokeStyle = 'rgba(255,213,151,.76)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(x,y,12,0,TAU); ctx.moveTo(x-21,y); ctx.lineTo(x-16,y); ctx.moveTo(x+16,y); ctx.lineTo(x+21,y);
+        ctx.moveTo(x,y-21); ctx.lineTo(x,y-16); ctx.moveTo(x,y+16); ctx.lineTo(x,y+21); ctx.stroke();
+        fillCircle(x,y,2,'#ffd994');
+      }
+    }
+    function draw() {
+      ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,width,height);
+      const jitterX = shake ? rand(-shake,shake) : 0, jitterY = shake ? rand(-shake,shake) : 0;
+      ctx.save(); ctx.translate(-camera.x + jitterX,-camera.y + jitterY);
+      background();
+      if (phase === 'menu') {
+        const demo = [
+          {x:player.x+190,y:player.y-85,type:'walker',hp:76,maxHp:76,burn:0,hit:0,radius:17,seed:0},
+          {x:player.x+255,y:player.y+105,type:'brute',hp:245,maxHp:245,burn:0,hit:0,radius:25,seed:2},
+          {x:player.x-155,y:player.y+130,type:'runner',hp:49,maxHp:49,burn:0,hit:0,radius:13,seed:3}
+        ];
+        for (const z of demo) drawZombie(z);
+        glow(player.x+130,player.y-15,155,'rgba(255,116,42,.17)');
+        for (let i = 0; i < 12; i++) { const x=player.x+42+i*15, y=player.y-40+Math.sin(clock*3+i)*22+i*2; fillCircle(x,y,4+i%3,'rgba(255,145,55,.64)'); }
+      }
+      for (const p of pools) drawPool(p);
+      for (const p of pickups) drawPickup(p);
+      for (const z of zombies) if (z.x > camera.x - 60 && z.x < camera.x + width + 60 && z.y > camera.y - 60 && z.y < camera.y + height + 60) drawZombie(z);
+      for (const b of bombs) { glow(b.x,b.y,50,'rgba(255,156,55,.45)'); fillCircle(b.x,b.y,9,'#ffbc68'); fillCircle(b.x,b.y,4,'#fff0b4'); }
+      drawPlayer();
+      for (const p of particles) {
+        ctx.globalAlpha = clamp(p.life / p.max,0,1);
+        if (p.flame && p.size > 6) glow(p.x,p.y,p.size*2.6,'rgba(255,147,56,.17)');
+        fillCircle(p.x,p.y,p.size * Math.max(.2,p.life/p.max),p.color);
+      }
+      ctx.globalAlpha = 1;
+      drawAtmosphere();
+      for (const f of floaters) { ctx.globalAlpha = Math.min(1,f.life*1.5); ctx.fillStyle = f.color; ctx.font = 'bold 16px Consolas, monospace'; ctx.textAlign = 'center'; ctx.shadowColor = '#000'; ctx.shadowBlur = 9; ctx.fillText(f.text,f.x,f.y); ctx.shadowBlur = 0; }
+      ctx.globalAlpha = 1; ctx.restore();
+      if (flash > 0) { ctx.fillStyle = `rgba(255,74,42,${flash * .54})`; ctx.fillRect(0,0,width,height); }
+      drawControls();
+    }
+    function frame(time) {
+      const dt = Math.min((time - lastTime) / 1000 || .016, .04); lastTime = time;
+      if (phase === 'menu') clock += dt;
+      update(dt); draw(); requestAnimationFrame(frame);
+    }
+    el.main.addEventListener('click', () => phase === 'pause' ? pause() : start());
+    el.secondary.addEventListener('click', start);
+    el.pause.addEventListener('click', () => { if (phase === 'playing' || phase === 'pause') pause(); });
+    $('help-btn').addEventListener('click', () => { el.help.hidden = !el.help.hidden; });
+    el.sound.addEventListener('click', () => { muted = !muted; el.sound.setAttribute('aria-label', muted ? 'Unmute audio' : 'Mute audio'); el.sound.title = muted ? 'Unmute audio' : 'Mute audio'; el.sound.style.opacity = muted ? '.45' : '1'; if (!muted) sound(490,660,.11); });
+    el.touchBomb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); bomb(); });
+    el.touchDash.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); dash(); });
+    addEventListener('keydown', e => {
+      const key = e.key.toLowerCase();
+      if ([' ', 'arrowup','arrowdown','arrowleft','arrowright'].includes(key)) e.preventDefault();
+      keys.add(key);
+      if (e.repeat) return;
+      if (key === 'enter' && (phase === 'menu' || phase === 'over')) start();
+      if (key === 'escape' || key === 'p') { if (!el.help.hidden && key === 'escape') el.help.hidden = true; else pause(); }
+      if (key === 'f') bomb(); if (key === ' ') dash();
+      if (key === 'm') el.sound.click();
+    });
+    addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+    addEventListener('blur', () => { keys.clear(); if (phase === 'playing') pause(); });
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+    canvas.addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') {
+        if (e.pointerId === touch.moveId && touch.moveBase) {
+          touch.movePoint = {x:e.clientX,y:e.clientY}; const dx=e.clientX-touch.moveBase.x, dy=e.clientY-touch.moveBase.y, length=Math.hypot(dx,dy);
+          touch.dx = length > 8 ? dx/Math.max(46,length) : 0; touch.dy = length > 8 ? dy/Math.max(46,length) : 0;
+        }
+        if (e.pointerId === touch.aimId) touch.aimPoint = {x:e.clientX,y:e.clientY};
+      } else { pointer.x=e.clientX; pointer.y=e.clientY; pointer.moved=true; }
+    });
+    canvas.addEventListener('pointerdown', e => {
+      if (phase !== 'playing') return;
+      if (e.pointerType === 'touch') {
+        e.preventDefault(); canvas.setPointerCapture(e.pointerId);
+        if (e.clientX < width * .47 && touch.moveId === null) {
+          touch.moveId=e.pointerId; touch.moveBase={x:e.clientX,y:e.clientY}; touch.movePoint={...touch.moveBase};
+        } else if (touch.aimId === null) {
+          touch.aimId=e.pointerId; touch.aimBase={x:e.clientX,y:e.clientY}; touch.aimPoint={...touch.aimBase}; pointer.firing=true;
+          player.facing=Math.atan2(e.clientY + camera.y - player.y,e.clientX + camera.x - player.x);
+        }
+      } else if (e.button === 2) bomb();
+      else if (e.button === 0) { pointer.x=e.clientX; pointer.y=e.clientY; pointer.moved=true; pointer.firing=true; }
+    });
+    function endPointer(e) {
+      if (e.pointerType === 'touch') {
+        if (e.pointerId === touch.moveId) { touch.moveId=null; touch.moveBase=null; touch.movePoint=null; touch.dx=touch.dy=0; }
+        if (e.pointerId === touch.aimId) { touch.aimId=null; touch.aimBase=null; touch.aimPoint=null; pointer.firing=false; }
+      } else if (e.button === 0) pointer.firing=false;
+    }
+    canvas.addEventListener('pointerup', endPointer); canvas.addEventListener('pointercancel', endPointer);
+    addEventListener('pointerup', e => { if (e.pointerType !== 'touch' && e.button === 0) pointer.firing=false; });
+    addEventListener('resize', resize);
+    reset(); resize(); showOverlay('menu'); requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

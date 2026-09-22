@@ -2,7 +2,7 @@
  * BDX Bench canonical dataset — hand-maintained local evaluation data.
  *
  * Real values from the Zombie Flamethrower Showdown (manual game-build
- * evaluation): five models, one shared prompt, binary playability
+ * evaluation): six models, one shared prompt, binary playability
  * check + feature checklist, community vote open (match m-001).
  * Scores surfaced from this file are Showdown Score (manual game-build
  * evaluation). Every other BDX dimension is `null` = "Not evaluated";
@@ -192,6 +192,20 @@ export const EVALUATIONS: DemoEvaluation[] = [
     benchmarkVersion: "v1",
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "gpt-6-sol",
+    benchmarkSlug: "zombie-flamethrower-showdown",
+    raw: 91.5,
+    normalized: 91.5,
+    ciLow: 91.5,
+    ciHigh: 91.5,
+    runs: 1,
+    variance: 0,
+    evaluatedAt: "2026-09-22",
+    sourceId: "local-manual-eval",
+    benchmarkVersion: "v1",
+    methodologyVersion: "v1",
+  },
 ];
 
 export interface SpeedEntry {
@@ -255,6 +269,17 @@ export const PRICE_SNAPSHOTS: PriceEntry[] = [
   },
   {
     modelSlug: "gpt-6-luna",
+    price: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-22",
+      source: "local-manual-eval",
+    },
+    sourceId: "local-manual-eval",
+  },
+  {
+    modelSlug: "gpt-6-sol",
     price: {
       inputPer1M: null,
       outputPer1M: null,
@@ -374,6 +399,26 @@ export const SCORE_SNAPSHOTS: SnapshotEntry[] = [
     imputedDims: [],
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "gpt-6-sol",
+    snapshot: {
+      overall: 91.5,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 91.5,
+      evaluatedAt: "2026-09-22",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+    evalCount: 1,
+    imputedDims: [],
+    methodologyVersion: "v1",
+  },
 ];
 
 export const SOURCES: Source[] = [
@@ -383,7 +428,7 @@ export const SOURCES: Source[] = [
     kind: "manual",
     retrievedAt: "2026-09-22",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/firebreak-night-shift, and /play/emberfall. DeepSeek V4.1 Flash scored 94; GPT Luna 6 scored 89.5 (Emberfall, 2026-09-22); GPT Luna 5.6 scored 91.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/firebreak-night-shift, /play/emberfall, and /play/cinderline. DeepSeek V4.1 Flash scored 94; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
   },
 ];
 
@@ -537,6 +582,43 @@ export const MODELS: Model[] = [
     },
   },
   {
+    id: "bdx-ai/gpt-6-sol",
+    slug: "gpt-6-sol",
+    name: "GPT 6 Sol",
+    family: "GPT Sol",
+    provider: "bdx-ai",
+    context: null,
+    released: null,
+    openWeights: false,
+    capabilities: {
+      vision: false,
+      tools: false,
+      audio: false,
+      multimodal: false,
+    },
+    prices: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-22",
+      source: "local-manual-eval",
+    },
+    scores: {
+      overall: 91.5,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 91.5,
+      evaluatedAt: "2026-09-22",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+  },
+  {
     id: "bdx-ai/gpt-6-luna",
     slug: "gpt-6-luna",
     name: "GPT Luna 6",
@@ -589,8 +671,8 @@ export const TRENDS: TrendPoint[] = [
   },
   {
     date: "2026-09-22",
-    avgBdxScore: 90.9,
-    modelCount: 5,
+    avgBdxScore: 91.0,
+    modelCount: 6,
   },
 ];
 
@@ -613,6 +695,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       provider: "bdx-ai",
       score: 92,
       delta: 2,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "gpt-6-sol",
+      name: "GPT 6 Sol",
+      provider: "bdx-ai",
+      score: 91.5,
+      delta: 0,
       pricePer1M: null,
       speedTps: null,
       contextK: null,
@@ -682,9 +774,9 @@ export const DEMO_TREND_SERIES: HomeTrendPoint[] = [
 ];
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 5,
+  modelsTracked: 6,
   benchmarks: 1,
-  evalRuns: 5,
+  evalRuns: 6,
   providers: 1,
   datasetRefresh: "2026-09-22",
 };
@@ -711,6 +803,15 @@ export const demoLeaderboard: LeaderboardRow[] = [
   },
   {
     rank: 3,
+    modelSlug: "gpt-6-sol",
+    modelName: "GPT 6 Sol",
+    provider: "bdx-ai",
+    bdxScore: 91.5,
+    overall: 91.5,
+    pricePer1MBlended: null,
+  },
+  {
+    rank: 4,
     modelSlug: "gpt-5-6-luna",
     modelName: "GPT Luna 5.6",
     provider: "bdx-ai",
@@ -719,7 +820,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 4,
+    rank: 5,
     modelSlug: "gpt-6-luna",
     modelName: "GPT Luna 6",
     provider: "bdx-ai",
@@ -728,7 +829,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 5,
+    rank: 6,
     modelSlug: "gemini-3-8-flash",
     modelName: "Gemini 3.8 Flash",
     provider: "bdx-ai",
@@ -772,7 +873,7 @@ export const PROVENANCE: ProvenanceItem[] = [
     kind: "manual",
     retrievedAt: "2026-09-22",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/firebreak-night-shift, and /play/emberfall. DeepSeek V4.1 Flash scored 94; GPT Luna 6 scored 89.5 (Emberfall, 2026-09-22); GPT Luna 5.6 scored 91.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/firebreak-night-shift, /play/emberfall, and /play/cinderline. DeepSeek V4.1 Flash scored 94; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
   },
 ];
 
@@ -786,7 +887,7 @@ export interface UncertaintySummary {
 }
 export const UNCERTAINTY: UncertaintySummary = {
   methodologyVersion: "v1",
-  evalCount: 5,
+  evalCount: 6,
   avgCiHalfWidth: 0,
   minRuns: 1,
   maxRuns: 1,

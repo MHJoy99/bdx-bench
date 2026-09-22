@@ -41,10 +41,25 @@ const PLAYABLE_BUILDS: Record<
     fps: "60 FPS @ 120 zombies + 2,300 particles live",
     tech: "Pooled entity buffers · End-of-frame compaction pass · Web Audio synthesizer",
   },
+  "gpt-6-sol": {
+    title: "GPT 6 Sol",
+    playUrl: "/play/cinderline",
+    badge: "THIRD · #3",
+    tagline: "Large-arena survivor with WASD twin-stick controls, firebomb clusters, dashing, heat combo chains, and touch controls.",
+    features: [
+      "Twin-stick controls with WASD movement, mouse aim, and flamethrower cone",
+      "Firebomb lob ability (F / RMB) creating lasting ground fire pools",
+      "Evasive dash (Space), heat chain combo multiplier, and vital fuel pickups",
+      "3 enemy archetypes: swift runners, shambling walkers, and high-health brutes",
+      "Procedural audio synthesizer with mute toggle, touch controls, and local high score",
+    ],
+    fps: "60 FPS · 49 KB standalone Canvas 2D engine with grain & vignette shaders",
+    tech: "Syntax verified & browser-tested · pure standalone Canvas 2D",
+  },
   "gpt-5-6-luna": {
     title: "GPT Luna 5.6",
     playUrl: "/play/firebreak-night-shift",
-    badge: "THIRD · #3",
+    badge: "FOURTH · #4",
     tagline: "Single-run street survival with spreading fire, tactical dashes, charged bursts, and mobile controls.",
     features: [
       "4 enemy classes: Shambler, Runner, Brute, and ranged Spitter",
@@ -59,7 +74,7 @@ const PLAYABLE_BUILDS: Record<
   "gpt-6-luna": {
     title: "GPT Luna 6",
     playUrl: "/play/emberfall",
-    badge: "FOURTH · #4",
+    badge: "FIFTH · #5",
     tagline: "Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups, and escalating nights.",
     features: [
       "Twin-stick WASD + mouse aim / hold Space or click to spray fire",
@@ -145,7 +160,7 @@ export default function BenchmarksPage() {
             </p>
           </div>
           <span className="font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
-            5 Evaluated Models
+            6 Evaluated Models
           </span>
         </div>
 

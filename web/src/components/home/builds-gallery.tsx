@@ -21,6 +21,13 @@ const VERIFIED = [
     blurb: "Dark-arena wave survival built on chain reactions: ignited zombies spread fire, six enemy types, Titan boss every 5th wave, upgrades between waves. Verified 60 FPS with 120 zombies live.",
   },
   {
+    name: "GPT 6 Sol",
+    model: "GPT 6 Sol",
+    score: 91.5,
+    href: "/play/cinderline",
+    blurb: "Last light city survivor with firebomb mortar lobs, evasive dashing, heat chain combos, touch controls, and procedural audio.",
+  },
+  {
     name: "GPT Luna 5.6",
     model: "GPT Luna 5.6",
     score: 91,

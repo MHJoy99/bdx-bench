@@ -21,6 +21,8 @@ export function PerformanceTable({
       ? 92
       : modelSlug === "deepseek-v4-1-flash"
         ? 94
+        : modelSlug === "gpt-6-sol"
+          ? 91.5
         : modelSlug === "gpt-5-6-luna"
           ? 91
           : modelSlug === "gpt-6-luna"
