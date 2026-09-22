@@ -31,6 +31,9 @@ export const metadata: Metadata = {
     description:
       "Independent benchmarks: composite BDX Bench Score, price/performance, trends, and side-by-side compare.",
   },
+  verification: {
+    google: "hru-mGkrVRO94mRZglGdElxBCAwhp9VdO5HyQbC_w3s",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
