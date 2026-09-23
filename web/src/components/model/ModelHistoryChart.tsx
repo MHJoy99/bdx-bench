@@ -12,6 +12,8 @@ export function ModelHistoryChart({
       ? 92
       : slug === "deepseek-v4-1-flash"
         ? 94
+        : slug === "space-bunny-free"
+          ? 93.5
         : slug === "gpt-6-sol"
           ? 91.5
         : slug === "gpt-5-6-luna"

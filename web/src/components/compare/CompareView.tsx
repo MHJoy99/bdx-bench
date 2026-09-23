@@ -41,6 +41,7 @@ export interface CompareViewProps {
 const PLAY_LINKS: Record<string, string> = {
   "muse-spark-1-3": "/play/pyro-vs-zombies",
   "deepseek-v4-1-flash": "/play/pyre-burn-horde",
+  "space-bunny-free": "/play/space-bunny",
   "gpt-6-sol": "/play/cinderline",
   "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",

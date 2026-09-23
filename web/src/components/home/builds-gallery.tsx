@@ -21,6 +21,13 @@ const VERIFIED = [
     blurb: "Dark-arena wave survival built on chain reactions: ignited zombies spread fire, six enemy types, Titan boss every 5th wave, upgrades between waves. Verified 60 FPS with 120 zombies live.",
   },
   {
+    name: "Space Bunny Free",
+    model: "Space Bunny Free",
+    score: 93.5,
+    href: "/play/space-bunny",
+    blurb: "Firebound survival protocol with dynamic heat core, boss encounters (The Cinder King), minimap radar tracking, and procedural audio synthesis.",
+  },
+  {
     name: "GPT 6 Sol",
     model: "GPT 6 Sol",
     score: 91.5,

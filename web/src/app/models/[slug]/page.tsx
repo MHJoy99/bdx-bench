@@ -20,6 +20,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   return [
     { slug: "muse-spark-1-3" },
     { slug: "deepseek-v4-1-flash" },
+    { slug: "space-bunny-free" },
     { slug: "gpt-6-sol" },
     { slug: "gpt-6-luna" },
     { slug: "gpt-5-6-luna" },
@@ -33,6 +34,7 @@ interface PageProps {
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "deepseek-v4-1-flash": 94,
+  "space-bunny-free": 93.5,
   "muse-spark-1-3": 92,
   "gpt-6-sol": 91.5,
   "gpt-5-6-luna": 91,
@@ -43,6 +45,7 @@ const SHOWDOWN_SCORES: Record<string, number> = {
 const PLAY_LINKS: Record<string, string> = {
   "muse-spark-1-3": "/play/pyro-vs-zombies",
   "deepseek-v4-1-flash": "/play/pyre-burn-horde",
+  "space-bunny-free": "/play/space-bunny",
   "gpt-6-sol": "/play/cinderline",
   "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",

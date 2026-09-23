@@ -18,6 +18,7 @@ function scoreOr(v: unknown): string {
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "deepseek-v4-1-flash": 94,
+  "space-bunny-free": 93.5,
   "muse-spark-1-3": 92,
   "gpt-6-sol": 91.5,
   "gpt-5-6-luna": 91,

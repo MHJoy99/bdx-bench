@@ -20,6 +20,7 @@ export const ProviderSchema = z.enum([
   "deepseek",
   "qwen",
   "xai",
+  "opencode",
   "other",
 ]);
 export type Provider = z.infer<typeof ProviderSchema>;

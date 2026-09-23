@@ -20,6 +20,7 @@ curl -sf https://bench.bdx.market/
 curl -sf https://bench.bdx.market/play/pyro-vs-zombies > /dev/null
 curl -sf https://bench.bdx.market/play/pyroclasm-inferno > /dev/null
 curl -sf https://bench.bdx.market/play/pyre-burn-horde > /dev/null
+curl -sf https://bench.bdx.market/play/space-bunny > /dev/null
 curl -sf https://bench.bdx.market/play/emberfall > /dev/null
 curl -sf https://bench.bdx.market/play/cinderline > /dev/null
 curl -sf https://bench.bdx.market/play/firebreak-night-shift > /dev/null

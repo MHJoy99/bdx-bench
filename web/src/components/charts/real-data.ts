@@ -46,6 +46,22 @@ export const REAL_MODEL_PYRE = {
   raw: 94,
 } as const;
 
+export const REAL_MODEL_BUNNY = {
+  slug: "space-bunny-free",
+  name: "Space Bunny Free",
+  id: "opencode/space-bunny-free",
+  /** 0–100 showdown score. */
+  raw: 93.5,
+} as const;
+
+export const REAL_MODEL_SOL = {
+  slug: "gpt-6-sol",
+  name: "GPT 6 Sol",
+  id: "bdx-ai/gpt-6-sol",
+  /** 0–100 showdown score. */
+  raw: 91.5,
+} as const;
+
 export const REAL_MODEL_LUNA = {
   slug: "gpt-5-6-luna",
   name: "GPT Luna 5.6",
@@ -63,16 +79,20 @@ export const REAL_MODEL_LUNA6 = {
 } as const;
 
 export const REAL_SLUGS: readonly string[] = [
-  REAL_MODEL_SPARK.slug,
   REAL_MODEL_PYRE.slug,
+  REAL_MODEL_BUNNY.slug,
+  REAL_MODEL_SPARK.slug,
+  REAL_MODEL_SOL.slug,
   REAL_MODEL_LUNA.slug,
   REAL_MODEL_LUNA6.slug,
   REAL_MODEL_FLASH.slug,
 ];
 
 export const REAL_MODEL_NAMES: readonly string[] = [
-  REAL_MODEL_SPARK.name,
   REAL_MODEL_PYRE.name,
+  REAL_MODEL_BUNNY.name,
+  REAL_MODEL_SPARK.name,
+  REAL_MODEL_SOL.name,
   REAL_MODEL_LUNA.name,
   REAL_MODEL_LUNA6.name,
   REAL_MODEL_FLASH.name,
@@ -80,8 +100,10 @@ export const REAL_MODEL_NAMES: readonly string[] = [
 
 /** 0–1 normalized showdown scores, aligned to REAL_MODEL_NAMES order. */
 export const REAL_SCORES_01: readonly number[] = [
-  REAL_MODEL_SPARK.raw / 100,
   REAL_MODEL_PYRE.raw / 100,
+  REAL_MODEL_BUNNY.raw / 100,
+  REAL_MODEL_SPARK.raw / 100,
+  REAL_MODEL_SOL.raw / 100,
   REAL_MODEL_LUNA.raw / 100,
   REAL_MODEL_LUNA6.raw / 100,
   REAL_MODEL_FLASH.raw / 100,
@@ -89,8 +111,10 @@ export const REAL_SCORES_01: readonly number[] = [
 
 export function isRealModelSlug(slug: string): boolean {
   return (
-    slug === REAL_MODEL_SPARK.slug ||
     slug === REAL_MODEL_PYRE.slug ||
+    slug === REAL_MODEL_BUNNY.slug ||
+    slug === REAL_MODEL_SPARK.slug ||
+    slug === REAL_MODEL_SOL.slug ||
     slug === REAL_MODEL_LUNA.slug ||
     slug === REAL_MODEL_LUNA6.slug ||
     slug === REAL_MODEL_FLASH.slug
@@ -99,8 +123,10 @@ export function isRealModelSlug(slug: string): boolean {
 
 export function isRealModelName(name: string): boolean {
   return (
-    name === REAL_MODEL_SPARK.name ||
     name === REAL_MODEL_PYRE.name ||
+    name === REAL_MODEL_BUNNY.name ||
+    name === REAL_MODEL_SPARK.name ||
+    name === REAL_MODEL_SOL.name ||
     name === REAL_MODEL_LUNA.name ||
     name === REAL_MODEL_LUNA6.name ||
     name === REAL_MODEL_FLASH.name
@@ -117,13 +143,23 @@ export const REAL_BAR_CATEGORIES: readonly string[] = [REAL_BENCHMARK_SLUG];
 
 export const REAL_BAR_SERIES: BarSeries[] = [
   {
+    name: REAL_MODEL_PYRE.name,
+    data: [norm(REAL_MODEL_PYRE.raw)],
+    runs: [1],
+  },
+  {
+    name: REAL_MODEL_BUNNY.name,
+    data: [norm(REAL_MODEL_BUNNY.raw)],
+    runs: [1],
+  },
+  {
     name: REAL_MODEL_SPARK.name,
     data: [norm(REAL_MODEL_SPARK.raw)],
     runs: [1],
   },
   {
-    name: REAL_MODEL_PYRE.name,
-    data: [norm(REAL_MODEL_PYRE.raw)],
+    name: REAL_MODEL_SOL.name,
+    data: [norm(REAL_MODEL_SOL.raw)],
     runs: [1],
   },
   {
@@ -149,13 +185,23 @@ export const REAL_RADAR_AXES: readonly string[] = [REAL_BENCHMARK_LABEL];
 
 export const REAL_RADAR: RadarDatum[] = [
   {
+    model: REAL_MODEL_PYRE.name,
+    values: [norm(REAL_MODEL_PYRE.raw)],
+    runs: 1,
+  },
+  {
+    model: REAL_MODEL_BUNNY.name,
+    values: [norm(REAL_MODEL_BUNNY.raw)],
+    runs: 1,
+  },
+  {
     model: REAL_MODEL_SPARK.name,
     values: [norm(REAL_MODEL_SPARK.raw)],
     runs: 1,
   },
   {
-    model: REAL_MODEL_PYRE.name,
-    values: [norm(REAL_MODEL_PYRE.raw)],
+    model: REAL_MODEL_SOL.name,
+    values: [norm(REAL_MODEL_SOL.raw)],
     runs: 1,
   },
   {
@@ -182,6 +228,22 @@ export const REAL_HEATMAP_BENCHMARKS: readonly string[] = [REAL_BENCHMARK_SLUG];
 
 export const REAL_HEATMAP_CELLS: HeatmapCell[] = [
   {
+    model: REAL_MODEL_PYRE.name,
+    benchmark: REAL_BENCHMARK_SLUG,
+    raw: norm(REAL_MODEL_PYRE.raw),
+    normalized: norm(REAL_MODEL_PYRE.raw),
+    date: "2026-09-18",
+    runs: 1,
+  },
+  {
+    model: REAL_MODEL_BUNNY.name,
+    benchmark: REAL_BENCHMARK_SLUG,
+    raw: norm(REAL_MODEL_BUNNY.raw),
+    normalized: norm(REAL_MODEL_BUNNY.raw),
+    date: "2026-09-23",
+    runs: 1,
+  },
+  {
     model: REAL_MODEL_SPARK.name,
     benchmark: REAL_BENCHMARK_SLUG,
     raw: norm(REAL_MODEL_SPARK.raw),
@@ -190,11 +252,11 @@ export const REAL_HEATMAP_CELLS: HeatmapCell[] = [
     runs: 1,
   },
   {
-    model: REAL_MODEL_PYRE.name,
+    model: REAL_MODEL_SOL.name,
     benchmark: REAL_BENCHMARK_SLUG,
-    raw: norm(REAL_MODEL_PYRE.raw),
-    normalized: norm(REAL_MODEL_PYRE.raw),
-    date: "2026-09-18",
+    raw: norm(REAL_MODEL_SOL.raw),
+    normalized: norm(REAL_MODEL_SOL.raw),
+    date: "2026-09-22",
     runs: 1,
   },
   {
@@ -227,12 +289,20 @@ export const REAL_HEATMAP_CELLS: HeatmapCell[] = [
 
 export const REAL_TRENDS: TrendSeries[] = [
   {
+    model: REAL_MODEL_PYRE.name,
+    points: [{ date: "2026-09-18", value: norm(REAL_MODEL_PYRE.raw), runs: 1 }],
+  },
+  {
+    model: REAL_MODEL_BUNNY.name,
+    points: [{ date: "2026-09-23", value: norm(REAL_MODEL_BUNNY.raw), runs: 1 }],
+  },
+  {
     model: REAL_MODEL_SPARK.name,
     points: [{ date: REAL_EVAL_DATE, value: norm(REAL_MODEL_SPARK.raw), runs: 1 }],
   },
   {
-    model: REAL_MODEL_PYRE.name,
-    points: [{ date: "2026-09-18", value: norm(REAL_MODEL_PYRE.raw), runs: 1 }],
+    model: REAL_MODEL_SOL.name,
+    points: [{ date: "2026-09-22", value: norm(REAL_MODEL_SOL.raw), runs: 1 }],
   },
   {
     model: REAL_MODEL_LUNA.name,

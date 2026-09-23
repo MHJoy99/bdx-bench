@@ -86,6 +86,21 @@ const PLAYABLE_BUILDS: Record<
     fps: "60 FPS · 37 KB clean zero-dependency Canvas build",
     tech: "Syntax verified & browser-tested · pure standalone Canvas 2D",
   },
+  "space-bunny-free": {
+    title: "Space Bunny Free",
+    playUrl: "/play/space-bunny",
+    badge: "RUNNER UP · #2",
+    tagline: "Large-scale firebound protocol with multi-phase boss encounters, minimap radar, and atmospheric visual effects.",
+    features: [
+      "Twin-stick movement with WASD and 360-degree mouse aiming flamethrower cone",
+      "Dynamic heat/flame core recharge mechanics with overheat protection",
+      "Boss encounters with custom health bars: The Cinder King & Ashen Sovereign",
+      "Minimap radar frame with real-time enemy tracking and obstacle layout",
+      "Full procedural Web Audio synthesis with spatial tones and kill effects",
+    ],
+    fps: "60 FPS · 77 KB rich standalone Canvas 2D engine with scanlines and radial lighting",
+    tech: "Multi-tier wave loop · Boss AI state machine · Clean zero-dependency build",
+  },
   "muse-spark-1-3": {
     title: "PYRO vs ZOMBIES",
     playUrl: "/play/pyro-vs-zombies",
@@ -160,7 +175,7 @@ export default function BenchmarksPage() {
             </p>
           </div>
           <span className="font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
-            6 Evaluated Models
+            7 Evaluated Models
           </span>
         </div>
 

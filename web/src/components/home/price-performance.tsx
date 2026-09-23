@@ -30,7 +30,7 @@ export function PricePerformance() {
               Not measured in this round
             </p>
             <p className="mx-auto mt-2 max-w-md text-sm text-bdx-muted">
-                The six verified builds were evaluated for game-build
+                The seven verified builds were evaluated for game-build
               quality only. Price and speed charts will appear once vendor
               pricing and throughput measurements are published.
             </p>

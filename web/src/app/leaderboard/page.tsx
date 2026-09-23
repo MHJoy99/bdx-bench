@@ -5,7 +5,7 @@ import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 export const metadata: Metadata = {
   title: "Leaderboard",
   description:
-    "Ranked Showdown Scores for six verified builds on Zombie Flamethrower Showdown.",
+    "Ranked Showdown Scores for seven verified builds on Zombie Flamethrower Showdown.",
 };
 
 export default function LeaderboardPage() {

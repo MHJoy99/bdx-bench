@@ -49,7 +49,7 @@ export default function MethodologyPage() {
         <h2 id="m-scoring" className="text-xl font-semibold">Scoring</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Judges assign a Showdown Score from 0 to 100 for each build. DeepSeek
-          V4.1 Flash scored 94, Muse Spark 1.3 scored 92, GPT 6 Sol scored
+          V4.1 Flash scored 94, Space Bunny Free scored 93.5, Muse Spark 1.3 scored 92, GPT 6 Sol scored
           91.5, GPT Luna 5.6 scored 91, GPT Luna 6 scored 89.5, and Gemini 3.8
           Flash scored 88 in the September 2026 round. The score reflects build
           quality, feel, and completeness from hands-on evaluation.
@@ -83,7 +83,7 @@ export default function MethodologyPage() {
       <section aria-labelledby="m-limits" className="mt-8">
         <h2 id="m-limits" className="text-xl font-semibold">Limitations</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-muted-foreground">
-          <li>Six builds only — results do not generalize to other models.</li>
+          <li>Seven builds only — results do not generalize to other models.</li>
           <li>Game-build quality only — no claims about chat, code, or reasoning strength.</li>
           <li>Judge review includes human judgment and carries taste variance.</li>
           <li>No price or speed claims in this round; those pages state Not measured.</li>

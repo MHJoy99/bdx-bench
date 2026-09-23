@@ -2,7 +2,7 @@
  * BDX Bench canonical dataset — hand-maintained local evaluation data.
  *
  * Real values from the Zombie Flamethrower Showdown (manual game-build
- * evaluation): six models, one shared prompt, binary playability
+ * evaluation): seven models, one shared prompt, binary playability
  * check + feature checklist, community vote open (match m-001).
  * Scores surfaced from this file are Showdown Score (manual game-build
  * evaluation). Every other BDX dimension is `null` = "Not evaluated";
@@ -31,9 +31,9 @@ import type {
 
 export const DEMO_DATA_LABEL = "SHOWDOWN DATA" as const;
 export const METHODOLOGY_VERSION = "v1" as const;
-export const DEMO_RETRIEVED_AT = "2026-09-22" as const;
-export const DEMO_DATASET_REFRESH_LABEL = "2026-09-22" as const;
-export const DEMO_EVAL_AT = "2026-09-22" as const;
+export const DEMO_RETRIEVED_AT = "2026-09-23" as const;
+export const DEMO_DATASET_REFRESH_LABEL = "2026-09-23" as const;
+export const DEMO_EVAL_AT = "2026-09-23" as const;
 
 /** Human label for every Showdown Score surfacing. */
 export const SHOWDOWN_SCORE_LABEL =
@@ -206,6 +206,20 @@ export const EVALUATIONS: DemoEvaluation[] = [
     benchmarkVersion: "v1",
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "space-bunny-free",
+    benchmarkSlug: "zombie-flamethrower-showdown",
+    raw: 93.5,
+    normalized: 93.5,
+    ciLow: 93.5,
+    ciHigh: 93.5,
+    runs: 1,
+    variance: 0,
+    evaluatedAt: "2026-09-23",
+    sourceId: "local-manual-eval",
+    benchmarkVersion: "v1",
+    methodologyVersion: "v1",
+  },
 ];
 
 export interface SpeedEntry {
@@ -285,6 +299,17 @@ export const PRICE_SNAPSHOTS: PriceEntry[] = [
       outputPer1M: null,
       currency: "USD",
       effectiveDate: "2026-09-22",
+      source: "local-manual-eval",
+    },
+    sourceId: "local-manual-eval",
+  },
+  {
+    modelSlug: "space-bunny-free",
+    price: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-23",
       source: "local-manual-eval",
     },
     sourceId: "local-manual-eval",
@@ -419,6 +444,26 @@ export const SCORE_SNAPSHOTS: SnapshotEntry[] = [
     imputedDims: [],
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "space-bunny-free",
+    snapshot: {
+      overall: 93.5,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 93.5,
+      evaluatedAt: "2026-09-23",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+    evalCount: 1,
+    imputedDims: [],
+    methodologyVersion: "v1",
+  },
 ];
 
 export const SOURCES: Source[] = [
@@ -426,9 +471,9 @@ export const SOURCES: Source[] = [
     id: "local-manual-eval",
     label: "Local manual evaluation — Zombie Flamethrower Showdown",
     kind: "manual",
-    retrievedAt: "2026-09-22",
+    retrievedAt: "2026-09-23",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/firebreak-night-shift, /play/emberfall, and /play/cinderline. DeepSeek V4.1 Flash scored 94; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyre-burn-horde, /play/space-bunny, /play/pyro-vs-zombies, /play/cinderline, /play/firebreak-night-shift, /play/emberfall, and /play/pyroclasm-inferno. DeepSeek V4.1 Flash scored 94; Space Bunny Free scored 93.5; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
   },
 ];
 
@@ -582,6 +627,43 @@ export const MODELS: Model[] = [
     },
   },
   {
+    id: "opencode/space-bunny-free",
+    slug: "space-bunny-free",
+    name: "Space Bunny Free",
+    family: "OpenCode",
+    provider: "opencode",
+    context: null,
+    released: null,
+    openWeights: false,
+    capabilities: {
+      vision: false,
+      tools: false,
+      audio: false,
+      multimodal: false,
+    },
+    prices: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-23",
+      source: "local-manual-eval",
+    },
+    scores: {
+      overall: 93.5,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 93.5,
+      evaluatedAt: "2026-09-23",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+  },
+  {
     id: "bdx-ai/gpt-6-sol",
     slug: "gpt-6-sol",
     name: "GPT 6 Sol",
@@ -674,6 +756,11 @@ export const TRENDS: TrendPoint[] = [
     avgBdxScore: 91.0,
     modelCount: 6,
   },
+  {
+    date: "2026-09-23",
+    avgBdxScore: 91.36,
+    modelCount: 7,
+  },
 ];
 
 /** Homepage "top models" — only Overall is measured (Showdown Score). */
@@ -684,6 +771,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       name: "DeepSeek V4.1 Flash",
       provider: "bdx-ai",
       score: 94,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "space-bunny-free",
+      name: "Space Bunny Free",
+      provider: "opencode",
+      score: 93.5,
       delta: 0,
       pricePer1M: null,
       speedTps: null,
@@ -771,14 +868,19 @@ export const DEMO_TREND_SERIES: HomeTrendPoint[] = [
     topScore: 94,
     medianScore: 91,
   },
+  {
+    label: "Sep 23",
+    topScore: 94,
+    medianScore: 91.5,
+  },
 ];
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 6,
+  modelsTracked: 7,
   benchmarks: 1,
-  evalRuns: 6,
-  providers: 1,
-  datasetRefresh: "2026-09-22",
+  evalRuns: 7,
+  providers: 2,
+  datasetRefresh: "2026-09-23",
 };
 
 /** Canonical leaderboard rows (Showdown Score desc). */
@@ -794,6 +896,15 @@ export const demoLeaderboard: LeaderboardRow[] = [
   },
   {
     rank: 2,
+    modelSlug: "space-bunny-free",
+    modelName: "Space Bunny Free",
+    provider: "opencode",
+    bdxScore: 93.5,
+    overall: 93.5,
+    pricePer1MBlended: null,
+  },
+  {
+    rank: 3,
     modelSlug: "muse-spark-1-3",
     modelName: "Muse Spark 1.3",
     provider: "bdx-ai",
@@ -802,7 +913,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 3,
+    rank: 4,
     modelSlug: "gpt-6-sol",
     modelName: "GPT 6 Sol",
     provider: "bdx-ai",
@@ -811,7 +922,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 4,
+    rank: 5,
     modelSlug: "gpt-5-6-luna",
     modelName: "GPT Luna 5.6",
     provider: "bdx-ai",
@@ -820,7 +931,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 5,
+    rank: 6,
     modelSlug: "gpt-6-luna",
     modelName: "GPT Luna 6",
     provider: "bdx-ai",
@@ -829,7 +940,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 6,
+    rank: 7,
     modelSlug: "gemini-3-8-flash",
     modelName: "Gemini 3.8 Flash",
     provider: "bdx-ai",
@@ -887,7 +998,7 @@ export interface UncertaintySummary {
 }
 export const UNCERTAINTY: UncertaintySummary = {
   methodologyVersion: "v1",
-  evalCount: 6,
+  evalCount: 7,
   avgCiHalfWidth: 0,
   minRuns: 1,
   maxRuns: 1,

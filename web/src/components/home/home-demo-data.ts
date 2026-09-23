@@ -5,7 +5,7 @@
 
 export const DEMO_DATA_LABEL = "SHOWDOWN DATA" as const;
 
-export const DEMO_DATASET_REFRESH_LABEL = "2026-09-22";
+export const DEMO_DATASET_REFRESH_LABEL = "2026-09-23";
 
 export interface HomeModel {
   id: string;
@@ -29,10 +29,10 @@ export interface GlobalStats {
 }
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 6,
+  modelsTracked: 7,
   benchmarks: 1,
-  evalRuns: 6,
-  providers: 1,
+  evalRuns: 7,
+  providers: 2,
   datasetRefresh: DEMO_DATASET_REFRESH_LABEL,
 };
 
@@ -45,6 +45,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       name: "DeepSeek V4.1 Flash",
       provider: "bdx-ai",
       score: 94,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "space-bunny-free",
+      name: "Space Bunny Free",
+      provider: "opencode",
+      score: 93.5,
       delta: 0,
       pricePer1M: null,
       speedTps: null,
