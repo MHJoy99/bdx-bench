@@ -9,6 +9,7 @@ const nextConfig = {
       { source: "/play/pyre-burn-horde", destination: "/play/pyre-burn-horde/index.html" },
       { source: "/play/emberfall", destination: "/play/emberfall/index.html" },
       { source: "/play/space-bunny", destination: "/play/space-bunny/index.html" },
+      { source: "/play/zombie-fire-survival", destination: "/play/zombie-fire-survival/index.html" },
       { source: "/play/cinderline", destination: "/play/cinderline/index.html" },
       { source: "/play/firebreak-night-shift", destination: "/play/firebreak-night-shift/index.html" },
       { source: "/play/pyroclasm-inferno", destination: "/play/pyroclasm-inferno/index.html" },

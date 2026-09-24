@@ -19,7 +19,7 @@
 //              real sha256 voter hash.
 //   comments -> {} (empty threads on demand)
 //
-// Canonical slugs: muse-spark-1-3, deepseek-v4-1-flash, space-bunny-free, gpt-6-sol, gpt-5-6-luna, gpt-6-luna, gemini-3-8-flash.
+// Canonical slugs: muse-spark-1-3, deepseek-v4-1-flash, space-bunny-free, gpt-6-sol, gpt-5-6-luna, gemini-pro-agent, gpt-6-luna, gemini-3-8-flash.
 // Match m-001: side A = muse-spark-1-3 (Muse), side B = gemini-3-8-flash
 // (Gemini), status open. Ratings scale 1-5.
 //
@@ -42,6 +42,7 @@ export const MODEL_SLUGS = [
   "space-bunny-free",
   "gpt-6-sol",
   "gpt-5-6-luna",
+  "gemini-pro-agent",
   "gpt-6-luna",
   "gemini-3-8-flash",
 ] as const;

@@ -129,6 +129,13 @@ export function Hero() {
             <span>GPT Luna 5.6 (91)</span>
           </Link>
           <Link
+            href="/play/zombie-fire-survival"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
+          >
+            <Gamepad2 className="size-3.5 text-[#38bdf8]" aria-hidden="true" />
+            <span>Gemini Pro Agent (90.5)</span>
+          </Link>
+          <Link
             href="/play/emberfall"
             className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >

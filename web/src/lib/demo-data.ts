@@ -220,6 +220,20 @@ export const EVALUATIONS: DemoEvaluation[] = [
     benchmarkVersion: "v1",
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "gemini-pro-agent",
+    benchmarkSlug: "zombie-flamethrower-showdown",
+    raw: 90.5,
+    normalized: 90.5,
+    ciLow: 90.5,
+    ciHigh: 90.5,
+    runs: 1,
+    variance: 0,
+    evaluatedAt: "2026-09-25",
+    sourceId: "local-manual-eval",
+    benchmarkVersion: "v1",
+    methodologyVersion: "v1",
+  },
 ];
 
 export interface SpeedEntry {
@@ -310,6 +324,17 @@ export const PRICE_SNAPSHOTS: PriceEntry[] = [
       outputPer1M: null,
       currency: "USD",
       effectiveDate: "2026-09-23",
+      source: "local-manual-eval",
+    },
+    sourceId: "local-manual-eval",
+  },
+  {
+    modelSlug: "gemini-pro-agent",
+    price: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-25",
       source: "local-manual-eval",
     },
     sourceId: "local-manual-eval",
@@ -464,6 +489,26 @@ export const SCORE_SNAPSHOTS: SnapshotEntry[] = [
     imputedDims: [],
     methodologyVersion: "v1",
   },
+  {
+    modelSlug: "gemini-pro-agent",
+    snapshot: {
+      overall: 90.5,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 90.5,
+      evaluatedAt: "2026-09-25",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+    evalCount: 1,
+    imputedDims: [],
+    methodologyVersion: "v1",
+  },
 ];
 
 export const SOURCES: Source[] = [
@@ -471,9 +516,9 @@ export const SOURCES: Source[] = [
     id: "local-manual-eval",
     label: "Local manual evaluation — Zombie Flamethrower Showdown",
     kind: "manual",
-    retrievedAt: "2026-09-23",
+    retrievedAt: "2026-09-25",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyre-burn-horde, /play/space-bunny, /play/pyro-vs-zombies, /play/cinderline, /play/firebreak-night-shift, /play/emberfall, and /play/pyroclasm-inferno. DeepSeek V4.1 Flash scored 94; Space Bunny Free scored 93.5; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyre-burn-horde, /play/space-bunny, /play/pyro-vs-zombies, /play/cinderline, /play/firebreak-night-shift, /play/zombie-fire-survival, /play/emberfall, and /play/pyroclasm-inferno. DeepSeek V4.1 Flash scored 94; Space Bunny Free scored 93.5; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; Gemini Pro Agent scored 90.5; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
   },
 ];
 
@@ -664,6 +709,43 @@ export const MODELS: Model[] = [
     },
   },
   {
+    id: "bdx-ai/gemini-pro-agent",
+    slug: "gemini-pro-agent",
+    name: "Gemini Pro Agent",
+    family: "Gemini Pro",
+    provider: "bdx-ai",
+    context: 1048576,
+    released: null,
+    openWeights: false,
+    capabilities: {
+      vision: true,
+      tools: true,
+      audio: false,
+      multimodal: true,
+    },
+    prices: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-09-25",
+      source: "local-manual-eval",
+    },
+    scores: {
+      overall: 90.5,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 90.5,
+      evaluatedAt: "2026-09-25",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+  },
+  {
     id: "bdx-ai/gpt-6-sol",
     slug: "gpt-6-sol",
     name: "GPT 6 Sol",
@@ -761,6 +843,11 @@ export const TRENDS: TrendPoint[] = [
     avgBdxScore: 91.36,
     modelCount: 7,
   },
+  {
+    date: "2026-09-25",
+    avgBdxScore: 91.25,
+    modelCount: 8,
+  },
 ];
 
 /** Homepage "top models" — only Overall is measured (Showdown Score). */
@@ -811,6 +898,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       name: "GPT Luna 5.6",
       provider: "bdx-ai",
       score: 91,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
+    {
+      id: "gemini-pro-agent",
+      name: "Gemini Pro Agent",
+      provider: "bdx-ai",
+      score: 90.5,
       delta: 0,
       pricePer1M: null,
       speedTps: null,
@@ -873,14 +970,19 @@ export const DEMO_TREND_SERIES: HomeTrendPoint[] = [
     topScore: 94,
     medianScore: 91.5,
   },
+  {
+    label: "Sep 25",
+    topScore: 94,
+    medianScore: 91.25,
+  },
 ];
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 7,
+  modelsTracked: 8,
   benchmarks: 1,
-  evalRuns: 7,
+  evalRuns: 8,
   providers: 2,
-  datasetRefresh: "2026-09-23",
+  datasetRefresh: "2026-09-25",
 };
 
 /** Canonical leaderboard rows (Showdown Score desc). */
@@ -932,6 +1034,15 @@ export const demoLeaderboard: LeaderboardRow[] = [
   },
   {
     rank: 6,
+    modelSlug: "gemini-pro-agent",
+    modelName: "Gemini Pro Agent",
+    provider: "bdx-ai",
+    bdxScore: 90.5,
+    overall: 90.5,
+    pricePer1MBlended: null,
+  },
+  {
+    rank: 7,
     modelSlug: "gpt-6-luna",
     modelName: "GPT Luna 6",
     provider: "bdx-ai",
@@ -940,7 +1051,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 7,
+    rank: 8,
     modelSlug: "gemini-3-8-flash",
     modelName: "Gemini 3.8 Flash",
     provider: "bdx-ai",
@@ -959,13 +1070,13 @@ export interface Freshness {
   refreshLabel: string;
 }
 export const FRESHNESS: Freshness = {
-  evalDate: "2026-09-22",
+  evalDate: "2026-09-25",
   benchmarkVersions: {
     "zombie-flamethrower-showdown": "v1",
   },
   methodologyVersion: "v1",
-  retrievedDate: "2026-09-22",
-  refreshLabel: "2026-09-22",
+  retrievedDate: "2026-09-25",
+  refreshLabel: "2026-09-25",
 };
 
 export interface ProvenanceItem {
@@ -982,9 +1093,9 @@ export const PROVENANCE: ProvenanceItem[] = [
     sourceId: "local-manual-eval",
     label: "Local manual evaluation — Zombie Flamethrower Showdown",
     kind: "manual",
-    retrievedAt: "2026-09-22",
+    retrievedAt: "2026-09-25",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/firebreak-night-shift, /play/emberfall, and /play/cinderline. DeepSeek V4.1 Flash scored 94; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
+      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/space-bunny, /play/cinderline, /play/firebreak-night-shift, /play/zombie-fire-survival, and /play/emberfall. DeepSeek V4.1 Flash scored 94; Space Bunny Free scored 93.5; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; Gemini Pro Agent scored 90.5; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
   },
 ];
 
@@ -998,7 +1109,7 @@ export interface UncertaintySummary {
 }
 export const UNCERTAINTY: UncertaintySummary = {
   methodologyVersion: "v1",
-  evalCount: 7,
+  evalCount: 8,
   avgCiHalfWidth: 0,
   minRuns: 1,
   maxRuns: 1,

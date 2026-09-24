@@ -7,7 +7,7 @@ import { MODELS } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Models",
   description:
-    "Profiles for seven verified game-build models with Showdown Scores and instant play links.",
+    "Profiles for eight verified game-build models with Showdown Scores and instant play links.",
 };
 
 const SHOWDOWN_SCORES: Record<string, number> = {
@@ -16,6 +16,7 @@ const SHOWDOWN_SCORES: Record<string, number> = {
   "muse-spark-1-3": 92,
   "gpt-6-sol": 91.5,
   "gpt-5-6-luna": 91,
+  "gemini-pro-agent": 90.5,
   "gpt-6-luna": 89.5,
   "gemini-3-8-flash": 88,
 };
@@ -27,6 +28,7 @@ const PLAY_LINKS: Record<string, string> = {
   "gpt-6-sol": "/play/cinderline",
   "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",
+  "gemini-pro-agent": "/play/zombie-fire-survival",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
 };
 

@@ -27,6 +27,8 @@ export function PerformanceTable({
           ? 91.5
         : modelSlug === "gpt-5-6-luna"
           ? 91
+          : modelSlug === "gemini-pro-agent"
+            ? 90.5
           : modelSlug === "gpt-6-luna"
             ? 89.5
           : modelSlug === "gemini-3-8-flash"

@@ -49,7 +49,7 @@ export function BenchmarkCoverage({ items = BENCHMARKS }: { items?: Benchmark[] 
                   {b.category} · {b.unit}
                 </p>
                 <p className="mt-2 text-sm text-bdx-muted">
-                   7 evaluated builds · Showdown Score (manual game-build
+                   8 evaluated builds · Showdown Score (manual game-build
                   evaluation)
                 </p>
               </CardContent>

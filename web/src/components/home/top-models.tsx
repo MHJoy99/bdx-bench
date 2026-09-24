@@ -17,6 +17,7 @@ const SHOWDOWN_SCORES: Record<string, number> = {
   "muse-spark-1-3": 92,
   "gpt-6-sol": 91.5,
   "gpt-5-6-luna": 91,
+  "gemini-pro-agent": 90.5,
   "gpt-6-luna": 89.5,
   "gemini-3-8-flash": 88,
 };

@@ -26,11 +26,11 @@ export function CapabilityTrend() {
         <CardContent>
           <div className="rounded-lg border border-dashed border-bdx-border bg-bdx-bg px-6 py-10 text-center">
             <p className="text-sm font-semibold text-bdx-ink">
-              September 2026: 94 · 93.5 · 92 · 91.5 · 91 · 89.5 · 88
+              September 2026: 94 · 93.5 · 92 · 91.5 · 91 · 90.5 · 89.5 · 88
             </p>
             <p className="mx-auto mt-2 max-w-md text-sm text-bdx-muted">
               DeepSeek V4.1 Flash leads at 94, followed by Space Bunny Free at 93.5, Muse Spark 1.3 at
-              92, GPT 6 Sol at 91.5, GPT Luna 5.6 at 91, GPT Luna 6 at 89.5, and Gemini 3.8 Flash at 88. The next
+              92, GPT 6 Sol at 91.5, GPT Luna 5.6 at 91, Gemini Pro Agent at 90.5, GPT Luna 6 at 89.5, and Gemini 3.8 Flash at 88. The next
               round will draw the first trend line.
             </p>
           </div>

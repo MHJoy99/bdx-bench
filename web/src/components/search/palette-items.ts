@@ -78,6 +78,7 @@ export const CANONICAL_MODELS: PaletteModelInput[] = [
   { slug: "deepseek-v4-1-flash", name: "DeepSeek V4.1 Flash", family: "DeepSeek", provider: "deepseek" },
   { slug: "space-bunny-free", name: "Space Bunny Free", family: "OpenCode", provider: "other" },
   { slug: "gpt-6-sol", name: "GPT 6 Sol", family: "GPT Sol", provider: "openai" },
+  { slug: "gemini-pro-agent", name: "Gemini Pro Agent", family: "Gemini Pro", provider: "google" },
   { slug: "gpt-6-luna", name: "GPT Luna 6", family: "GPT Luna", provider: "openai" },
   { slug: "gpt-5-6-luna", name: "GPT Luna 5.6", family: "GPT Luna", provider: "openai" },
   { slug: "gemini-3-8-flash", name: "Gemini 3.8 Flash", family: "Gemini Flash", provider: "google" },

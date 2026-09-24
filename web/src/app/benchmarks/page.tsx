@@ -101,6 +101,21 @@ const PLAYABLE_BUILDS: Record<
     fps: "60 FPS · 77 KB rich standalone Canvas 2D engine with scanlines and radial lighting",
     tech: "Multi-tier wave loop · Boss AI state machine · Clean zero-dependency build",
   },
+  "gemini-pro-agent": {
+    title: "Gemini Pro Agent",
+    playUrl: "/play/zombie-fire-survival",
+    badge: "SCORE 90.5",
+    tagline: "Fluid twin-stick survivor with WASD diagonal normalization, mouse aim turret, and glowing additive flamethrower cone.",
+    features: [
+      "Dynamic cone spread with multi-layered additive flame glow and dissipate physics",
+      "Charred zombie states with burn damage-over-time and randomized smoke trails",
+      "Responsive WASD movement with diagonal vector normalization",
+      "Dynamic player heat glow reacting to sustained flamethrower discharge",
+      "Fiery gore explosion particles and screen-damage feedback vignette",
+    ],
+    fps: "60 FPS · 20 KB lightweight zero-dependency standalone Canvas 2D engine",
+    tech: "Continuous flame particle pool · Additive blend rendering · Progressive swarm director",
+  },
   "muse-spark-1-3": {
     title: "PYRO vs ZOMBIES",
     playUrl: "/play/pyro-vs-zombies",
@@ -175,7 +190,7 @@ export default function BenchmarksPage() {
             </p>
           </div>
           <span className="font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
-            7 Evaluated Models
+            8 Evaluated Models
           </span>
         </div>
 

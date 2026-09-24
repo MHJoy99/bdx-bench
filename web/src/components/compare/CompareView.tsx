@@ -45,6 +45,7 @@ const PLAY_LINKS: Record<string, string> = {
   "gpt-6-sol": "/play/cinderline",
   "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",
+  "gemini-pro-agent": "/play/zombie-fire-survival",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
 };
 

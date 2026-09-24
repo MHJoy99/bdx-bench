@@ -42,6 +42,20 @@ const VERIFIED = [
     blurb: "Street survival with spreading fire, four enemy types, Solar Burst, fire dash, fuel and health pickups, touch controls, and endless waves.",
   },
   {
+    name: "GPT Luna 5.6",
+    model: "GPT Luna 5.6",
+    score: 91,
+    href: "/play/firebreak-night-shift",
+    blurb: "Street survival with spreading fire, four enemy types, Solar Burst, fire dash, fuel and health pickups, touch controls, and endless waves.",
+  },
+  {
+    name: "Zombie Fire Survival",
+    model: "Gemini Pro Agent",
+    score: 90.5,
+    href: "/play/zombie-fire-survival",
+    blurb: "Fluid arcade survivor with WASD diagonal vector normalization, mouse aim turret, dynamic flamethrower cone with additive glow, charred burn DoT, and health feedback vignette.",
+  },
+  {
     name: "GPT Luna 6",
     model: "GPT Luna 6",
     score: 89.5,

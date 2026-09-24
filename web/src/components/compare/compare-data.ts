@@ -44,6 +44,7 @@ export const DEMO_MODEL_SLUGS: readonly string[] = [
   "space-bunny-free",
   "gpt-6-sol",
   "gpt-5-6-luna",
+  "gemini-pro-agent",
   "gpt-6-luna",
   "gemini-3-8-flash",
 ];

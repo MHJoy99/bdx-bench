@@ -62,6 +62,14 @@ export const REAL_MODEL_SOL = {
   raw: 91.5,
 } as const;
 
+export const REAL_MODEL_GEMINI_PRO = {
+  slug: "gemini-pro-agent",
+  name: "Gemini Pro Agent",
+  id: "bdx-ai/gemini-pro-agent",
+  /** 0–100 showdown score. */
+  raw: 90.5,
+} as const;
+
 export const REAL_MODEL_LUNA = {
   slug: "gpt-5-6-luna",
   name: "GPT Luna 5.6",
@@ -84,6 +92,7 @@ export const REAL_SLUGS: readonly string[] = [
   REAL_MODEL_SPARK.slug,
   REAL_MODEL_SOL.slug,
   REAL_MODEL_LUNA.slug,
+  REAL_MODEL_GEMINI_PRO.slug,
   REAL_MODEL_LUNA6.slug,
   REAL_MODEL_FLASH.slug,
 ];
@@ -94,6 +103,7 @@ export const REAL_MODEL_NAMES: readonly string[] = [
   REAL_MODEL_SPARK.name,
   REAL_MODEL_SOL.name,
   REAL_MODEL_LUNA.name,
+  REAL_MODEL_GEMINI_PRO.name,
   REAL_MODEL_LUNA6.name,
   REAL_MODEL_FLASH.name,
 ];
@@ -105,6 +115,7 @@ export const REAL_SCORES_01: readonly number[] = [
   REAL_MODEL_SPARK.raw / 100,
   REAL_MODEL_SOL.raw / 100,
   REAL_MODEL_LUNA.raw / 100,
+  REAL_MODEL_GEMINI_PRO.raw / 100,
   REAL_MODEL_LUNA6.raw / 100,
   REAL_MODEL_FLASH.raw / 100,
 ];
@@ -116,6 +127,7 @@ export function isRealModelSlug(slug: string): boolean {
     slug === REAL_MODEL_SPARK.slug ||
     slug === REAL_MODEL_SOL.slug ||
     slug === REAL_MODEL_LUNA.slug ||
+    slug === REAL_MODEL_GEMINI_PRO.slug ||
     slug === REAL_MODEL_LUNA6.slug ||
     slug === REAL_MODEL_FLASH.slug
   );
@@ -128,6 +140,7 @@ export function isRealModelName(name: string): boolean {
     name === REAL_MODEL_SPARK.name ||
     name === REAL_MODEL_SOL.name ||
     name === REAL_MODEL_LUNA.name ||
+    name === REAL_MODEL_GEMINI_PRO.name ||
     name === REAL_MODEL_LUNA6.name ||
     name === REAL_MODEL_FLASH.name
   );
@@ -165,6 +178,11 @@ export const REAL_BAR_SERIES: BarSeries[] = [
   {
     name: REAL_MODEL_LUNA.name,
     data: [norm(REAL_MODEL_LUNA.raw)],
+    runs: [1],
+  },
+  {
+    name: REAL_MODEL_GEMINI_PRO.name,
+    data: [norm(REAL_MODEL_GEMINI_PRO.raw)],
     runs: [1],
   },
   {
@@ -207,6 +225,11 @@ export const REAL_RADAR: RadarDatum[] = [
   {
     model: REAL_MODEL_LUNA.name,
     values: [norm(REAL_MODEL_LUNA.raw)],
+    runs: 1,
+  },
+  {
+    model: REAL_MODEL_GEMINI_PRO.name,
+    values: [norm(REAL_MODEL_GEMINI_PRO.raw)],
     runs: 1,
   },
   {
@@ -268,6 +291,14 @@ export const REAL_HEATMAP_CELLS: HeatmapCell[] = [
     runs: 1,
   },
   {
+    model: REAL_MODEL_GEMINI_PRO.name,
+    benchmark: REAL_BENCHMARK_SLUG,
+    raw: norm(REAL_MODEL_GEMINI_PRO.raw),
+    normalized: norm(REAL_MODEL_GEMINI_PRO.raw),
+    date: "2026-09-25",
+    runs: 1,
+  },
+  {
     model: REAL_MODEL_LUNA6.name,
     benchmark: REAL_BENCHMARK_SLUG,
     raw: norm(REAL_MODEL_LUNA6.raw),
@@ -307,6 +338,10 @@ export const REAL_TRENDS: TrendSeries[] = [
   {
     model: REAL_MODEL_LUNA.name,
     points: [{ date: "2026-09-18", value: norm(REAL_MODEL_LUNA.raw), runs: 1 }],
+  },
+  {
+    model: REAL_MODEL_GEMINI_PRO.name,
+    points: [{ date: "2026-09-25", value: norm(REAL_MODEL_GEMINI_PRO.raw), runs: 1 }],
   },
   {
     model: REAL_MODEL_LUNA6.name,
