@@ -9,21 +9,21 @@ export function ModelHistoryChart({
 }) {
   const score =
     slug === "muse-spark-1-3"
-      ? 92
+      ? 82
       : slug === "deepseek-v4-1-flash"
         ? 94
         : slug === "space-bunny-free"
-          ? 93.5
+          ? 93
         : slug === "gpt-6-sol"
-          ? 91.5
-        : slug === "gpt-5-6-luna"
           ? 91
-          : slug === "gemini-pro-agent"
-            ? 90.5
-          : slug === "gpt-6-luna"
-            ? 89.5
+        : slug === "gpt-5-6-luna"
+          ? 88
           : slug === "gemini-3-8-flash"
-            ? 88
+            ? 86
+          : slug === "gpt-6-luna"
+            ? 79
+          : slug === "gemini-pro-agent"
+            ? 55
             : null;
   return (
     <section aria-labelledby="model-history-heading">

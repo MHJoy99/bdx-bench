@@ -21,14 +21,14 @@ Every model receives the exact same unprimed user brief:
 
 | Rank | Model | Showdown Score | Playable Build | Description |
 |:---:|:---|:---:|:---:|:---|
-| **#1** | **DeepSeek V4.1 Flash** | **94.0** | [Play PYRE ↗](https://bench.bdx.market/play/pyre-burn-horde) | Thermodynamic fire contagion, 6 enemy classes, Titan bosses & 19 card upgrades. |
-| **#2** | **Space Bunny Free** | **93.5** | [Play Space Bunny ↗](https://bench.bdx.market/play/space-bunny) | Firebound protocol with dynamic heat core, boss encounters, minimap radar tracking & procedural audio. |
-| **#3** | **Muse Spark 1.3** | **92.0** | [Play Pyro vs Zombies ↗](https://bench.bdx.market/play/pyro-vs-zombies) | Pure arcade twin-stick shooter with high-contrast particles & rapid pick-up-and-play. |
-| **#4** | **GPT 6 Sol** | **91.5** | [Play Cinderline ↗](https://bench.bdx.market/play/cinderline) | Large-arena survivor with WASD twin-stick controls, firebomb mortar lobs, evasive dash, and heat combos. |
-| **#5** | **GPT Luna 5.6** | **91.0** | [Play Firebreak ↗](https://bench.bdx.market/play/firebreak-night-shift) | Dark street survival with 4 enemy types, spreading flame, Solar Burst & fire dash. |
-| **#6** | **Gemini Pro Agent** | **90.5** | [Play Zombie Fire Survival ↗](https://bench.bdx.market/play/zombie-fire-survival) | Fluid twin-stick survivor with normalized WASD, mouse aim turret, and glowing additive flamethrower cone. |
-| **#7** | **GPT Luna 6** | **89.5** | [Play Emberfall ↗](https://bench.bdx.market/play/emberfall) | Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups & mobile sticks. |
-| **#8** | **Gemini 3.8 Flash** | **88.0** | [Play Pyroclasm ↗](https://bench.bdx.market/play/pyroclasm-inferno) | High-particle survivor with secondary fireball unlockables & edge-spawning swarms. |
+| **#1** | **DeepSeek V4.1 Flash** | **94.0** | [Play PYRE ↗](https://bench.bdx.market/play/pyre-burn-horde) | Thermodynamic fire contagion, 6 enemy classes, Titan bosses, 19 card upgrades & procedural audio. |
+| **#2** | **Space Bunny Free** | **93.0** | [Play Space Bunny ↗](https://bench.bdx.market/play/space-bunny) | Firebound protocol with dynamic flame core, minimap radar tracking, boss encounters & audio synthesis. |
+| **#3** | **GPT 6 Sol** | **91.0** | [Play Cinderline ↗](https://bench.bdx.market/play/cinderline) | Large-arena survivor with WASD twin-stick controls, firebomb mortar lobs, evasive dash, and heat combos. |
+| **#4** | **GPT Luna 5.6** | **88.0** | [Play Firebreak ↗](https://bench.bdx.market/play/firebreak-night-shift) | Dark street survival with 4 enemy types, spreading flame, Solar Burst, fire dash, and touch controls. |
+| **#5** | **Gemini 3.8 Flash** | **86.0** | [Play Pyroclasm ↗](https://bench.bdx.market/play/pyroclasm-inferno) | High-particle survivor with 3 weapons (Fireball, Napalm, Supernova) and multi-channel synth audio. |
+| **#6** | **Muse Spark 1.3** | **82.0** | [Play Pyro vs Zombies ↗](https://bench.bdx.market/play/pyro-vs-zombies) | Pure arcade twin-stick shooter with high-contrast particles, burn DoT, and pick-up-and-play feel. |
+| **#7** | **GPT Luna 6** | **79.0** | [Play Emberfall ↗](https://bench.bdx.market/play/emberfall) | Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups & mobile sticks. |
+| **#8** | **Gemini Pro Agent** | **55.0** | [Play Zombie Fire Survival ↗](https://bench.bdx.market/play/zombie-fire-survival) | Basic twin-stick demo with normalized WASD and additive flame cone; lacks audio, abilities, or enemy variety. |
 
 ---
 

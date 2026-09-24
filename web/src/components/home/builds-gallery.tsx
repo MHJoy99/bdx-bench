@@ -7,13 +7,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const VERIFIED = [
   {
-    name: "PYRO vs ZOMBIES",
-    model: "Muse Spark 1.3",
-    score: 92,
-    href: "/play/pyro-vs-zombies",
-    blurb: "Top-down survival arena. Burn waves with the flamethrower cone, dodge grabs, chain-burn combos, HP pickups, localStorage high-score.",
-  },
-  {
     name: "PYRE — Burn the Horde",
     model: "DeepSeek V4.1 Flash",
     score: 94,
@@ -23,51 +16,51 @@ const VERIFIED = [
   {
     name: "Space Bunny Free",
     model: "Space Bunny Free",
-    score: 93.5,
+    score: 93,
     href: "/play/space-bunny",
     blurb: "Firebound survival protocol with dynamic heat core, boss encounters (The Cinder King), minimap radar tracking, and procedural audio synthesis.",
   },
   {
-    name: "GPT 6 Sol",
+    name: "Cinderline",
     model: "GPT 6 Sol",
-    score: 91.5,
+    score: 91,
     href: "/play/cinderline",
     blurb: "Last light city survivor with firebomb mortar lobs, evasive dashing, heat chain combos, touch controls, and procedural audio.",
   },
   {
-    name: "GPT Luna 5.6",
+    name: "Firebreak: Night Shift",
     model: "GPT Luna 5.6",
-    score: 91,
+    score: 88,
     href: "/play/firebreak-night-shift",
     blurb: "Street survival with spreading fire, four enemy types, Solar Burst, fire dash, fuel and health pickups, touch controls, and endless waves.",
-  },
-  {
-    name: "GPT Luna 5.6",
-    model: "GPT Luna 5.6",
-    score: 91,
-    href: "/play/firebreak-night-shift",
-    blurb: "Street survival with spreading fire, four enemy types, Solar Burst, fire dash, fuel and health pickups, touch controls, and endless waves.",
-  },
-  {
-    name: "Zombie Fire Survival",
-    model: "Gemini Pro Agent",
-    score: 90.5,
-    href: "/play/zombie-fire-survival",
-    blurb: "Fluid arcade survivor with WASD diagonal vector normalization, mouse aim turret, dynamic flamethrower cone with additive glow, charred burn DoT, and health feedback vignette.",
-  },
-  {
-    name: "GPT Luna 6",
-    model: "GPT Luna 6",
-    score: 89.5,
-    href: "/play/emberfall",
-    blurb: "Dark woods survivor with smooth twin-stick controls, fuel pickups, escalating nights, mobile touch controls, and sound synthesis.",
   },
   {
     name: "PYROCLASM: Zombie Inferno",
     model: "Gemini 3.8 Flash",
-    score: 88,
+    score: 86,
     href: "/play/pyroclasm-inferno",
     blurb: "Arena survival plus unlockables (Fireball, Napalm Mines), edge-spawned waves, chain ignites, supernova room-clear blast.",
+  },
+  {
+    name: "PYRO vs ZOMBIES",
+    model: "Muse Spark 1.3",
+    score: 82,
+    href: "/play/pyro-vs-zombies",
+    blurb: "Pure arcade twin-stick loop. Burn waves with the flamethrower cone, dodge grabs, chain-burn combos, HP pickups, and procedural audio.",
+  },
+  {
+    name: "Emberfall",
+    model: "GPT Luna 6",
+    score: 79,
+    href: "/play/emberfall",
+    blurb: "Dark woods survivor with smooth twin-stick controls, fuel pickups, escalating nights, mobile touch controls, and sound synthesis.",
+  },
+  {
+    name: "Zombie Fire Survival",
+    model: "Gemini Pro Agent",
+    score: 55,
+    href: "/play/zombie-fire-survival",
+    blurb: "Basic arcade survivor with WASD diagonal vector normalization, mouse aim turret, and dynamic flame cone with additive glow.",
   },
 ];
 

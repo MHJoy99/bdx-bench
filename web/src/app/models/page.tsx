@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 
 const SHOWDOWN_SCORES: Record<string, number> = {
   "deepseek-v4-1-flash": 94,
-  "space-bunny-free": 93.5,
-  "muse-spark-1-3": 92,
-  "gpt-6-sol": 91.5,
-  "gpt-5-6-luna": 91,
-  "gemini-pro-agent": 90.5,
-  "gpt-6-luna": 89.5,
-  "gemini-3-8-flash": 88,
+  "space-bunny-free": 93,
+  "gpt-6-sol": 91,
+  "gpt-5-6-luna": 88,
+  "gemini-3-8-flash": 86,
+  "muse-spark-1-3": 82,
+  "gpt-6-luna": 79,
+  "gemini-pro-agent": 55,
 };
 
 const PLAY_LINKS: Record<string, string> = {

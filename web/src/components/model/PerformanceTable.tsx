@@ -18,21 +18,21 @@ export function PerformanceTable({
   );
   const fallbackRaw =
     modelSlug === "muse-spark-1-3"
-      ? 92
+      ? 82
       : modelSlug === "deepseek-v4-1-flash"
         ? 94
         : modelSlug === "space-bunny-free"
-          ? 93.5
+          ? 93
         : modelSlug === "gpt-6-sol"
-          ? 91.5
-        : modelSlug === "gpt-5-6-luna"
           ? 91
-          : modelSlug === "gemini-pro-agent"
-            ? 90.5
-          : modelSlug === "gpt-6-luna"
-            ? 89.5
+        : modelSlug === "gpt-5-6-luna"
+          ? 88
           : modelSlug === "gemini-3-8-flash"
-            ? 88
+            ? 86
+          : modelSlug === "gpt-6-luna"
+            ? 79
+          : modelSlug === "gemini-pro-agent"
+            ? 55
             : null;
 
   const rows =

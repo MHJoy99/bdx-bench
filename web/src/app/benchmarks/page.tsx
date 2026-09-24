@@ -44,7 +44,7 @@ const PLAYABLE_BUILDS: Record<
   "gpt-6-sol": {
     title: "GPT 6 Sol",
     playUrl: "/play/cinderline",
-    badge: "THIRD · #3",
+    badge: "SCORE 91.0 · #3",
     tagline: "Large-arena survivor with WASD twin-stick controls, firebomb clusters, dashing, heat combo chains, and touch controls.",
     features: [
       "Twin-stick controls with WASD movement, mouse aim, and flamethrower cone",
@@ -59,7 +59,7 @@ const PLAYABLE_BUILDS: Record<
   "gpt-5-6-luna": {
     title: "GPT Luna 5.6",
     playUrl: "/play/firebreak-night-shift",
-    badge: "FOURTH · #4",
+    badge: "SCORE 88.0 · #4",
     tagline: "Single-run street survival with spreading fire, tactical dashes, charged bursts, and mobile controls.",
     features: [
       "4 enemy classes: Shambler, Runner, Brute, and ranged Spitter",
@@ -74,7 +74,7 @@ const PLAYABLE_BUILDS: Record<
   "gpt-6-luna": {
     title: "GPT Luna 6",
     playUrl: "/play/emberfall",
-    badge: "FIFTH · #5",
+    badge: "SCORE 79.0 · #7",
     tagline: "Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups, and escalating nights.",
     features: [
       "Twin-stick WASD + mouse aim / hold Space or click to spray fire",
@@ -89,7 +89,7 @@ const PLAYABLE_BUILDS: Record<
   "space-bunny-free": {
     title: "Space Bunny Free",
     playUrl: "/play/space-bunny",
-    badge: "RUNNER UP · #2",
+    badge: "SCORE 93.0 · #2",
     tagline: "Large-scale firebound protocol with multi-phase boss encounters, minimap radar, and atmospheric visual effects.",
     features: [
       "Twin-stick movement with WASD and 360-degree mouse aiming flamethrower cone",
@@ -104,8 +104,8 @@ const PLAYABLE_BUILDS: Record<
   "gemini-pro-agent": {
     title: "Gemini Pro Agent",
     playUrl: "/play/zombie-fire-survival",
-    badge: "SCORE 90.5",
-    tagline: "Fluid twin-stick survivor with WASD diagonal normalization, mouse aim turret, and glowing additive flamethrower cone.",
+    badge: "SCORE 55.0 · #8",
+    tagline: "Lightweight twin-stick arcade survival with normalized WASD, mouse aim turret, and glowing additive flame cone.",
     features: [
       "Dynamic cone spread with multi-layered additive flame glow and dissipate physics",
       "Charred zombie states with burn damage-over-time and randomized smoke trails",
@@ -119,7 +119,7 @@ const PLAYABLE_BUILDS: Record<
   "muse-spark-1-3": {
     title: "PYRO vs ZOMBIES",
     playUrl: "/play/pyro-vs-zombies",
-    badge: "RUNNER UP · #2",
+    badge: "SCORE 82.0 · #6",
     tagline: "Arcade-pure twin-stick survival. Lightning-fast pick up and play.",
     features: [
       "Pure arcade twin-stick loop, 0.5s time-to-first-flame",
@@ -134,7 +134,7 @@ const PLAYABLE_BUILDS: Record<
   "gemini-3-8-flash": {
     title: "PYROCLASM: Zombie Inferno",
     playUrl: "/play/pyroclasm-inferno",
-    badge: "THIRD · #3",
+    badge: "SCORE 86.0 · #5",
     tagline: "High-particle arena survivor with secondary weapons and edge-spawning swarms.",
     features: [
       "Edge-spawned zombie waves with swarm AI",

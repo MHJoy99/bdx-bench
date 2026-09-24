@@ -47,12 +47,13 @@ export function Hero() {
           <Flame className="size-4 shrink-0 text-[#ffc53d]" aria-hidden="true" />
           <span>
             Latest Game-Build Showdown: <strong className="font-semibold text-[var(--text)]">DeepSeek V4.1 Flash (94)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">Space Bunny Free (93.5)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (92)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">GPT 6 Sol (91.5)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">GPT Luna 5.6 (91)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">GPT Luna 6 (89.5)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (88)</strong>
+            <strong className="font-semibold text-[var(--text)]">Space Bunny Free (93)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">GPT 6 Sol (91)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">GPT Luna 5.6 (88)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (86)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (82)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">GPT Luna 6 (79)</strong> vs{" "}
+            <strong className="font-semibold text-[var(--text)]">Gemini Pro Agent (55)</strong>
           </span>
         </div>
 
@@ -94,13 +95,6 @@ export function Hero() {
         <div className="mt-7 flex flex-wrap items-center gap-2 pt-2 text-xs">
           <span className="font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Play Interactive Builds:</span>
           <Link
-            href="/play/pyro-vs-zombies"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[var(--accent)]" aria-hidden="true" />
-            <span>Pyro vs Zombies (Muse Spark · 92)</span>
-          </Link>
-          <Link
             href="/play/pyre-burn-horde"
             className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
@@ -112,42 +106,49 @@ export function Hero() {
             className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
             <Gamepad2 className="size-3.5 text-[#ff9b38]" aria-hidden="true" />
-            <span>Space Bunny Free (93.5)</span>
+            <span>Space Bunny Free (93)</span>
           </Link>
           <Link
             href="/play/cinderline"
             className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
             <Gamepad2 className="size-3.5 text-[#ffad45]" aria-hidden="true" />
-            <span>GPT 6 Sol (91.5)</span>
+            <span>GPT 6 Sol (91)</span>
           </Link>
           <Link
             href="/play/firebreak-night-shift"
             className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
             <Gamepad2 className="size-3.5 text-[#b8ff5a]" aria-hidden="true" />
-            <span>GPT Luna 5.6 (91)</span>
-          </Link>
-          <Link
-            href="/play/zombie-fire-survival"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#38bdf8]" aria-hidden="true" />
-            <span>Gemini Pro Agent (90.5)</span>
-          </Link>
-          <Link
-            href="/play/emberfall"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#d7ff79]" aria-hidden="true" />
-            <span>GPT Luna 6 (89.5)</span>
+            <span>GPT Luna 5.6 (88)</span>
           </Link>
           <Link
             href="/play/pyroclasm-inferno"
             className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
           >
             <Gamepad2 className="size-3.5 text-[#7dd3fc]" aria-hidden="true" />
-            <span>Pyroclasm Inferno (Gemini 3.8 · 88)</span>
+            <span>Gemini 3.8 Flash (86)</span>
+          </Link>
+          <Link
+            href="/play/pyro-vs-zombies"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
+          >
+            <Gamepad2 className="size-3.5 text-[var(--accent)]" aria-hidden="true" />
+            <span>Muse Spark 1.3 (82)</span>
+          </Link>
+          <Link
+            href="/play/emberfall"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
+          >
+            <Gamepad2 className="size-3.5 text-[#d7ff79]" aria-hidden="true" />
+            <span>GPT Luna 6 (79)</span>
+          </Link>
+          <Link
+            href="/play/zombie-fire-survival"
+            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
+          >
+            <Gamepad2 className="size-3.5 text-[#38bdf8]" aria-hidden="true" />
+            <span>Gemini Pro Agent (55)</span>
           </Link>
         </div>
 

@@ -48,10 +48,10 @@ export default function MethodologyPage() {
       <section aria-labelledby="m-scoring" className="mt-8">
         <h2 id="m-scoring" className="text-xl font-semibold">Scoring</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Judges assign a Showdown Score from 0 to 100 for each build. DeepSeek
-          V4.1 Flash scored 94, Space Bunny Free scored 93.5, Muse Spark 1.3 scored 92, GPT 6 Sol scored
-          91.5, GPT Luna 5.6 scored 91, Gemini Pro Agent scored 90.5, GPT Luna 6 scored 89.5, and Gemini 3.8
-          Flash scored 88 in the September 2026 round. The score reflects build
+          Judges assign a Showdown Score from 0 to 100 for each build based on a strict 5-dimensional rubric: Controls & Mobility (20 pts), Combat Physics & Flame Mechanics (20 pts), Enemy Variety & Progression (20 pts), Audio & Sound Design (20 pts, 0 if silent), and Visual Polish & Game Feel (20 pts). DeepSeek
+          V4.1 Flash scored 94.0, Space Bunny Free scored 93.0, GPT 6 Sol scored
+          91.0, GPT Luna 5.6 scored 88.0, Gemini 3.8 Flash scored 86.0, Muse Spark 1.3 scored 82.0, GPT Luna 6 scored 79.0, and Gemini Pro
+          Agent scored 55.0 in the September 2026 round. The score reflects build
           quality, feel, and completeness from hands-on evaluation.
           observed during hands-on review. Dimensions outside this round, such
           as reasoning or coding subscores, show as Not evaluated. Pricing and
