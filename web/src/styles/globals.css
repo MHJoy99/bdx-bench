@@ -123,6 +123,7 @@
   --warning-border: rgba(255, 197, 61, 0.4);
   --danger: #ff7a72;
   --danger-muted: rgba(255, 122, 114, 0.15);
+  --danger-border: rgba(255, 122, 114, 0.35);
   --info: #7dd3fc;
   --info-muted: rgba(125, 211, 252, 0.12);
   --info-border: rgba(125, 211, 252, 0.4);
@@ -163,6 +164,7 @@
   --warning-border: rgba(154, 98, 0, 0.4);
   --danger: #c22e2e;
   --danger-muted: rgba(194, 46, 46, 0.12);
+  --danger-border: rgba(194, 46, 46, 0.35);
   --info: #0369a1;
   --info-muted: rgba(3, 105, 161, 0.12);
   --info-border: rgba(3, 105, 161, 0.4);
@@ -209,6 +211,30 @@
   .ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /*
+   * Keyboard hint chip — used by the command palette (CommandPalette.tsx,
+   * CommandPaletteHost.tsx). It lived in a second stylesheet that nothing
+   * imported, so these chips were rendering unstyled in production. One
+   * stylesheet, one source of truth.
+   */
+  .bdx-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding-inline: 0.3rem;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: var(--elevated);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
     white-space: nowrap;
   }
 }

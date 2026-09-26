@@ -1,23 +1,27 @@
 # BDX Bench — QA Checklist (responsive / a11y / perf / states)
 
-Owner: QA/PERF/A11Y (sub-agent 9/10). Scope: tests, configs, checklists, a11y/perf
-fixes. Do NOT rebuild the app here — app scaffold + pages belong to Agents 1–8, 10.
-Zero-dep rule holds at repo root: this `web/` dir is the ONLY place where
-opt-in devDeps (vitest/playwright) may ever be installed, and only with Lead approval.
+Scope: manual QA, a11y and perf passes for the `web/` app. See
+[`../docs/WEB.md`](../docs/WEB.md) for architecture, routes, and the design and
+motion doctrine. The `web/` directory is the only place where opt-in devDeps
+(vitest / playwright) may be installed, and only with Lead approval.
 
 Status legend: `[ ]` todo · `[x]` done · `[B]` blocked · `[S]` skipped with reason.
 Automated coverage: `node --test tests/` (scores + API contract) and
-`node tests/a11y-audit.js` (static a11y/perf scan). This file is the MANUAL pass.
+`node tests/a11y-audit.js` (static a11y/perf scan) — note these live in the
+**root** `tests/`, not `web/tests/`. This file is the MANUAL pass.
 
-## 0. Blockers (updated 2026-09-17)
+Verification gate for the web app is `npm run check` (`tsc --noEmit && next
+build`); ESLint is not configured in this project.
 
-- [B] `public/` UI files are deleted in the working tree (only `.gitkeep` remains);
-  `GET /` returns JSON 404. The a11y component pass + all browser checks below are
-  BLOCKED until the UI agent restores `index.html`/`app.js`/`styles.css`
-  (or Agent 1 lands the `web/` app + serving route). Tracked by the intentional
-  failure in `tests/api-contract.test.js` ("static serving" suite) and by
-  `node tests/a11y-audit.js` exiting `2/BLOCKED`.
-- [ ] SPEC-vs-code deviations (code wins; docs agent should reconcile SPEC):
+## 0. Blockers
+
+- [x] **Resolved 2026-09-26.** The old blocker — "harness `public/` UI files are
+  deleted, `GET /` returns JSON 404" — no longer applies. The public product is
+  now the Next.js app in `web/`, served at `https://bench.bdx.market`, and
+  `tests/api-contract.test.js` covers the harness API separately on `:8765`.
+  Do not re-add this blocker; check the harness API on its own port.
+- [ ] SPEC-vs-code deviations (harness, code wins; docs agent should reconcile
+  `docs/SPEC.md`):
   D1 `GET /api/health` → `{ok, version}` (SPEC says `{ok, mode, time}`).
   D2 `GET /api/tasks` without `?suite=` → `400 {error, suites}` (SPEC says 200 all).
   D3 `GET /api/tasks?suite=unknown` → `404` (SPEC says `200 {tasks:[]}`).
