@@ -546,7 +546,7 @@ export const MODELS: Model[] = [
       source: "local-manual-eval",
     },
     scores: {
-      overall: 82,
+      overall: 52,
       reasoning: null,
       coding: null,
       math: null,
@@ -555,7 +555,7 @@ export const MODELS: Model[] = [
       agentic: null,
       longContext: null,
       efficiency: null,
-      bdxScore: 82,
+      bdxScore: 52,
       evaluatedAt: "2026-09-17",
       benchmark: "zombie-flamethrower-showdown",
     },
