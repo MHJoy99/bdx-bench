@@ -11,25 +11,25 @@ export const metadata: Metadata = {
 };
 
 const SHOWDOWN_SCORES: Record<string, number> = {
-  "deepseek-v4-1-flash": 94,
-  "space-bunny-free": 93,
-  "gpt-6-sol": 91,
-  "gpt-5-6-luna": 88,
-  "gemini-3-8-flash": 86,
-  "muse-spark-1-3": 82,
-  "gpt-6-luna": 79,
-  "gemini-pro-agent": 55,
+  "space-bunny-free": 91,
+  "deepseek-v4-1-flash": 80,
+  "gpt-5-6-luna": 62,
+  "gpt-6-sol": 58,
+  "muse-spark-1-3": 52,
+  "gpt-6-luna": 51,
+  "gemini-3-8-flash": 43,
+  "gemini-pro-agent": 24
 };
 
 const PLAY_LINKS: Record<string, string> = {
-  "muse-spark-1-3": "/play/pyro-vs-zombies",
+  "space-bunny-free": "/play/ember-dead",
   "deepseek-v4-1-flash": "/play/pyre-burn-horde",
-  "space-bunny-free": "/play/space-bunny",
-  "gpt-6-sol": "/play/cinderline",
-  "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",
-  "gemini-pro-agent": "/play/zombie-fire-survival",
+  "gpt-6-sol": "/play/cinderline",
+  "muse-spark-1-3": "/play/pyro-vs-zombies",
+  "gpt-6-luna": "/play/emberfall",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
+  "gemini-pro-agent": "/play/zombie-fire-survival"
 };
 
 function showdownFor(slug: string, fallback: number): string {

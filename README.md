@@ -17,18 +17,28 @@
 Every model receives the exact same unprimed user brief:
 > *"make me a video game where i am killing zombies with fire and all please? a nice wonderfull game i can play for fun okay?"*
 
-### Verified Leaderboard & Instant Playable Builds:
+### Verified Leaderboard & Instant Playable Builds
 
-| Rank | Model | Showdown Score | Playable Build | Description |
-|:---:|:---|:---:|:---:|:---|
-| **#1** | **DeepSeek V4.1 Flash** | **94.0** | [Play PYRE ↗](https://bench.bdx.market/play/pyre-burn-horde) | Thermodynamic fire contagion, 6 enemy classes, Titan bosses, 19 card upgrades & procedural audio. |
-| **#2** | **Space Bunny Free** | **93.0** | [Play Space Bunny ↗](https://bench.bdx.market/play/space-bunny) | Firebound protocol with dynamic flame core, minimap radar tracking, boss encounters & audio synthesis. |
-| **#3** | **GPT 6 Sol** | **91.0** | [Play Cinderline ↗](https://bench.bdx.market/play/cinderline) | Large-arena survivor with WASD twin-stick controls, firebomb mortar lobs, evasive dash, and heat combos. |
-| **#4** | **GPT Luna 5.6** | **88.0** | [Play Firebreak ↗](https://bench.bdx.market/play/firebreak-night-shift) | Dark street survival with 4 enemy types, spreading flame, Solar Burst, fire dash, and touch controls. |
-| **#5** | **Gemini 3.8 Flash** | **86.0** | [Play Pyroclasm ↗](https://bench.bdx.market/play/pyroclasm-inferno) | High-particle survivor with 3 weapons (Fireball, Napalm, Supernova) and multi-channel synth audio. |
-| **#6** | **Muse Spark 1.3** | **82.0** | [Play Pyro vs Zombies ↗](https://bench.bdx.market/play/pyro-vs-zombies) | Pure arcade twin-stick shooter with high-contrast particles, burn DoT, and pick-up-and-play feel. |
-| **#7** | **GPT Luna 6** | **79.0** | [Play Emberfall ↗](https://bench.bdx.market/play/emberfall) | Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups & mobile sticks. |
-| **#8** | **Gemini Pro Agent** | **55.0** | [Play Zombie Fire Survival ↗](https://bench.bdx.market/play/zombie-fire-survival) | Basic twin-stick demo with normalized WASD and additive flame cone; lacks audio, abilities, or enemy variety. |
+Scores are **Showdown Score v2** — a strict source-code audit. Five dimensions,
+20 points each (Controls & Mobility, Combat Physics & Weapons, Content & Enemy
+Variety, Audio & Sound Design, Visual Polish & Game Feel). A build with no audio
+scores 0 on audio. A feature earns points only when it is genuinely implemented
+and reachable: on-screen strings, comments, and dead code score **zero**.
+
+> The previous v1 method credited features that were absent from the code and
+> reported scores up to 40 points too high. v1 has been withdrawn. The full v1
+> → v2 deltas are listed in the methodology page.
+
+| Rank | Model | Score | Best Build | Also Audited |
+|:---:|:---|:---:|:---|:---|
+| **#1** | **Space Bunny Free** | **91.0** | [EMBER DEAD ↗](https://bench.bdx.market/play/ember-dead) | earlier build scored 49.0 |
+| **#2** | **DeepSeek V4.1 Flash** | **80.0** | [PYRE — Burn the Horde ↗](https://bench.bdx.market/play/pyre-burn-horde) | [INFERNO DEAD ↗](https://bench.bdx.market/play/inferno-dead) scored 61.0 |
+| **#3** | **GPT Luna 5.6** | **62.0** | [Firebreak: Night Shift ↗](https://bench.bdx.market/play/firebreak-night-shift) | — |
+| **#4** | **GPT 6 Sol** | **58.0** | [Cinderline ↗](https://bench.bdx.market/play/cinderline) | — |
+| **#5** | **Muse Spark 1.3** | **52.0** | [PYRO vs ZOMBIES ↗](https://bench.bdx.market/play/pyro-vs-zombies) | — |
+| **#6** | **GPT Luna 6** | **51.0** | [Emberfall ↗](https://bench.bdx.market/play/emberfall) | — |
+| **#7** | **Gemini 3.8 Flash** | **43.0** | [PYROCLASM: Zombie Inferno ↗](https://bench.bdx.market/play/pyroclasm-inferno) | — |
+| **#8** | **Gemini Pro Agent** | **24.0** | [Zombie Fire Survival ↗](https://bench.bdx.market/play/zombie-fire-survival) | — |
 
 ---
 

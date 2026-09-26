@@ -19,6 +19,8 @@ const PLAYABLE_BUILDS: Record<
   {
     title: string;
     playUrl: string;
+    altPlayUrl?: string;
+    altPlayLabel?: string;
     badge: string;
     tagline: string;
     features: string[];
@@ -29,8 +31,10 @@ const PLAYABLE_BUILDS: Record<
   "deepseek-v4-1-flash": {
     title: "PYRE — Burn the Horde",
     playUrl: "/play/pyre-burn-horde",
-    badge: "WINNER · #1",
-    tagline: "Thermodynamic chain reactions, 6 enemy classes, Titan bosses & 19 roguelite upgrades.",
+    altPlayUrl: "/play/inferno-dead",
+    altPlayLabel: "INFERNO DEAD — newer build (strict audit 61.0)",
+    badge: "SCORE 80.0 · #2",
+    tagline: "PYRE — five interlocking fire systems and a real 20-upgrade card draft. Deepest systems, no touch support.",
     features: [
       "Dynamic heat contagion — burning zombies ignite their swarm neighbors",
       "6 enemy classes: Shamblers, Runners, Spitters, Bloaters, Brutes, Titans",
@@ -38,14 +42,14 @@ const PLAYABLE_BUILDS: Record<
       "19 selectable card upgrades across 4 rarity tiers",
       "Fuel recharge loop, flame nova (Space), fire dash (Shift)",
     ],
-    fps: "60 FPS @ 120 zombies + 2,300 particles live",
-    tech: "Pooled entity buffers · End-of-frame compaction pass · Web Audio synthesizer",
+    fps: "Zero-allocation 11-array particle SoA, 4200 cap, 120 Hz fixed step · 1915 lines",
+    tech: "Single file · 20 DOM card upgrades with rarity weighting and a score-gated reroll",
   },
   "gpt-6-sol": {
     title: "GPT 6 Sol",
     playUrl: "/play/cinderline",
-    badge: "SCORE 91.0 · #3",
-    tagline: "Large-arena survivor with WASD twin-stick controls, firebomb clusters, dashing, heat combo chains, and touch controls.",
+    badge: "SCORE 58.0 · #4",
+    tagline: "Cinderline — proven continuous flame cone, working touch layer, functional combo. No boss, no knockback, no upgrades.",
     features: [
       "Twin-stick controls with WASD movement, mouse aim, and flamethrower cone",
       "Firebomb lob ability (F / RMB) creating lasting ground fire pools",
@@ -53,14 +57,14 @@ const PLAYABLE_BUILDS: Record<
       "3 enemy archetypes: swift runners, shambling walkers, and high-health brutes",
       "Procedural audio synthesizer with mute toggle, touch controls, and local high score",
     ],
-    fps: "60 FPS · 49 KB standalone Canvas 2D engine with grain & vignette shaders",
-    tech: "Syntax verified & browser-tested · pure standalone Canvas 2D",
+    fps: "653 lines / 501 JS, zero global pollution",
+    tech: "Knockback is entirely absent; enemies have no velocity field",
   },
   "gpt-5-6-luna": {
     title: "GPT Luna 5.6",
     playUrl: "/play/firebreak-night-shift",
-    badge: "SCORE 88.0 · #4",
-    tagline: "Single-run street survival with spreading fire, tactical dashes, charged bursts, and mobile controls.",
+    badge: "SCORE 62.0 · #3",
+    tagline: "Firebreak: Night Shift — four genuinely distinct enemy behaviours, real contagion, working pointer-event touch.",
     features: [
       "4 enemy classes: Shambler, Runner, Brute, and ranged Spitter",
       "Spreading fire, fuel reserve, health/ash pickups, and obstacle field",
@@ -68,14 +72,14 @@ const PLAYABLE_BUILDS: Record<
       "Pointer-based touch controls and local best-run persistence",
       "Self-contained Canvas 2D build with procedural Web Audio",
     ],
-    fps: "58 KB standalone Canvas 2D build",
-    tech: "Static code + browser-start verified · no external assets or network calls",
+    fps: "1229 lines, single file, no external resources",
+    tech: "No boss, no combo, no music · reachable pause-hang defect documented in the audit",
   },
   "gpt-6-luna": {
     title: "GPT Luna 6",
     playUrl: "/play/emberfall",
-    badge: "SCORE 79.0 · #7",
-    tagline: "Atmospheric dark-woods arena with smooth twin-stick controls, fuel pickups, and escalating nights.",
+    badge: "SCORE 51.0 · #6",
+    tagline: "Emberfall — correct normalized directional knockback and a fully working pointer-event touch layer.",
     features: [
       "Twin-stick WASD + mouse aim / hold Space or click to spray fire",
       "2 zombie tiers: standard horde + armored tough zombies",
@@ -83,29 +87,31 @@ const PLAYABLE_BUILDS: Record<
       "Touch joystick and touch burn button for mobile",
       "Procedural Web Audio sound effects with mute toggle",
     ],
-    fps: "60 FPS · 37 KB clean zero-dependency Canvas build",
-    tech: "Syntax verified & browser-tested · pure standalone Canvas 2D",
+    fps: "604 lines, 447 JS, zero global pollution",
+    tech: "One enemy archetype, one pickup, no boss, no combo, no music",
   },
   "space-bunny-free": {
     title: "Space Bunny Free",
-    playUrl: "/play/space-bunny",
-    badge: "SCORE 93.0 · #2",
-    tagline: "Large-scale firebound protocol with multi-phase boss encounters, minimap radar, and atmospheric visual effects.",
+    playUrl: "/play/ember-dead",
+    altPlayUrl: "/play/space-bunny",
+    altPlayLabel: "Earlier build (strict audit 49.0)",
+    badge: "SCORE 91.0 · #1",
+    tagline: "EMBER DEAD — six enemy roles, five fire abilities with i-frames, and a 142 BPM procedural soundtrack. Highest-scoring build in the set.",
     features: [
-      "Twin-stick movement with WASD and 360-degree mouse aiming flamethrower cone",
-      "Dynamic heat/flame core recharge mechanics with overheat protection",
-      "Boss encounters with custom health bars: The Cinder King & Ashen Sovereign",
-      "Minimap radar frame with real-time enemy tracking and obstacle layout",
-      "Full procedural Web Audio synthesis with spatial tones and kill effects",
+      "6 enemy types with real role separation: Walker, Runner, Brute, Spitter, Ember suicide-bomber, and the Inferno Behemoth boss every 5th wave",
+      "5 abilities on independent cooldowns: flamethrower cone, fireball w/ recoil, ballistic Molotov, Blaze Dash (0.3s i-frames), and a pickup-gated Inferno nuke",
+      "Full WebAudio engine: 15 synthesized SFX, a live flame bed, and a 142 BPM five-layer step sequencer (kick/snare/hats/bass/lead)",
+      "Six damage channels funnelled through one resolver: burn DoT with a 1.12x burning vulnerability, ignite stacking, fire pools, dash contact, passive ember aura",
+      "Layered game feel: slow-motion, hit-stop, per-event screen shake, regenerating heat shield, out-of-combat regen, 3 pickup types, combo to x13, ?wave= jump, working touch controls",
     ],
-    fps: "60 FPS · 77 KB rich standalone Canvas 2D engine with scanlines and radial lighting",
-    tech: "Multi-tier wave loop · Boss AI state machine · Clean zero-dependency build",
+    fps: "Zero-allocation 1500-particle pool, two-pass additive batching · 79 KB across 4 files · ~80k frames driven, 0 runtime errors",
+    tech: "Multi-file (index.html + style.css + game.js + audio.js) · no dependencies, no assets, no network",
   },
   "gemini-pro-agent": {
     title: "Gemini Pro Agent",
     playUrl: "/play/zombie-fire-survival",
-    badge: "SCORE 55.0 · #8",
-    tagline: "Lightweight twin-stick arcade survival with normalized WASD, mouse aim turret, and glowing additive flame cone.",
+    badge: "SCORE 24.0 · #8",
+    tagline: "Zombie Fire Survival — a clean 507-line prototype with a well-tuned burn DoT and nothing else.",
     features: [
       "Dynamic cone spread with multi-layered additive flame glow and dissipate physics",
       "Charred zombie states with burn damage-over-time and randomized smoke trails",
@@ -113,14 +119,14 @@ const PLAYABLE_BUILDS: Record<
       "Dynamic player heat glow reacting to sustained flamethrower discharge",
       "Fiery gore explosion particles and screen-damage feedback vignette",
     ],
-    fps: "60 FPS · 20 KB lightweight zero-dependency standalone Canvas 2D engine",
-    tech: "Continuous flame particle pool · Additive blend rendering · Progressive swarm director",
+    fps: "507 lines / 415 JS · zero audio, one enemy type, no fuel economy, no touch",
+    tech: "Audio verified at absolute zero (0/6 probes, 0 AudioContext constructions at runtime)",
   },
   "muse-spark-1-3": {
     title: "PYRO vs ZOMBIES",
     playUrl: "/play/pyro-vs-zombies",
-    badge: "SCORE 82.0 · #6",
-    tagline: "Arcade-pure twin-stick survival. Lightning-fast pick up and play.",
+    badge: "SCORE 52.0 · #5",
+    tagline: "PYRO vs ZOMBIES — real contagion cascades and tank chain-explosions in 238 lines of JS.",
     features: [
       "Pure arcade twin-stick loop, 0.5s time-to-first-flame",
       "4 zombie varieties: Normal, Fast, Tank, Spitter",
@@ -128,22 +134,22 @@ const PLAYABLE_BUILDS: Record<
       "Health & fuel drop pickups across the arena",
       "Procedural lowpass white-noise audio synthesis",
     ],
-    fps: "60 FPS rock-solid on all hardware",
-    tech: "26 KB ultra-lightweight Canvas 2D · Zero dependencies",
+    fps: "319 lines total, 238 JS, one IIFE, zero globals",
+    tech: "No boss, no combo, no card draft, no music · touchcancel fuel-bleed lockout",
   },
   "gemini-3-8-flash": {
     title: "PYROCLASM: Zombie Inferno",
     playUrl: "/play/pyroclasm-inferno",
-    badge: "SCORE 86.0 · #5",
-    tagline: "High-particle arena survivor with secondary weapons and edge-spawning swarms.",
+    badge: "SCORE 43.0 · #7",
+    tagline: "PYROCLASM: Zombie Inferno — a real 1/2/3 weapon system with three distinct mechanics.",
     features: [
       "Edge-spawned zombie waves with swarm AI",
       "Secondary unlockables: Fireball burst & Napalm Mines",
       "Screen-clearing Supernova room-blast",
       "Persistent localStorage high score tracking",
     ],
-    fps: "50-60 FPS · Heavy particle canvas",
-    tech: "40 KB Canvas 2D engine · Web Audio sound FX",
+    fps: "1327 lines · no delta time (sim runs 2.67x fast at 160fps) · 1.9M-op/frame O(n2) cliff at ~644 zombies",
+    tech: "Advertised dash, lingering pools and touch are all absent from the code",
   },
 };
 
@@ -281,6 +287,18 @@ export default function BenchmarksPage() {
                       <Gamepad2 className="size-4" />
                       <span>PLAY THIS BUILD</span>
                       <ArrowUpRight className="size-3.5 opacity-70" />
+                    </Link>
+                  ) : null}
+                  {build?.altPlayUrl ? (
+                    <Link
+                      href={build.altPlayUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--accent-border)] hover:text-[var(--accent-ink)]"
+                    >
+                      <Gamepad2 className="size-3.5" />
+                      <span>{build.altPlayLabel}</span>
+                      <ArrowUpRight className="size-3 opacity-70" />
                     </Link>
                   ) : null}
                   <Link

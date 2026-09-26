@@ -17,22 +17,22 @@ export function PerformanceTable({
     (e) => e.modelSlug === modelSlug,
   );
   const fallbackRaw =
-    modelSlug === "muse-spark-1-3"
-      ? 82
+    modelSlug === "space-bunny-free"
+      ? 91
       : modelSlug === "deepseek-v4-1-flash"
-        ? 94
-        : modelSlug === "space-bunny-free"
-          ? 93
-        : modelSlug === "gpt-6-sol"
-          ? 91
+        ? 80
         : modelSlug === "gpt-5-6-luna"
-          ? 88
-          : modelSlug === "gemini-3-8-flash"
-            ? 86
+          ? 62
+          : modelSlug === "gpt-6-sol"
+            ? 58
+            : modelSlug === "muse-spark-1-3"
+              ? 52
           : modelSlug === "gpt-6-luna"
-            ? 79
+            ? 51
+          : modelSlug === "gemini-3-8-flash"
+            ? 43
           : modelSlug === "gemini-pro-agent"
-            ? 55
+            ? 24
             : null;
 
   const rows =

@@ -48,11 +48,16 @@ export default function MethodologyPage() {
       <section aria-labelledby="m-scoring" className="mt-8">
         <h2 id="m-scoring" className="text-xl font-semibold">Scoring</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Judges assign a Showdown Score from 0 to 100 for each build based on a strict 5-dimensional rubric: Controls & Mobility (20 pts), Combat Physics & Flame Mechanics (20 pts), Enemy Variety & Progression (20 pts), Audio & Sound Design (20 pts, 0 if silent), and Visual Polish & Game Feel (20 pts). DeepSeek
-          V4.1 Flash scored 94.0, Space Bunny Free scored 93.0, GPT 6 Sol scored
-          91.0, GPT Luna 5.6 scored 88.0, Gemini 3.8 Flash scored 86.0, Muse Spark 1.3 scored 82.0, GPT Luna 6 scored 79.0, and Gemini Pro
-          Agent scored 55.0 in the September 2026 round. The score reflects build
-          quality, feel, and completeness from hands-on evaluation.
+          Judges score each build on a 5-dimension rubric, 20 points per
+          dimension, 100 total: Controls &amp; Mobility, Combat Physics &amp;
+          Weapon Mechanics, Content &amp; Enemy Variety, Audio &amp; Sound
+          Design, and Visual Polish &amp; Game Feel. A build with no audio
+          scores 0 on audio. A feature earns points only when it is genuinely
+          implemented and reachable — on-screen text, comments, and dead code
+          score zero. This v2 audit replaced the earlier v1 method, which
+          credited claimed features that were absent from the code and
+          therefore reported scores up to 40 points too high; the v1
+          leaderboard has been withdrawn.
           observed during hands-on review. Dimensions outside this round, such
           as reasoning or coding subscores, show as Not evaluated. Pricing and
           speed show as Not measured until dedicated measurements land.
@@ -83,7 +88,10 @@ export default function MethodologyPage() {
       <section aria-labelledby="m-limits" className="mt-8">
         <h2 id="m-limits" className="text-xl font-semibold">Limitations</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-muted-foreground">
-          <li>Eight builds only — results do not generalize to other models.</li>
+          <li>
+            Eight models, ten audited builds — results do not generalize to
+            other models or other prompts.
+          </li>
           <li>Game-build quality only — no claims about chat, code, or reasoning strength.</li>
           <li>Judge review includes human judgment and carries taste variance.</li>
           <li>No price or speed claims in this round; those pages state Not measured.</li>

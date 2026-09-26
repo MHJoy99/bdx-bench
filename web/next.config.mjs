@@ -13,6 +13,8 @@ const nextConfig = {
       { source: "/play/cinderline", destination: "/play/cinderline/index.html" },
       { source: "/play/firebreak-night-shift", destination: "/play/firebreak-night-shift/index.html" },
       { source: "/play/pyroclasm-inferno", destination: "/play/pyroclasm-inferno/index.html" },
+      { source: "/play/ember-dead", destination: "/play/ember-dead/index.html" },
+      { source: "/play/inferno-dead", destination: "/play/inferno-dead/index.html" },
       { source: "/favicon.ico", destination: "/icon.svg" },
     ];
   },

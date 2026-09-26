@@ -18,14 +18,14 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 const PLAY_LINKS: Record<string, string> = {
-  "muse-spark-1-3": "/play/pyro-vs-zombies",
+  "space-bunny-free": "/play/ember-dead",
   "deepseek-v4-1-flash": "/play/pyre-burn-horde",
-  "space-bunny-free": "/play/space-bunny",
-  "gpt-6-sol": "/play/cinderline",
-  "gpt-6-luna": "/play/emberfall",
   "gpt-5-6-luna": "/play/firebreak-night-shift",
-  "gemini-pro-agent": "/play/zombie-fire-survival",
+  "gpt-6-sol": "/play/cinderline",
+  "muse-spark-1-3": "/play/pyro-vs-zombies",
+  "gpt-6-luna": "/play/emberfall",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
+  "gemini-pro-agent": "/play/zombie-fire-survival"
 };
 
 export function ModelHeader({ model }: { model: Model }) {

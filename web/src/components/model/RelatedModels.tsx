@@ -2,14 +2,14 @@ import Link from "next/link";
 import { MODELS } from "@/lib/data";
 
 const SHOWDOWN_SCORES: Record<string, number> = {
-  "deepseek-v4-1-flash": 94,
-  "space-bunny-free": 93,
-  "gpt-6-sol": 91,
-  "gpt-5-6-luna": 88,
-  "gemini-3-8-flash": 86,
-  "muse-spark-1-3": 82,
-  "gpt-6-luna": 79,
-  "gemini-pro-agent": 55,
+  "space-bunny-free": 91,
+  "deepseek-v4-1-flash": 80,
+  "gpt-5-6-luna": 62,
+  "gpt-6-sol": 58,
+  "muse-spark-1-3": 52,
+  "gpt-6-luna": 51,
+  "gemini-3-8-flash": 43,
+  "gemini-pro-agent": 24
 };
 
 export function RelatedModels({ slug }: { slug: string }) {

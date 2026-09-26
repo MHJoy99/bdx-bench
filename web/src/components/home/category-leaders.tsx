@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 
 const SHOWDOWN_SCORES = [
-  { label: "DeepSeek V4.1 Flash", slug: "deepseek-v4-1-flash", score: 94 },
-  { label: "Space Bunny Free", slug: "space-bunny-free", score: 93 },
-  { label: "GPT 6 Sol", slug: "gpt-6-sol", score: 91 },
-  { label: "GPT Luna 5.6", slug: "gpt-5-6-luna", score: 88 },
-  { label: "Gemini 3.8 Flash", slug: "gemini-3-8-flash", score: 86 },
-  { label: "Muse Spark 1.3", slug: "muse-spark-1-3", score: 82 },
-  { label: "GPT Luna 6", slug: "gpt-6-luna", score: 79 },
-  { label: "Gemini Pro Agent", slug: "gemini-pro-agent", score: 55 },
+  { label: "Space Bunny Free", slug: "space-bunny-free", score: 91 },
+  { label: "DeepSeek V4.1 Flash", slug: "deepseek-v4-1-flash", score: 80 },
+  { label: "GPT Luna 5.6", slug: "gpt-5-6-luna", score: 62 },
+  { label: "GPT 6 Sol", slug: "gpt-6-sol", score: 58 },
+  { label: "Muse Spark 1.3", slug: "muse-spark-1-3", score: 52 },
+  { label: "GPT Luna 6", slug: "gpt-6-luna", score: 51 },
+  { label: "Gemini 3.8 Flash", slug: "gemini-3-8-flash", score: 43 },
+  { label: "Gemini Pro Agent", slug: "gemini-pro-agent", score: 24 }
 ];
 
 export function CategoryLeaders() {

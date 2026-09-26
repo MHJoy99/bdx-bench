@@ -25,4 +25,9 @@ curl -sf https://bench.bdx.market/play/zombie-fire-survival > /dev/null
 curl -sf https://bench.bdx.market/play/emberfall > /dev/null
 curl -sf https://bench.bdx.market/play/cinderline > /dev/null
 curl -sf https://bench.bdx.market/play/firebreak-night-shift > /dev/null
+curl -sf https://bench.bdx.market/play/ember-dead/index.html > /dev/null
+curl -sf https://bench.bdx.market/play/ember-dead/game.js > /dev/null
+curl -sf https://bench.bdx.market/play/ember-dead/audio.js > /dev/null
+curl -sf https://bench.bdx.market/play/ember-dead/style.css > /dev/null
+curl -sf https://bench.bdx.market/play/inferno-dead > /dev/null
 echo "DEPLOY OK: $(git rev-parse HEAD)"

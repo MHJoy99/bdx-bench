@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Space Bunny Free — EMBER DEAD</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='9' fill='%23ff6a10'/%3E%3Ccircle cx='16' cy='20' r='4' fill='%23ffe08a'/%3E%3Cpath d='M16 2c4 6 1 8 0 10-2-1-1-5 0-10z' fill='%23ffb04a'/%3E%3C/svg%3E" />
+</head>
+<body>
+<div id="app">
+  <canvas id="game"></canvas>
+
+  <div id="vignette"></div>
+  <div id="flash"></div>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="bar hp">
+        <div class="bar-ghost" id="hpGhost"></div>
+        <div class="bar-fill" id="hpFill"></div>
+        <span class="bar-label" id="hpText">100</span>
+      </div>
+      <div class="bar aura"><div class="bar-fill" id="auraFill"></div></div>
+      <div class="stats">
+        <span class="chip">WAVE <b id="waveText">1</b></span>
+        <span class="chip">SCORE <b id="scoreText">0</b></span>
+        <span class="chip best">BEST <b id="bestText">0</b></span>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <div id="comboWrap" class="hidden">
+        <div id="comboX">x1</div>
+        <div class="combo-bar"><i id="comboFill"></i></div>
+      </div>
+      <div class="wave-info" id="waveInfo">NEXT WAVE 5s</div>
+      <div class="threat" id="threatText"></div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="abilities">
+        <div class="ab" id="abFire">
+          <div class="ab-key">RMB</div>
+          <div class="ab-cd"><i></i></div>
+          <div class="ab-name">FIREBALL</div>
+        </div>
+        <div class="ab" id="abMolo">
+          <div class="ab-key">E</div>
+          <div class="ab-cd"><i></i></div>
+          <div class="ab-name">MOLOTOV</div>
+        </div>
+        <div class="ab" id="abDash">
+          <div class="ab-key">SPACE</div>
+          <div class="ab-cd"><i></i></div>
+          <div class="ab-name">BLAZE DASH</div>
+        </div>
+        <div class="ab" id="abNuke">
+          <div class="ab-key">Q</div>
+          <div class="ab-cd"><i></i></div>
+          <div class="ab-name">INFERNO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TITLE ============ -->
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <h1 class="title"><span class="t1">EMBER</span><span class="t2">DEAD</span></h1>
+      <p class="tag">You are the only thing still burning on purpose.</p>
+      <div class="controls">
+        <div class="ctrl"><b>WASD</b><span>Move</span></div>
+        <div class="ctrl"><b>MOUSE</b><span>Aim</span></div>
+        <div class="ctrl"><b>HOLD LMB</b><span>Flamethrower</span></div>
+        <div class="ctrl"><b>RMB / F</b><span>Fireball</span></div>
+        <div class="ctrl"><b>E</b><span>Molotov</span></div>
+        <div class="ctrl"><b>SPACE</b><span>Blaze Dash</span></div>
+        <div class="ctrl"><b>Q</b><span>Inferno (pickup)</span></div>
+        <div class="ctrl"><b>P / ESC</b><span>Pause</span></div>
+      </div>
+      <button class="btn big" id="startBtn">CLICK TO IGNITE</button>
+      <p class="hint">Burn them. Chain kills for combo. Fire cannot hurt you.</p>
+    </div>
+  </div>
+
+  <!-- ============ PAUSE ============ -->
+  <div id="pause" class="overlay hidden">
+    <div class="panel small">
+      <h2>PAUSED</h2>
+      <button class="btn" id="resumeBtn">RESUME</button>
+      <button class="btn ghost" id="quitBtn">ABANDON RUN</button>
+    </div>
+  </div>
+
+  <!-- ============ GAME OVER ============ -->
+  <div id="over" class="overlay hidden">
+    <div class="panel">
+      <h2 class="dead">YOU BURNED OUT</h2>
+      <div class="finalStats">
+        <div><b id="fScore">0</b><span>SCORE</span></div>
+        <div><b id="fWave">0</b><span>WAVE</span></div>
+        <div><b id="fKills">0</b><span>KURNED</span></div>
+        <div><b id="fCombo">0</b><span>BEST COMBO</span></div>
+      </div>
+      <p class="newbest hidden" id="newBest">NEW RECORD</p>
+      <button class="btn big" id="againBtn">BURN AGAIN</button>
+      <p class="hint">R to restart</p>
+    </div>
+  </div>
+
+  <button id="soundToggle" title="Mute (M)">&#9835;</button>
+
+  <!-- ============ TOUCH ============ -->
+  <div id="touch" class="hidden">
+    <div id="stick"><i id="knob"></i></div>
+    <div id="tbtns">
+      <button class="tb" id="tFire">FIRE</button>
+      <button class="tb" id="tMolo">MOLO</button>
+      <button class="tb" id="tDash">DASH</button>
+    </div>
+  </div>
+</div>
+
+<script src="audio.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

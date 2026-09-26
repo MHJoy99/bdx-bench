@@ -30,6 +30,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/play/emberfall",
     "/play/firebreak-night-shift",
     "/play/pyroclasm-inferno",
+    "/play/ember-dead",
+    "/play/inferno-dead",
   ];
 
   return routes.map((route) => ({
