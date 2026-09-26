@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getModel } from "@/lib/data";
+import { getModel, MODELS } from "@/lib/data";
 import {
   MetricsGrid,
   ModelHeader,
@@ -12,48 +12,52 @@ import {
   Provenance,
   RelatedModels,
 } from "@/components/model";
+import { FailuresFound } from "@/components/model/Provenance";
+import { altEntryFor, auditEntryFor, scoreOf } from "@/components/model/Provenance";
 import LikeButton from "@/components/interactive/LikeButton";
 import StarRating from "@/components/interactive/StarRating";
 import Comments from "@/components/interactive/Comments";
 
+/**
+ * BDX Bench — the model page.
+ *
+ * Order is the creative direction, not a layout accident: the page is written
+ * as artifact -> evidence -> score -> model identity.
+ *
+ *   1. ModelHeader      name + the large live playable build + the score
+ *   2. Provenance       the build report header (and a second build, if any)
+ *   3. MetricsGrid      the five audit dimensions with their evidence
+ *   4. PerformanceTable the prompt the build was made from
+ *   5. FailuresFound    the verified defects behind the number
+ *   6. community + the unmeasured surfaces (radar, price/speed, history)
+ *   7. related models + comments
+ *
+ * Audit lookup matches slug AND the model's published Showdown Score. Two
+ * models shipped two audited builds each, so `AUDIT_BY_SLUG` (last-wins) would
+ * show the wrong build and the wrong evidence; the resolvers in
+ * `@/components/model/MetricsGrid` never read it.
+ */
+
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  return [
-    { slug: "muse-spark-1-3" },
-    { slug: "deepseek-v4-1-flash" },
-    { slug: "space-bunny-free" },
-    { slug: "gpt-6-sol" },
-    { slug: "gpt-6-luna" },
-    { slug: "gpt-5-6-luna" },
-    { slug: "gemini-pro-agent" },
-    { slug: "gemini-3-8-flash" },
-  ];
+  return MODELS.map((m) => ({ slug: m.slug }));
 }
 
 interface PageProps {
   params: { slug: string } | Promise<{ slug: string }>;
 }
 
-const SHOWDOWN_SCORES: Record<string, number> = {
-  "space-bunny-free": 91,
-  "deepseek-v4-1-flash": 80,
-  "gpt-5-6-luna": 62,
-  "gpt-6-sol": 58,
-  "muse-spark-1-3": 52,
-  "gpt-6-luna": 51,
-  "gemini-3-8-flash": 43,
-  "gemini-pro-agent": 24
-};
+/** Published round, highest score first. Rank is a consequence of the score. */
+const RANKED = [...MODELS].sort((a, b) => (scoreOf(b) ?? 0) - (scoreOf(a) ?? 0));
 
-const PLAY_LINKS: Record<string, string> = {
-  "space-bunny-free": "/play/ember-dead",
-  "deepseek-v4-1-flash": "/play/pyre-burn-horde",
-  "gpt-5-6-luna": "/play/firebreak-night-shift",
-  "gpt-6-sol": "/play/cinderline",
-  "muse-spark-1-3": "/play/pyro-vs-zombies",
-  "gpt-6-luna": "/play/emberfall",
-  "gemini-3-8-flash": "/play/pyroclasm-inferno",
-  "gemini-pro-agent": "/play/zombie-fire-survival"
-};
+function rankFor(slug: string): number {
+  return RANKED.findIndex((m) => m.slug === slug) + 1;
+}
+
+function scoreTextFor(slug: string): string {
+  const model = getModel(slug);
+  const score = model ? scoreOf(model) : null;
+  return score === null ? "Not evaluated" : score.toFixed(2);
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -61,15 +65,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!model) {
     return { title: "Model not found" };
   }
-  const showdown = SHOWDOWN_SCORES[slug];
-  const scoreText =
-    typeof showdown === "number" ? showdown.toFixed(1) : "Not evaluated";
+  const scoreText = scoreTextFor(slug);
+  const title = `${model.name} — playable build and audit evidence`;
+  const description = `${model.name}: Showdown Score ${scoreText} on Zombie Flamethrower Showdown. Play the build, read the five audit dimensions, and see every verified failure behind the number.`;
   return {
-    title: `${model.name} Showdown Score and Profile`,
-    description: `${model.name}: Showdown Score ${scoreText} on Zombie Flamethrower Showdown. Play links, evaluation details, and related builds.`,
+    title,
+    description,
     openGraph: {
-      title: `${model.name} Showdown Score and Profile`,
-      description: `Showdown Score ${scoreText} for ${model.name} on Zombie Flamethrower Showdown.`,
+      title,
+      description,
       type: "article",
     },
   };
@@ -80,24 +84,58 @@ export default async function ModelPage({ params }: PageProps) {
   const model = getModel(slug);
   if (!model) notFound();
 
+  const score = scoreOf(model);
+  const entry = auditEntryFor(slug, score);
+  const altEntry = altEntryFor(slug, score);
+  const rank = rankFor(slug);
+
   return (
-    <main className="mx-auto w-full max-w-5xl space-y-8 px-4 py-8 sm:px-6">
-      <ModelHeader model={model} />
+    <main className="mx-auto w-full max-w-[1120px] space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+      {/* 1 + 2. Identity, PLAYABLE BUILD, score. */}
+      <ModelHeader
+        model={model}
+        entry={entry}
+        rank={rank}
+        fieldSize={RANKED.length}
+      />
 
-      <MetricsGrid model={model} />
+      {/* 3. The build report header (and a second build, clearly labelled). */}
+      <Provenance
+        entry={entry}
+        altEntry={altEntry}
+        modelSlug={model.slug}
+        modelName={model.name}
+      />
 
-      <section aria-label="Community feedback" className="flex flex-wrap items-center gap-4">
+      {/* 4. EVALUATION BREAKDOWN — five dimensions with per-dimension evidence. */}
+      <MetricsGrid entry={entry} />
+
+      {/* 5. PROMPT USED — what was asked, verbatim. */}
+      <PerformanceTable
+        modelSlug={model.slug}
+        modelName={model.name}
+        entry={entry}
+      />
+
+      {/* 6. FAILURES FOUND — the credibility weapon, never collapsed. */}
+      <FailuresFound entry={entry} />
+
+      {/* 7. Community on this build. */}
+      <section
+        aria-label="Community feedback"
+        className="flex flex-wrap items-center gap-4 rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5"
+      >
         <LikeButton modelSlug={model.slug} />
         <StarRating modelSlug={model.slug} />
-        {PLAY_LINKS[model.slug] ? (
-          <Link href={PLAY_LINKS[model.slug] as string} className="underline underline-offset-4">
-            Play this build
-          </Link>
-        ) : null}
+        <a
+          href="#model-comments"
+          className="ml-auto text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+        >
+          Read the discussion
+        </a>
       </section>
 
-      <PerformanceTable modelSlug={model.slug} modelName={model.name} />
-
+      {/* 8. Unmeasured surfaces, shown as unmeasured. */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <ModelRadar model={model} />
@@ -111,13 +149,16 @@ export default async function ModelPage({ params }: PageProps) {
 
       <RelatedModels slug={model.slug} />
 
-      <Provenance modelSlug={model.slug} />
+      <div id="model-comments">
+        <Comments scope="model" id={model.slug} />
+      </div>
 
-      <Comments scope="model" id={model.slug} />
-
-      <nav aria-label="Model pages" className="flex gap-4 text-[13px] leading-5">
+      <nav aria-label="Model pages" className="flex flex-wrap gap-4 text-[13px] leading-5">
         <Link href="/leaderboard" className="underline underline-offset-2">
           Back to leaderboard
+        </Link>
+        <Link href="/models" className="underline underline-offset-2">
+          All models
         </Link>
         <Link href="/" className="underline underline-offset-2">
           Home

@@ -4,6 +4,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * THE live stylesheet. `src/app/layout.tsx` imports THIS file.
+ * (There was a second, orphaned `src/app/globals.css` — it duplicated these
+ * tokens and had drifted. It has been removed so there is one source of truth.)
+ */
+
+/*
+ * Font tokens. `tailwind.config.ts` routes font-sans / font-display / font-mono
+ * through these custom properties, and a `var()` with no fallback that is
+ * undefined invalidates the ENTIRE font-family declaration at computed-value
+ * time — it does not fall through to the rest of the stack. Declaring them
+ * here is what makes `font-mono` actually render JetBrains Mono.
+ * The families themselves are loaded by the @import above.
+ */
+:root {
+  --font-sans: "Inter";
+  --font-display: "Plus Jakarta Sans";
+  --font-mono: "JetBrains Mono";
+}
+
 :root {
   --background: 210 40% 98%;
   --foreground: 222 47% 11%;
@@ -29,6 +49,9 @@
   * {
     border-color: var(--border);
   }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     background-color: var(--bg);
     color: var(--text);
@@ -42,8 +65,33 @@
       "Helvetica Neue",
       Arial,
       sans-serif;
+    /* Dense data-tool contract. This is a dashboard, not a landing page. */
+    font-size: 13px;
+    line-height: 20px;
     font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  /* Slim neutral scrollbars that work in both themes. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 8px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 
@@ -143,8 +191,31 @@
   }
 }
 
+@layer components {
+  /* Flat card primitive (matches ui/card.tsx). */
+  .card-flat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Muted secondary copy. */
+  .muted {
+    color: var(--text-secondary);
+  }
+
+  /* Single-line ellipsis for model ids / run ids. */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 /* Tabular numbers for every score / rank / ms readout. */
-.tnum {
+.tnum,
+.tabular {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -185,7 +256,28 @@
   }
 }
 
+/*
+ * Motion-sensitive users: kill every CSS animation and transition globally.
+ * Shortening a looping animation to one near-instant iteration still paints its
+ * final keyframe residue, so `animation: none` is required — not just a tiny
+ * duration. Tailwind's animate-* helpers are covered by the same rule.
+ */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+  }
   .skeleton-shimmer::after {
     display: none;
   }

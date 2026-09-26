@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
+import { SCORE_SCALE_CAPTION } from "@/components/leaderboard/columns";
 
 export const metadata: Metadata = {
   title: "Leaderboard",
   description:
-    "Ranked Showdown Scores for eight verified builds on Zombie Flamethrower Showdown.",
+    "Showdown Score v2 evidence table for eight verified builds on Zombie Flamethrower Showdown: five audited dimensions, verified findings, and the playable artifact behind every score.",
 };
 
 export default function LeaderboardPage() {
@@ -16,9 +18,24 @@ export default function LeaderboardPage() {
           Leaderboard
         </h1>
         <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
-          Ranked by Showdown Score (manual game-build evaluation) on Zombie
-          Flamethrower Showdown. Select a model to open its profile. Scores
-          outside this round show as Not evaluated.
+          An evidence table, not a scoreboard. Every score below is a strict
+          implementation-level audit of one playable build on Zombie
+          Flamethrower Showdown. A feature earns points only when it is
+          genuinely implemented and reachable — on-screen text, comments and
+          dead code score zero.
+        </p>
+        <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
+          Open any row for the verified findings behind the number, or play the
+          build and check the audit yourself. This round is dated and static:
+          scores here do not move on their own.
+        </p>
+        <p className="mt-3 font-mono text-[10px] uppercase leading-[16px] tracking-wider text-[var(--text-tertiary)]">
+          <Link
+            href="/methodology"
+            className="underline-offset-2 hover:text-[var(--text-secondary)] hover:underline"
+          >
+            {SCORE_SCALE_CAPTION}
+          </Link>
         </p>
       </header>
 

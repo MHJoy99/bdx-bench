@@ -1,329 +1,663 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Flame, Gamepad2, ArrowUpRight, Zap, ShieldCheck } from "lucide-react";
-import { getBenchmarkEvaluations, getModel } from "@/lib/data";
+import { ArrowUpRight, FileSearch, ShieldCheck } from "lucide-react";
+import { SHOWDOWN } from "@/lib/demo-data";
+import {
+  AUDIT_BY_SLUG,
+  AUDIT_DIMENSIONS,
+  AUDIT_TRAIL,
+  SECONDARY_BUILDS,
+  dimensionStatus,
+  type AuditEntry,
+} from "@/lib/audit-data";
+import { ArtifactCard } from "@/components/artifact/artifact-card";
+import { MatrixSection } from "@/components/benchmarks/MatrixSection";
+import {
+  DimensionBar,
+  FadeIn,
+  ScoreReveal,
+  StaggerGroup,
+  StaggerItem,
+} from "@/components/motion/polish-motion";
+import {
+  MOTION_SCORE_DELAY,
+  MOTION_STAGGER,
+  staggerDelay,
+} from "@/lib/motion-tokens";
+import { cn } from "@/lib/utils";
+
+/**
+ * /benchmarks — the audit, not the gallery.
+ *
+ * Creative direction: "GitHub for AI-generated software artifacts", hierarchy
+ * artifact -> evidence -> score -> model identity. This page used to be a
+ * showreel: one hand-maintained record per model with a big Play button and
+ * copy that had drifted from the builds. It is now an evidence surface.
+ *
+ * Order of the page is the order of an argument:
+ *   1. what was asked      (the shared prompt, verbatim)
+ *   2. how it was scored  (the five dimensions, 20 points each)
+ *   3. the matrix         (dimensions x models, points/20, colour = verdict)
+ *   4. the artifacts      (the actual playable builds, canonical + secondary)
+ *   5. the coverage       (every audited build x every dimension)
+ *   6. what a score is not
+ *
+ * Every count, date, score and finding on this page is derived from
+ * `AUDIT_TRAIL`. Nothing is hardcoded, so the page cannot contradict the data.
+ */
 
 export const metadata: Metadata = {
-  title: "Zombie Flamethrower Showdown — Interactive Builds & Benchmark Results",
+  title: "Benchmarks — Showdown Score v2 audit matrix",
   description:
-    "Test prompt p-001 results: all models evaluated head-to-head on the zombie flamethrower game brief. Live scores, instant in-browser playable builds, and open arena voting.",
+    "One shared prompt, eight models, ten audited game builds. Showdown Score v2 is a strict implementation-level source-code audit across five dimensions. The full matrix, every verified defect, and the playable build behind each score.",
 };
 
-const SHOWDOWN_SLUG = "zombie-flamethrower-showdown";
-const SHOWDOWN_NAME = "Zombie Flamethrower Showdown";
-const PROMPT_BODY =
-  "make me a video game where i am killing zombies with fire and all please? a nice wonderfull game i can play for fun okay?";
+const SHOWDOWN_SLUG = SHOWDOWN.benchmarkSlug;
 
-const PLAYABLE_BUILDS: Record<
-  string,
-  {
-    title: string;
-    playUrl: string;
-    altPlayUrl?: string;
-    altPlayLabel?: string;
-    badge: string;
-    tagline: string;
-    features: string[];
-    fps: string;
-    tech: string;
-  }
-> = {
-  "deepseek-v4-1-flash": {
-    title: "PYRE — Burn the Horde",
-    playUrl: "/play/pyre-burn-horde",
-    altPlayUrl: "/play/inferno-dead",
-    altPlayLabel: "INFERNO DEAD — newer build (strict audit 61.0)",
-    badge: "SCORE 80.0 · #2",
-    tagline: "PYRE — five interlocking fire systems and a real 20-upgrade card draft. Deepest systems, no touch support.",
-    features: [
-      "Dynamic heat contagion — burning zombies ignite their swarm neighbors",
-      "6 enemy classes: Shamblers, Runners, Spitters, Bloaters, Brutes, Titans",
-      "Titan boss every 5th wave with room-clearing blast",
-      "19 selectable card upgrades across 4 rarity tiers",
-      "Fuel recharge loop, flame nova (Space), fire dash (Shift)",
-    ],
-    fps: "Zero-allocation 11-array particle SoA, 4200 cap, 120 Hz fixed step · 1915 lines",
-    tech: "Single file · 20 DOM card upgrades with rarity weighting and a score-gated reroll",
-  },
-  "gpt-6-sol": {
-    title: "GPT 6 Sol",
-    playUrl: "/play/cinderline",
-    badge: "SCORE 58.0 · #4",
-    tagline: "Cinderline — proven continuous flame cone, working touch layer, functional combo. No boss, no knockback, no upgrades.",
-    features: [
-      "Twin-stick controls with WASD movement, mouse aim, and flamethrower cone",
-      "Firebomb lob ability (F / RMB) creating lasting ground fire pools",
-      "Evasive dash (Space), heat chain combo multiplier, and vital fuel pickups",
-      "3 enemy archetypes: swift runners, shambling walkers, and high-health brutes",
-      "Procedural audio synthesizer with mute toggle, touch controls, and local high score",
-    ],
-    fps: "653 lines / 501 JS, zero global pollution",
-    tech: "Knockback is entirely absent; enemies have no velocity field",
-  },
-  "gpt-5-6-luna": {
-    title: "GPT Luna 5.6",
-    playUrl: "/play/firebreak-night-shift",
-    badge: "SCORE 62.0 · #3",
-    tagline: "Firebreak: Night Shift — four genuinely distinct enemy behaviours, real contagion, working pointer-event touch.",
-    features: [
-      "4 enemy classes: Shambler, Runner, Brute, and ranged Spitter",
-      "Spreading fire, fuel reserve, health/ash pickups, and obstacle field",
-      "Solar Burst (E), fire dash (Shift), pause/restart, and endless waves",
-      "Pointer-based touch controls and local best-run persistence",
-      "Self-contained Canvas 2D build with procedural Web Audio",
-    ],
-    fps: "1229 lines, single file, no external resources",
-    tech: "No boss, no combo, no music · reachable pause-hang defect documented in the audit",
-  },
-  "gpt-6-luna": {
-    title: "GPT Luna 6",
-    playUrl: "/play/emberfall",
-    badge: "SCORE 51.0 · #6",
-    tagline: "Emberfall — correct normalized directional knockback and a fully working pointer-event touch layer.",
-    features: [
-      "Twin-stick WASD + mouse aim / hold Space or click to spray fire",
-      "2 zombie tiers: standard horde + armored tough zombies",
-      "Dynamic fuel drain & recharge loop with fuel pickups",
-      "Touch joystick and touch burn button for mobile",
-      "Procedural Web Audio sound effects with mute toggle",
-    ],
-    fps: "604 lines, 447 JS, zero global pollution",
-    tech: "One enemy archetype, one pickup, no boss, no combo, no music",
-  },
-  "space-bunny-free": {
-    title: "Space Bunny Free",
-    playUrl: "/play/ember-dead",
-    altPlayUrl: "/play/space-bunny",
-    altPlayLabel: "Earlier build (strict audit 49.0)",
-    badge: "SCORE 91.0 · #1",
-    tagline: "EMBER DEAD — six enemy roles, five fire abilities with i-frames, and a 142 BPM procedural soundtrack. Highest-scoring build in the set.",
-    features: [
-      "6 enemy types with real role separation: Walker, Runner, Brute, Spitter, Ember suicide-bomber, and the Inferno Behemoth boss every 5th wave",
-      "5 abilities on independent cooldowns: flamethrower cone, fireball w/ recoil, ballistic Molotov, Blaze Dash (0.3s i-frames), and a pickup-gated Inferno nuke",
-      "Full WebAudio engine: 15 synthesized SFX, a live flame bed, and a 142 BPM five-layer step sequencer (kick/snare/hats/bass/lead)",
-      "Six damage channels funnelled through one resolver: burn DoT with a 1.12x burning vulnerability, ignite stacking, fire pools, dash contact, passive ember aura",
-      "Layered game feel: slow-motion, hit-stop, per-event screen shake, regenerating heat shield, out-of-combat regen, 3 pickup types, combo to x13, ?wave= jump, working touch controls",
-    ],
-    fps: "Zero-allocation 1500-particle pool, two-pass additive batching · 79 KB across 4 files · ~80k frames driven, 0 runtime errors",
-    tech: "Multi-file (index.html + style.css + game.js + audio.js) · no dependencies, no assets, no network",
-  },
-  "gemini-pro-agent": {
-    title: "Gemini Pro Agent",
-    playUrl: "/play/zombie-fire-survival",
-    badge: "SCORE 24.0 · #8",
-    tagline: "Zombie Fire Survival — a clean 507-line prototype with a well-tuned burn DoT and nothing else.",
-    features: [
-      "Dynamic cone spread with multi-layered additive flame glow and dissipate physics",
-      "Charred zombie states with burn damage-over-time and randomized smoke trails",
-      "Responsive WASD movement with diagonal vector normalization",
-      "Dynamic player heat glow reacting to sustained flamethrower discharge",
-      "Fiery gore explosion particles and screen-damage feedback vignette",
-    ],
-    fps: "507 lines / 415 JS · zero audio, one enemy type, no fuel economy, no touch",
-    tech: "Audio verified at absolute zero (0/6 probes, 0 AudioContext constructions at runtime)",
-  },
-  "muse-spark-1-3": {
-    title: "PYRO vs ZOMBIES",
-    playUrl: "/play/pyro-vs-zombies",
-    badge: "SCORE 52.0 · #5",
-    tagline: "PYRO vs ZOMBIES — real contagion cascades and tank chain-explosions in 238 lines of JS.",
-    features: [
-      "Pure arcade twin-stick loop, 0.5s time-to-first-flame",
-      "4 zombie varieties: Normal, Fast, Tank, Spitter",
-      "Fuel drain/regen loop with ground scorch marks",
-      "Health & fuel drop pickups across the arena",
-      "Procedural lowpass white-noise audio synthesis",
-    ],
-    fps: "319 lines total, 238 JS, one IIFE, zero globals",
-    tech: "No boss, no combo, no card draft, no music · touchcancel fuel-bleed lockout",
-  },
-  "gemini-3-8-flash": {
-    title: "PYROCLASM: Zombie Inferno",
-    playUrl: "/play/pyroclasm-inferno",
-    badge: "SCORE 43.0 · #7",
-    tagline: "PYROCLASM: Zombie Inferno — a real 1/2/3 weapon system with three distinct mechanics.",
-    features: [
-      "Edge-spawned zombie waves with swarm AI",
-      "Secondary unlockables: Fireball burst & Napalm Mines",
-      "Screen-clearing Supernova room-blast",
-      "Persistent localStorage high score tracking",
-    ],
-    fps: "1327 lines · no delta time (sim runs 2.67x fast at 160fps) · 1.9M-op/frame O(n2) cliff at ~644 zombies",
-    tech: "Advertised dash, lingering pools and touch are all absent from the code",
-  },
+/** The eight canonical builds: one per model, the strongest audited build. */
+const CANONICAL: AuditEntry[] = Object.values(AUDIT_BY_SLUG).sort(
+  (a, b) => b.total - a.total,
+);
+
+/** Alternate audited builds — a second build by a model that shipped two. */
+const SECONDARY: AuditEntry[] = Object.values(SECONDARY_BUILDS).filter(
+  (e): e is AuditEntry => e != null,
+);
+
+const SECONDARY_OF = new Map<string, AuditEntry>(
+  SECONDARY.map((e) => [e.modelSlug, e]),
+);
+
+const ALL_FINDINGS = AUDIT_TRAIL.flatMap((e) => e.findings);
+
+const AUDIT_WINDOW = {
+  from: AUDIT_TRAIL.reduce((min, e) => (e.generated < min ? e.generated : min), AUDIT_TRAIL[0]?.generated ?? ""),
+  to: AUDIT_TRAIL.reduce((max, e) => (e.generated > max ? e.generated : max), AUDIT_TRAIL[0]?.generated ?? ""),
 };
 
-export default function BenchmarksPage() {
-  const evals = getBenchmarkEvaluations(SHOWDOWN_SLUG);
-  const display = [...evals].sort((a, b) => b.raw - a.raw);
+/**
+ * Stagger gap for the build grid, derived from the tokens and capped at
+ * `MOTION_STAGGER.maxTotal` so eight cards never drag.
+ */
+const CARD_GAP = Math.min(
+  MOTION_STAGGER.card,
+  MOTION_STAGGER.maxTotal / Math.max(CANONICAL.length - 1, 1),
+);
+
+/** Cap the matrix column stagger so the reveal stays under ~0.5s. */
+const MATRIX_STAGGER_CAP = 3;
+
+const LABEL = "font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]";
+
+function statusTone(points: number): string {
+  const status = dimensionStatus(points);
+  if (status === "pass") return "text-[var(--text)]";
+  if (status === "partial") return "text-[var(--warning)]";
+  return "text-[var(--danger)]";
+}
+
+/* ------------------------------------------------------------------ *
+ * 1. Factual header
+ * ------------------------------------------------------------------ */
+
+function FactRow({ label, value, tone }: { label: string; value: string; tone?: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 border-b border-[var(--border)] py-1 last:border-b-0">
+      <dt className={LABEL}>{label}</dt>
+      <dd className={cn("tnum text-right text-[12px] text-[var(--text-secondary)]", tone)}>
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+function BenchmarkHeader() {
+  const failing = ALL_FINDINGS.filter((f) => f.severity === "high").length;
 
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
-      {/* Hero: The One Test */}
-      <section className="relative overflow-hidden rounded-[14px] border border-[var(--border-strong)] bg-gradient-to-b from-[var(--surface)] to-[var(--bg)] p-6 sm:p-10 shadow-[var(--shadow-card)]">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[var(--accent-muted)] blur-[90px]" />
-        <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--elevated)] px-3 py-1 text-xs text-[var(--text-secondary)]">
-            <Flame className="size-3.5 text-[#ff7847]" />
-            <span className="font-semibold text-[var(--text)]">Benchmark Suite: p-001</span>
-            <span>·</span>
-            <span>Zombie Flamethrower Survival</span>
-          </div>
-          <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-4xl lg:text-5xl">
-            One prompt. Every model. <span className="text-[var(--accent-ink)]">Play the builds.</span>
-          </h1>
-          <p className="mt-3 text-base text-[var(--text-secondary)] sm:text-lg leading-relaxed">
-            Every model below was given the exact same brief with zero priming. Test the actual games, inspect the scores, and see which AI creates the best software.
-          </p>
-          <div className="mt-4 rounded-[10px] border border-[var(--border)] bg-[var(--bg)]/80 p-3.5 font-mono text-xs text-[var(--text-secondary)]">
-            <span className="font-semibold text-[var(--text-tertiary)] uppercase tracking-wider block mb-1">
-              Shared Prompt Brief:
-            </span>
-            &ldquo;{PROMPT_BODY}&rdquo;
-          </div>
-        </div>
-      </section>
+    <FadeIn>
+      <header className="border-b border-[var(--border)] pb-5">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className={cn(LABEL, "flex items-center gap-1.5 text-[var(--accent-ink)]")}>
+            <span className="size-1.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+            Benchmark p-001
+          </span>
+          <span className="text-[var(--border-strong)]" aria-hidden="true">
+            /
+          </span>
+          <span className={LABEL}>{SHOWDOWN_SLUG}</span>
+        </p>
 
-      {/* Primary Section: Tested & Scored Builds (Playable Now) */}
-      <section className="mt-10" aria-labelledby="scored-builds-heading">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="mt-2 text-[26px] font-semibold leading-[32px] tracking-tight text-[var(--text)] sm:text-[30px] sm:leading-[36px]">
+          Zombie Flamethrower Showdown
+        </h1>
+
+        <p className="mt-2 max-w-2xl text-[13px] leading-[20px] text-[var(--text-secondary)]">
+          One prompt, sent verbatim to every model with no priming.{" "}
+          {CANONICAL.length} models answered; {AUDIT_TRAIL.length} builds were then read
+          at implementation level and scored as{" "}
+          <span className="text-[var(--text)]">{SHOWDOWN.scoreLabel}</span>. This page
+          is the evidence for those numbers, including the parts that failed.
+        </p>
+
+        {/* The prompt is the input to the whole experiment. It gets a
+            verbatim block, not a paraphrase. */}
+        <div className="mt-4 rounded-[10px] border border-[var(--border-strong)] bg-[var(--surface)] p-3">
+          <p className={cn(LABEL, "mb-1.5")}>
+            Shared prompt — identical text to every model
+          </p>
+          <p className="font-mono text-[12px] leading-[19px] text-[var(--text)]">
+            &ldquo;{SHOWDOWN.promptBody}&rdquo;
+          </p>
+        </div>
+
+        <div className="mt-4 grid gap-x-6 gap-y-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           <div>
-            <h2 id="scored-builds-heading" className="text-2xl font-bold tracking-tight text-[var(--text)]">
-              Verified Playable Builds
+            <h2 className={cn(LABEL, "text-[var(--text-secondary)]")}>
+              How a score is produced
             </h2>
-            <p className="text-sm text-[var(--text-secondary)]">
-              Human-evaluated, fully debugged, 100% in-browser. Click <strong className="text-[var(--text)]">Play Now</strong> to test in your browser instantly.
+            <p className="mt-1.5 text-[12px] leading-[18px] text-[var(--text-secondary)]">
+              {AUDIT_DIMENSIONS.length} dimensions × 20 points = 100. A feature earns
+              points only when it is genuinely implemented <em>and</em> reachable at
+              runtime. On-screen strings, comments, and dead code score zero. Every
+              verified defect is published against the build that carries it, worst
+              severity first, and nothing is filtered out for being unflattering.
+            </p>
+            <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+              {AUDIT_DIMENSIONS.map((d) => (
+                <li key={d.key} className="text-[11px] leading-[16px] text-[var(--text-tertiary)]">
+                  {d.label}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+              <Link
+                href="/methodology"
+                className="inline-flex items-center gap-1 text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+              >
+                Read the full methodology
+                <ArrowUpRight className="size-3" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/leaderboard"
+                className="inline-flex items-center gap-1 text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+              >
+                Scores as a table
+                <ArrowUpRight className="size-3" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/compare"
+                className="inline-flex items-center gap-1 text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+              >
+                Compare two models
+                <ArrowUpRight className="size-3" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+
+          <dl className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-3 py-2">
+            <FactRow label="Builds audited" value={String(AUDIT_TRAIL.length)} />
+            <FactRow label="Models" value={String(CANONICAL.length)} />
+            <FactRow label="Dimensions" value={`${AUDIT_DIMENSIONS.length} × 20 pts`} />
+            <FactRow label="Verified defects" value={String(ALL_FINDINGS.length)} />
+            <FactRow
+              label="Of which failing"
+              value={String(failing)}
+              tone={failing > 0 ? "text-[var(--danger)]" : undefined}
+            />
+            <FactRow label="Touch-ready builds" value={String(AUDIT_TRAIL.filter((e) => e.mobileReady).length)} />
+            <FactRow label="Audit window" value={`${AUDIT_WINDOW.from} → ${AUDIT_WINDOW.to}`} />
+            <FactRow label="Round label" value={SHOWDOWN.scoreLabel} />
+          </dl>
+        </div>
+      </header>
+    </FadeIn>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 2. The audit matrix — the hero object
+ * ------------------------------------------------------------------ */
+
+function MatrixLegend() {
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+      <span className="flex items-center gap-1.5">
+        <span className="h-1 w-4 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+        <span className="text-[11px] text-[var(--text-secondary)]">16–20 pass</span>
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-1 w-4 rounded-full bg-[var(--warning)]" aria-hidden="true" />
+        <span className="text-[11px] text-[var(--text-secondary)]">10–15 partial pass</span>
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-1 w-4 rounded-full bg-[var(--danger)]" aria-hidden="true" />
+        <span className="text-[11px] text-[var(--text-secondary)]">0–9 failure</span>
+      </span>
+      <span className="text-[11px] text-[var(--text-tertiary)]">
+        Bar length is points of 20. The number is the score; the colour is the verdict.
+      </span>
+    </div>
+  );
+}
+
+function DimensionMatrix({
+  entries,
+  caption,
+}: {
+  entries: AuditEntry[];
+  caption: string;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[720px] border-collapse">
+        <caption className="sr-only">{caption}</caption>
+        <thead>
+          <tr className="border-b border-[var(--border)]">
+            <th
+              scope="col"
+              className="sticky left-0 z-20 border-b border-r border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-left align-bottom"
+            >
+              <span className={cn(LABEL, "block")}>Dimension</span>
+              <span className="text-[11px] text-[var(--text-secondary)]">points of 20</span>
+            </th>
+            {entries.map((entry) => (
+              <th
+                key={entry.buildId}
+                scope="col"
+                className="border-b border-r border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-left align-bottom last:border-r-0"
+              >
+                <Link
+                  href={`/models/${entry.modelSlug}`}
+                  className="block truncate text-[12px] font-medium text-[var(--text)] underline-offset-2 hover:underline"
+                  title={entry.modelName}
+                >
+                  {entry.modelName}
+                </Link>
+                <span className="mt-0.5 block truncate font-mono text-[9px] uppercase tracking-wider text-[var(--text-tertiary)]">
+                  {entry.buildId}
+                </span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {AUDIT_DIMENSIONS.map((dimension) => (
+            <tr key={dimension.key} className="border-b border-[var(--border)] last:border-b-0">
+              <th
+                scope="row"
+                className="sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-left align-middle"
+              >
+                <span className="block text-[12px] font-medium leading-[16px] text-[var(--text)]">
+                  {dimension.label}
+                </span>
+                <span className={cn(LABEL, "mt-0.5 block")}>{dimension.short}</span>
+              </th>
+              {entries.map((entry, col) => {
+                const points = entry.dims[dimension.key];
+                return (
+                  <td
+                    key={entry.buildId}
+                    className="border-r border-[var(--border)] px-2 py-2 align-middle last:border-r-0"
+                  >
+                    <span
+                      className={cn(
+                        "tnum block text-[14px] font-semibold leading-[18px]",
+                        statusTone(points),
+                      )}
+                    >
+                      {points}
+                    </span>
+                    <DimensionBar
+                      dimension={dimension}
+                      points={points}
+                      index={Math.min(col, MATRIX_STAGGER_CAP)}
+                      showLabel={false}
+                      className="mt-1"
+                    />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr className="border-t border-[var(--border-strong)] bg-[var(--elevated)]">
+            <th
+              scope="row"
+              className={cn(
+                "sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--elevated)] px-3 py-2 text-left align-middle",
+                LABEL,
+              )}
+            >
+              Total / 100
+            </th>
+            {entries.map((entry, i) => (
+              <td
+                key={entry.buildId}
+                className="border-r border-[var(--border)] px-2 py-2 align-middle last:border-r-0"
+              >
+                <span
+                  aria-hidden="true"
+                  className="tnum block text-[15px] font-semibold leading-[18px] text-[var(--text)]"
+                >
+                  <ScoreReveal
+                    value={entry.total}
+                    decimals={0}
+                    delay={MOTION_SCORE_DELAY + staggerDelay(i, 0.05)}
+                  />
+                </span>
+                <span className="sr-only">{entry.modelName}: {entry.total} of 100</span>
+                <span
+                  className="mt-1 block h-1 w-full overflow-hidden rounded-full bg-[var(--surface)]"
+                  aria-hidden="true"
+                >
+                  <span
+                    className="block h-full w-full origin-left rounded-full bg-[var(--border-strong)]"
+                    style={{ transform: `scaleX(${entry.total / 100})` }}
+                  />
+                </span>
+              </td>
+            ))}
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+}
+
+function AuditMatrix() {
+  return (
+    <section id="audit-matrix" aria-labelledby="audit-matrix-heading" className="mt-8">
+      <FadeIn>
+        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 border-b border-[var(--border)] pb-2">
+          <div className="min-w-0">
+            <h2
+              id="audit-matrix-heading"
+              className="flex items-center gap-1.5 text-[15px] font-semibold tracking-tight text-[var(--text)]"
+            >
+              <FileSearch className="size-3.5 text-[var(--text-tertiary)]" aria-hidden="true" />
+              The audit matrix
+            </h2>
+            <p className="mt-0.5 max-w-2xl text-[12px] leading-[18px] text-[var(--text-secondary)]">
+              Rows are the five audit dimensions, columns are models. Every cell is the
+              points that model&apos;s canonical build earned on that dimension, out of
+              20. Columns are ordered by audited total for reading order only — this is
+              not a ranking claim.
             </p>
           </div>
-          <span className="font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
-            8 Evaluated Models
-          </span>
+          <p className={cn(LABEL, "shrink-0")}>
+            {CANONICAL.length} models · {AUDIT_DIMENSIONS.length} dimensions
+          </p>
         </div>
+      </FadeIn>
 
-        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          {display.map((e, idx) => {
-            const m = getModel(e.modelSlug);
-            const build = PLAYABLE_BUILDS[e.modelSlug];
-            const isFirst = idx === 0;
+      <FadeIn delay={0.05}>
+        <div className="mt-3 rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
+          <DimensionMatrix
+            entries={CANONICAL}
+            caption="Showdown Score v2 audit matrix: five dimensions, points out of 20, for each model's canonical audited build."
+          />
+        </div>
+        <MatrixLegend />
+      </FadeIn>
 
+      {SECONDARY.length > 0 ? (
+        <FadeIn delay={0.05}>
+          <div className="mt-4 rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-[var(--border)] px-3 py-2">
+              <h3 className="text-[12px] font-semibold text-[var(--text)]">
+                Second audited builds
+              </h3>
+              <p className={cn(LABEL, "text-[var(--text-tertiary)]")}>
+                {SECONDARY.length} models shipped two builds — these are not the model
+                score
+              </p>
+            </div>
+            <DimensionMatrix
+              entries={SECONDARY}
+              caption="Second audited builds: five dimensions, points out of 20, for models that shipped more than one audited build."
+            />
+          </div>
+        </FadeIn>
+      ) : null}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 3. The artifacts
+ * ------------------------------------------------------------------ */
+
+function SecondaryBuilds() {
+  if (SECONDARY.length === 0) return null;
+  return (
+    <div className="mt-3 overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
+      <table className="w-full min-w-[720px] border-collapse">
+        <caption className="sr-only">
+          Second audited builds by model: total, dimension breakdown, verified findings,
+          and audit date. These builds are not the model score.
+        </caption>
+        <thead>
+          <tr className="border-b border-[var(--border)]">
+            <th scope="col" className="px-3 py-2 text-left">
+              <span className={cn(LABEL, "block")}>Build</span>
+              <span className="text-[11px] text-[var(--text-secondary)]">second audited build</span>
+            </th>
+            <th scope="col" className="px-3 py-2 text-left">
+              <span className={cn(LABEL, "block")}>Model</span>
+              <span className="text-[11px] text-[var(--text-secondary)]">canonical total</span>
+            </th>
+            {AUDIT_DIMENSIONS.map((d) => (
+              <th key={d.key} scope="col" className="px-2 py-2 text-right">
+                <span className={LABEL}>{d.short}</span>
+              </th>
+            ))}
+            <th scope="col" className="px-3 py-2 text-right">
+              <span className={LABEL}>Findings</span>
+            </th>
+            <th scope="col" className="px-3 py-2 text-right">
+              <span className={LABEL}>Audited</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {SECONDARY.map((entry) => {
+            const failing = entry.findings.filter((f) => f.severity === "high").length;
+            const canonical = AUDIT_BY_SLUG[entry.modelSlug];
             return (
-              <div
-                key={e.modelSlug}
-                className={`relative flex flex-col justify-between rounded-[14px] border p-6 transition-all duration-200 ${
-                  isFirst
-                    ? "border-[var(--accent-border)] bg-[var(--surface)] shadow-[0_0_30px_-5px_rgba(184,255,90,0.2)]"
-                    : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-strong)]"
-                }`}
+              <tr
+                key={entry.buildId}
+                className="border-b border-[var(--border)] transition-colors last:border-b-0 hover:bg-[var(--elevated)]"
               >
-                <div>
-                  {/* Top Bar: Rank + Score */}
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 font-mono text-xs font-bold ${
-                        isFirst
-                          ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
-                          : "border border-[var(--border)] bg-[var(--elevated)] text-[var(--text-secondary)]"
-                      }`}
-                    >
-                      {build?.badge ?? `#${idx + 1}`}
-                    </span>
-                    <div className="text-right">
-                      <span className="font-mono text-3xl font-black text-[var(--text)]">
-                        {e.raw.toFixed(1)}
-                      </span>
-                      <span className="block text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
-                        Showdown Score
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Model & Game Title */}
-                  <div className="mt-4">
-                    <p className="text-xs uppercase tracking-wider text-[var(--text-tertiary)]">
-                      {m?.name ?? e.modelSlug}
-                    </p>
-                    <h3 className="mt-1 font-display text-xl font-extrabold text-[var(--text)]">
-                      {build?.title ?? "Game Build"}
-                    </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-[var(--text-secondary)]">
-                      {build?.tagline}
-                    </p>
-                  </div>
-
-                  {/* Feature Checklist */}
-                  {build?.features && (
-                    <ul className="mt-4 space-y-1.5 border-t border-[var(--border)]/60 pt-4 text-xs text-[var(--text-secondary)]">
-                      {build.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2">
-                          <span className="mt-0.5 text-[var(--accent)]">✓</span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {/* Performance metric */}
-                  {build?.fps && (
-                    <div className="mt-4 rounded-[8px] bg-[var(--elevated)]/60 p-2 text-[11px] font-mono text-[var(--text-tertiary)]">
-                      <Zap className="inline mr-1 size-3 text-[#ffc53d]" />
-                      {build.fps}
-                    </div>
-                  )}
-                </div>
-
-                {/* Big Action: PLAY NOW */}
-                <div className="mt-6 pt-4 border-t border-[var(--border)]/60 flex flex-col gap-2">
-                  {build?.playUrl ? (
-                    <Link
-                      href={build.playUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center justify-center gap-2 rounded-[8px] py-3 text-sm font-bold tracking-wide transition-all ${
-                        isFirst
-                          ? "bg-[var(--accent)] text-[var(--accent-foreground)] hover:brightness-110 shadow-[0_0_18px_rgba(184,255,90,0.35)]"
-                          : "bg-[var(--elevated)] text-[var(--text)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)] border border-[var(--border-strong)]"
-                      }`}
-                    >
-                      <Gamepad2 className="size-4" />
-                      <span>PLAY THIS BUILD</span>
-                      <ArrowUpRight className="size-3.5 opacity-70" />
-                    </Link>
-                  ) : null}
-                  {build?.altPlayUrl ? (
-                    <Link
-                      href={build.altPlayUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--accent-border)] hover:text-[var(--accent-ink)]"
-                    >
-                      <Gamepad2 className="size-3.5" />
-                      <span>{build.altPlayLabel}</span>
-                      <ArrowUpRight className="size-3 opacity-70" />
-                    </Link>
-                  ) : null}
+                <td className="px-3 py-2">
                   <Link
-                    href={`/models/${e.modelSlug}`}
-                    className="text-center text-xs text-[var(--text-tertiary)] hover:text-[var(--text)] underline-offset-4 hover:underline"
+                    href={entry.playPath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[12px] font-medium text-[var(--text)] underline-offset-2 hover:underline"
                   >
-                    View model profile & metrics →
+                    {entry.buildName}
                   </Link>
-                </div>
-              </div>
+                  <span className="tnum ml-2 text-[11px] text-[var(--text-tertiary)]">
+                    {entry.total}/100
+                  </span>
+                </td>
+                <td className="px-3 py-2 text-[12px] text-[var(--text-secondary)]">
+                  {entry.modelName}
+                  {canonical ? (
+                    <span className="tnum ml-1.5 text-[11px] text-[var(--text-tertiary)]">
+                      ({canonical.total}/100)
+                    </span>
+                  ) : null}
+                </td>
+                {AUDIT_DIMENSIONS.map((d) => (
+                  <td
+                    key={d.key}
+                    className={cn(
+                      "tnum px-2 py-2 text-right text-[12px]",
+                      statusTone(entry.dims[d.key]),
+                    )}
+                  >
+                    {entry.dims[d.key]}
+                  </td>
+                ))}
+                <td className="px-3 py-2 text-right text-[12px]">
+                  <span className="tnum text-[var(--text-secondary)]">{entry.findings.length}</span>
+                  {failing > 0 ? (
+                    <>
+                      <span aria-hidden="true" className="mx-1 text-[var(--border-strong)]">
+                        ·
+                      </span>
+                      <span className="tnum text-[11px] text-[var(--danger)]">{failing} failing</span>
+                    </>
+                  ) : null}
+                </td>
+                <td className="tnum px-3 py-2 text-right text-[11px] text-[var(--text-tertiary)]">
+                  {entry.generated}
+                </td>
+              </tr>
             );
           })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function BuildCards() {
+  return (
+    <section id="builds" aria-labelledby="audit-builds-heading" className="mt-10">
+      <FadeIn>
+        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 border-b border-[var(--border)] pb-2">
+          <div className="min-w-0">
+            <h2
+              id="audit-builds-heading"
+              className="text-[15px] font-semibold tracking-tight text-[var(--text)]"
+            >
+              The builds behind the numbers
+            </h2>
+            <p className="mt-0.5 max-w-2xl text-[12px] leading-[18px] text-[var(--text-secondary)]">
+              One card per model: the canonical audited build, the evidence it earned,
+              and — where the model shipped two audited builds — a labelled link to the
+              second one. Every card can run its artifact in place.
+            </p>
+          </div>
+          <p className={cn(LABEL, "shrink-0")}>
+            {CANONICAL.length} models · {SECONDARY.length} second builds
+          </p>
         </div>
+      </FadeIn>
+
+      <StaggerGroup gap={CARD_GAP} className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {CANONICAL.map((entry) => (
+          <StaggerItem key={entry.buildId} className="min-w-0">
+            <ArtifactCard entry={entry} altEntry={SECONDARY_OF.get(entry.modelSlug)} className="h-full" />
+          </StaggerItem>
+        ))}
+      </StaggerGroup>
+
+      <SecondaryBuilds />
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 5. Coverage + 6. integrity
+ * ------------------------------------------------------------------ */
+
+function IntegrityNote() {
+  return (
+    <section aria-labelledby="integrity-heading" className="mt-10">
+      <FadeIn>
+        <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-4">
+          <h2
+            id="integrity-heading"
+            className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--text)]"
+          >
+            <ShieldCheck className="size-3.5 text-[var(--accent)]" aria-hidden="true" />
+            What these scores are, and what they are not
+          </h2>
+          <div className="mt-2 grid gap-x-6 gap-y-2 text-[12px] leading-[18px] text-[var(--text-secondary)] md:grid-cols-2">
+            <p>
+              <span className="text-[var(--text)]">They are</span> a strict
+              implementation-level audit of readable source:{" "}
+              {ALL_FINDINGS.length} verified defects across {AUDIT_TRAIL.length} builds,
+              each with the line of evidence that justifies it, published against the
+              build that carries it.
+            </p>
+            <p>
+              <span className="text-[var(--text)]">They are not</span> vendor claims,
+              marketing benchmarks, or a vibe check. A build that advertises a feature
+              and does not implement it scores zero for it, and the defect is printed
+              next to the score.
+            </p>
+          </div>
+          <p className="mt-3 border-t border-[var(--border)] pt-3 text-[12px] leading-[18px] text-[var(--text-secondary)]">
+            The fastest way to check this page is to open a build and disagree with the
+            auditor. The prompt is above, the artifacts are below, and every score is
+            reproducible from the source.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+            <Link
+              href="/methodology"
+              className="text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+            >
+              Methodology
+            </Link>
+            <Link
+              href="/leaderboard"
+              className="text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+            >
+              Leaderboard
+            </Link>
+            <Link
+              href="/compare"
+              className="text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+            >
+              Compare
+            </Link>
+            <Link
+              href="/benchmarks/zombie-flamethrower-showdown"
+              className="text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+            >
+              Full audit record
+            </Link>
+          </div>
+        </div>
+      </FadeIn>
+    </section>
+  );
+}
+
+export default function BenchmarksPage() {
+  return (
+    <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
+      <BenchmarkHeader />
+      <AuditMatrix />
+      <BuildCards />
+
+      <section id="coverage" aria-labelledby="coverage-heading" className="mt-10">
+        <FadeIn>
+          <div className="border-b border-[var(--border)] pb-2">
+            <h2
+              id="coverage-heading"
+              className="text-[15px] font-semibold tracking-tight text-[var(--text)]"
+            >
+              Coverage
+            </h2>
+            <p className="mt-0.5 max-w-2xl text-[12px] leading-[18px] text-[var(--text-secondary)]">
+              Every audited build against every dimension, including the second builds
+              the matrix above excludes. Sort it, filter it, read it as a table.
+            </p>
+          </div>
+        </FadeIn>
+        <FadeIn delay={0.05} className="mt-3">
+          <MatrixSection />
+        </FadeIn>
       </section>
 
-      {/* Methodology Guarantee Footer */}
-      <section className="mt-12 rounded-[12px] border border-[var(--border)] bg-[var(--elevated)]/40 p-6 text-xs text-[var(--text-secondary)] leading-relaxed">
-        <div className="flex items-center gap-2 font-semibold text-[var(--text)] text-sm">
-          <ShieldCheck className="size-4 text-[var(--accent)]" />
-          <span>Evaluation Integrity Guarantee</span>
-        </div>
-        <p className="mt-2">
-          Zero cherry-picking. Every score comes from a real human playing the generated build in an isolated browser environment. The prompt is never tuned per-model. All builds are hosted statically with zero trackers or analytics inserted.
-        </p>
-      </section>
+      <IntegrityNote />
     </div>
   );
 }

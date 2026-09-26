@@ -1,159 +1,155 @@
 import Link from "next/link";
-import { ArrowRight, Flame, Gamepad2, GitCompare } from "lucide-react";
+import { ArrowRight, BookOpen, Gamepad2, ShieldCheck } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AUDIT_DIMENSIONS, AUDIT_TRAIL, type AuditEntry } from "@/lib/audit-data";
+import { FadeIn, StaggerGroup, StaggerItem } from "@/components/motion/polish-motion";
+
+/**
+ * Homepage hero — a data-tool header, not a marketing banner.
+ *
+ * Creative direction (GPT Orchestrator, 2026-09-26): the rejected version was a
+ * 6xl "AI models, measured." headline on a glowing gradient. Most AI benchmarks
+ * lead with the number and engineers distrust them. This one leads with the
+ * facts a reviewer needs to decide whether to keep reading:
+ *
+ *   what was tested · how much · under which prompt · against which dimensions
+ *
+ * Every figure in the strip is derived from `@/lib/audit-data`, so the header
+ * can never drift from the grid it labels. The one obvious way to play is the
+ * top-scoring build; the 8-chip play row is gone because the builds grid owns
+ * that job now.
+ */
+
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+/** "2026-09-26" -> "Sep 2026". */
+function monthYear(iso: string): string {
+  const month = MONTHS[Number(iso.slice(5, 7)) - 1];
+  return month ? `${month} ${iso.slice(0, 4)}` : iso;
+}
+
+function heroFacts(): {
+  round: string;
+  models: number;
+  builds: number;
+  dimensions: number;
+  top: AuditEntry;
+} {
+  const newest = AUDIT_TRAIL.reduce((a, b) => (a.generated >= b.generated ? a : b));
+  const top = AUDIT_TRAIL.reduce((a, b) => (b.total > a.total ? b : a));
+  return {
+    round: monthYear(newest.generated),
+    models: new Set(AUDIT_TRAIL.map((e) => e.modelSlug)).size,
+    builds: AUDIT_TRAIL.length,
+    dimensions: AUDIT_DIMENSIONS.length,
+    top,
+  };
+}
 
 export function Hero() {
+  const facts = heroFacts();
+
+  const strip: { label: string; value: string }[] = [
+    { label: "Round", value: facts.round },
+    { label: "Models", value: String(facts.models) },
+    { label: "Audited builds", value: String(facts.builds) },
+    { label: "Shared prompts", value: "1" },
+    { label: "Audit dimensions", value: String(facts.dimensions) },
+  ];
+
   return (
     <section
       aria-labelledby="home-hero-heading"
-      className="relative overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-6 py-12 sm:px-10 sm:py-16 lg:px-12 shadow-[var(--shadow-card)]"
+      className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
     >
-      {/* Ambient background glow & subtle technical grid */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-16 -top-24 h-80 w-80 rounded-full bg-[var(--accent-muted)] blur-[80px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(#222a33_1px,transparent_1px)] [background-size:24px_24px] opacity-25"
-      />
+      <div className="px-4 py-4 sm:px-5 sm:py-5">
+        <FadeIn>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
+            BDX Bench
+          </p>
+          <h1
+            id="home-hero-heading"
+            className="mt-1.5 max-w-3xl text-[17px] font-semibold leading-[24px] tracking-tight text-[var(--text)] text-balance sm:text-[19px] sm:leading-[26px]"
+          >
+            AI coding models tested on one prompt. Real playable builds.
+            Transparent scoring.
+          </h1>
+        </FadeIn>
 
-      <div className="relative z-10 max-w-3xl">
-        {/* Top badge pill */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--elevated)]/80 px-3 py-1 text-xs text-[var(--text-secondary)] shadow-sm backdrop-blur-sm transition-colors hover:border-[var(--accent-border)]">
-          <span className="flex h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
-          <span className="font-semibold text-[var(--text)]">⚡ Independent AI Intelligence</span>
-          <span className="text-[var(--text-tertiary)]" aria-hidden="true">·</span>
-          <span className="text-[var(--text-secondary)]">Zombie Showdown Round (Sep 2026)</span>
-        </div>
-
-        {/* Headline */}
-        <h1
-          id="home-hero-heading"
-          className="mt-5 font-display text-4xl font-extrabold tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl text-balance leading-[1.08]"
+        {/* Factual scope strip. Divider-only, flat, 1px. */}
+        <StaggerGroup
+          className="mt-3.5 grid grid-cols-2 gap-px overflow-hidden rounded-[8px] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3 lg:grid-cols-5"
         >
-          AI models,{" "}
-          <span className="text-[var(--accent-ink)]">measured.</span>
-        </h1>
+          {strip.map((s) => (
+            <StaggerItem key={s.label} className="bg-[var(--surface)] px-3 py-2">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
+                {s.label}
+              </p>
+              <p className="tnum mt-0.5 text-[13px] font-medium text-[var(--text)]">
+                {s.value}
+              </p>
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
 
-        {/* Subtitles with high readability */}
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
-          Independent benchmarks, pricing, speed, capability, and model
-          intelligence in one place.
-        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <Link href="#builds" className={cn(buttonVariants({ size: "default" }))}>
+            <Gamepad2 aria-hidden="true" />
+            Explore builds
+            <ArrowRight aria-hidden="true" />
+          </Link>
+          <Link
+            href="/methodology"
+            className={cn(buttonVariants({ variant: "secondary", size: "default" }))}
+          >
+            <BookOpen aria-hidden="true" />
+            Methodology
+          </Link>
+          <Link
+            href={facts.top.playPath}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "default" }),
+              "hover:border-[var(--accent-border)]",
+            )}
+          >
+            <Gamepad2 aria-hidden="true" />
+            Play {facts.top.buildName}
+            <span className="tnum text-[var(--text-tertiary)]">{facts.top.total}</span>
+          </Link>
+        </div>
 
-        <div className="mt-3.5 flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-          <Flame className="size-4 shrink-0 text-[#ffc53d]" aria-hidden="true" />
-          <span>
-            Showdown Score v2 (strict code audit): <strong className="font-semibold text-[var(--text)]">Space Bunny Free (91)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">DeepSeek V4.1 Flash (80)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">GPT Luna 5.6 (62)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">GPT 6 Sol (58)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">Muse Spark 1.3 (52)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">GPT Luna 6 (51)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">Gemini 3.8 Flash (43)</strong> vs{" "}
-            <strong className="font-semibold text-[var(--text)]">Gemini Pro Agent (24)</strong>
+        <p className="mt-3 flex max-w-3xl flex-wrap items-baseline gap-x-2 text-[11px] leading-[16px] text-[var(--text-tertiary)]">
+          <span className="inline-flex items-center gap-1 font-mono uppercase tracking-wider">
+            <ShieldCheck className="size-3 text-[var(--text-secondary)]" aria-hidden="true" />
+            Showdown Score v2
           </span>
-        </div>
-
-        {/* High-impact CTAs */}
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Link
-            href="/leaderboard"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "group relative overflow-hidden font-semibold shadow-[0_0_20px_-3px_rgba(184,255,90,0.35)] hover:shadow-[0_0_28px_-2px_rgba(184,255,90,0.5)] transition-all",
-            )}
-          >
-            <span>Explore Leaderboard</span>
-            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
-          </Link>
-          <Link
-            href="/compare?models=muse-spark-1-3,gemini-3-8-flash"
-            className={cn(
-              buttonVariants({ variant: "secondary", size: "lg" }),
-              "border-[var(--border-strong)] hover:border-[var(--accent-border)] transition-colors",
-            )}
-          >
-            <GitCompare className="size-4 text-[var(--text-tertiary)]" aria-hidden="true" />
-            <span>Compare Models</span>
-          </Link>
-          <Link
-            href="/eval"
-            className={cn(
-              buttonVariants({ variant: "secondary", size: "lg" }),
-              "border-[var(--border-strong)] hover:border-[var(--accent-border)] transition-colors",
-            )}
-          >
-            <span className="h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
-            <span>Live Telemetry</span>
-          </Link>
-        </div>
-
-        {/* Playable builds micro-badges */}
-        <div className="mt-7 flex flex-wrap items-center gap-2 pt-2 text-xs">
-          <span className="font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Play Interactive Builds:</span>
-          <Link
-            href="/play/ember-dead"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#ff9b38]" aria-hidden="true" />
-            <span>EMBER DEAD (Space Bunny · 91)</span>
-          </Link>
-          <Link
-            href="/play/pyre-burn-horde"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#ff7847]" aria-hidden="true" />
-            <span>PYRE (DeepSeek · 80)</span>
-          </Link>
-          <Link
-            href="/play/firebreak-night-shift"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#b8ff5a]" aria-hidden="true" />
-            <span>Firebreak (Luna 5.6 · 62)</span>
-          </Link>
-          <Link
-            href="/play/cinderline"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#ffad45]" aria-hidden="true" />
-            <span>Cinderline (GPT 6 Sol · 58)</span>
-          </Link>
-          <Link
-            href="/play/pyro-vs-zombies"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[var(--accent)]" aria-hidden="true" />
-            <span>Pyro vs Zombies (Muse Spark · 52)</span>
-          </Link>
-          <Link
-            href="/play/emberfall"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#d7ff79]" aria-hidden="true" />
-            <span>Emberfall (Luna 6 · 51)</span>
-          </Link>
-          <Link
-            href="/play/pyroclasm-inferno"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#7dd3fc]" aria-hidden="true" />
-            <span>Pyroclasm (Gemini 3.8 · 43)</span>
-          </Link>
-          <Link
-            href="/play/zombie-fire-survival"
-            className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--elevated)]/80 px-2.5 py-1 font-medium text-[var(--text)] transition-colors hover:border-[var(--accent-border)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent-ink)]"
-          >
-            <Gamepad2 className="size-3.5 text-[#38bdf8]" aria-hidden="true" />
-            <span>Zombie Fire Survival (Gemini Pro · 24)</span>
-          </Link>
-        </div>
-
-        <p className="mt-6 text-[11px] font-mono tracking-wide text-[var(--text-tertiary)]">
-          TRANSPARENT METHODOLOGY · REPRODUCIBLE SCORING · PLAYABLE BUILDS
+          <span>
+            Re-audited at implementation level, not by keyword scan:{" "}
+            {facts.dimensions} dimensions × 20 points, zero for absent features.
+            Every verified defect stays published.{" "}
+            <Link
+              href="/methodology"
+              className="text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text)] hover:underline"
+            >
+              How scores are produced
+            </Link>
+          </span>
         </p>
       </div>
     </section>

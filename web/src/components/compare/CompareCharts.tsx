@@ -1,219 +1,328 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
+import { ArrowUpRight, Play } from "lucide-react";
 import type { Model } from "@/lib/types";
-import { BarGroup, barsToTable } from "@/components/charts/BarGroup";
-import { ChartShell } from "@/components/charts/ChartShell";
-import { NotEnoughData } from "@/components/charts/NotEnoughData";
-import { PriceBars, pricesToTable } from "@/components/charts/PriceBars";
-import { RadarChart, radarToTable } from "@/components/charts/RadarChart";
+import { AUDIT_DIMENSIONS } from "@/lib/audit-data";
 import {
-  NOT_EVALUATED,
-  REAL_BAR_CATEGORIES,
-  REAL_BAR_SERIES,
-  REAL_BENCHMARK_LABEL,
-  REAL_BENCHMARK_SLUG,
-  REAL_EVAL_DATE,
-  REAL_MATCH_ID,
-  REAL_MODEL_FLASH,
-  REAL_MODEL_SPARK,
-  REAL_PROVENANCE_NOTE,
-  REAL_RADAR,
-  REAL_RADAR_AXES,
-} from "@/components/charts/real-data";
-import { SpeedBars, speedsToTable } from "@/components/charts/SpeedBars";
+  DimensionBar,
+  ScoreReveal,
+  StaggerGroup,
+  StaggerItem,
+} from "@/components/motion/polish-motion";
+import { cn } from "@/lib/utils";
+import {
+  DIMENSION_MAX,
+  auditForSlug,
+  dimPoints,
+  severityBreakdown,
+} from "./CompareTable";
+
+/**
+ * COMPARE — the visual read of the dimension matrix.
+ *
+ * Creative direction (GPT Orchestrator): no giant score bars, no winner
+ * language. This is a set of equal-width per-model dimension profiles so the
+ * SHAPE of each build is comparable at a glance, followed by a written,
+ * factual list of the measured differences. The reader gets the trade-offs;
+ * the page never declares a winner.
+ */
 
 export interface CompareChartsProps {
   models: readonly Model[];
 }
 
-const REAL_SLUGS = [REAL_MODEL_SPARK.slug, REAL_MODEL_FLASH.slug] as const;
-
-function displayName(m: Model): string {
-  if (m.slug === REAL_MODEL_SPARK.slug) return REAL_MODEL_SPARK.name;
-  if (m.slug === REAL_MODEL_FLASH.slug) return REAL_MODEL_FLASH.name;
-  return m.name;
+interface ModelProfile {
+  model: Model;
+  entry: ReturnType<typeof auditForSlug>;
 }
 
-function Legend({ models }: { models: readonly Model[] }) {
-  const dots = ["#B8FF5A", "#7DD3FC", "#C4B5FD", "#FCA5A5"];
+interface Difference {
+  label: string;
+  spread: number;
+  high: { name: string; value: string };
+  low: { name: string; value: string };
+}
+
+const actionClass =
+  "inline-flex items-center gap-1 rounded-[6px] border px-2 py-1 font-mono text-[10px] uppercase leading-none tracking-wider transition-colors";
+
+function ProfileCard({ profile }: { profile: ModelProfile }) {
+  const { model, entry } = profile;
+  const sev = severityBreakdown(entry);
+
   return (
-    <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-      {models.map((m, i) => (
-        <li key={m.slug} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span
-            className="inline-block h-2 w-2 rounded-full"
-            style={{ backgroundColor: dots[i % dots.length] }}
-            aria-hidden="true"
-          />
-          <span className="font-medium text-foreground">{i + 1}</span> {displayName(m)}
-        </li>
-      ))}
-    </ul>
+    <div className="flex min-w-0 flex-col gap-2 rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-2.5">
+      <div className="min-w-0">
+        <Link
+          href={`/models/${model.slug}`}
+          className="block truncate text-[12px] font-semibold text-[var(--text)] underline-offset-4 hover:underline"
+        >
+          {model.name}
+        </Link>
+        <p className="truncate font-mono text-[10px] text-[var(--text-tertiary)]">
+          {model.slug}
+        </p>
+      </div>
+
+      {entry ? (
+        <>
+          <div className="flex items-baseline gap-1">
+            <ScoreReveal
+              value={entry.total}
+              decimals={2}
+              className="text-[16px] font-semibold leading-none text-[var(--text)]"
+            />
+            <span className="tnum font-mono text-[10px] text-[var(--text-tertiary)]">
+              /100
+            </span>
+            <span className="ml-auto truncate font-mono text-[9px] uppercase tracking-wider text-[var(--text-tertiary)]">
+              {entry.buildId}
+            </span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {AUDIT_DIMENSIONS.map((d, i) => (
+              <DimensionBar
+                key={d.key}
+                dimension={d}
+                points={entry.dims[d.key]}
+                index={i}
+              />
+            ))}
+          </div>
+          <p className="font-mono text-[10px] leading-[14px] text-[var(--text-tertiary)]">
+            <span className="text-[var(--text-secondary)]">{entry.findings.length} findings</span>
+            {" · "}
+            <span
+              className={cn(
+                sev.high > 0 ? "text-[var(--danger)]" : "text-[var(--accent-ink)]",
+              )}
+            >
+              {sev.high} failing
+            </span>
+            {" · "}
+            <span className={entry.mobileReady ? "text-[var(--success)]" : "text-[var(--warning)]"}>
+              {entry.mobileReady ? "touch ready" : "no touch"}
+            </span>
+          </p>
+          <div className="mt-auto flex flex-wrap gap-1 pt-1">
+            <Link
+              href={entry.playPath}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                actionClass,
+                "border-[var(--accent-border)] bg-[var(--accent-muted)] text-[var(--accent-ink)] hover:border-[var(--accent)]",
+              )}
+            >
+              <Play className="size-3" aria-hidden="true" />
+              Play
+            </Link>
+            <Link
+              href={`/models/${model.slug}`}
+              className={cn(
+                actionClass,
+                "border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text)]",
+              )}
+            >
+              Audit
+              <ArrowUpRight className="size-3" aria-hidden="true" />
+            </Link>
+          </div>
+        </>
+      ) : (
+        <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
+          Not audited in this round
+        </p>
+      )}
+    </div>
   );
 }
 
 export function CompareCharts({ models }: CompareChartsProps) {
-  const extraSlugs = useMemo(
-    () =>
-      models
-        .map((m) => m.slug)
-        .filter((s) => s !== REAL_MODEL_SPARK.slug && s !== REAL_MODEL_FLASH.slug),
+  const profiles = useMemo<ModelProfile[]>(
+    () => models.map((m) => ({ model: m, entry: auditForSlug(m) })),
     [models],
   );
 
-  const radarTable = useMemo(
-    () => radarToTable(REAL_RADAR, REAL_RADAR_AXES),
-    [],
-  );
-  const barsTable = useMemo(
-    () => barsToTable([...REAL_BAR_CATEGORIES], REAL_BAR_SERIES),
-    [],
-  );
+  const differences = useMemo<Difference[]>(() => {
+    const audited = profiles.filter((p) => p.entry);
+    if (audited.length < 2) return [];
 
-  const priceEntries = useMemo(
-    () => [
-      { model: REAL_MODEL_SPARK.name, blendedPer1M: null, inputPer1M: null, outputPer1M: null },
-      { model: REAL_MODEL_FLASH.name, blendedPer1M: null, inputPer1M: null, outputPer1M: null },
-    ],
-    [],
-  );
-  const speedEntries = useMemo(
-    () => [
-      { model: REAL_MODEL_SPARK.name, tps: null, ttftMs: null },
-      { model: REAL_MODEL_FLASH.name, tps: null, ttftMs: null },
-    ],
-    [],
-  );
-  const priceTable = useMemo(() => pricesToTable(priceEntries), [priceEntries]);
-  const speedTable = useMemo(() => speedsToTable(speedEntries), [speedEntries]);
+    const rows: Difference[] = [];
+
+    const totals = audited.map((p) => ({
+      name: p.model.name,
+      value: p.entry?.total ?? 0,
+    }));
+    const totalMax = Math.max(...totals.map((t) => t.value));
+    const totalMin = Math.min(...totals.map((t) => t.value));
+    rows.push({
+      label: "Showdown Score",
+      spread: totalMax - totalMin,
+      high: {
+        name: totals.find((t) => t.value === totalMax)?.name ?? "—",
+        value: totalMax.toFixed(2),
+      },
+      low: {
+        name: totals.find((t) => t.value === totalMin)?.name ?? "—",
+        value: totalMin.toFixed(2),
+      },
+    });
+
+    for (const dim of AUDIT_DIMENSIONS) {
+      const values = audited.map((p) => ({
+        name: p.model.name,
+        value: dimPoints(p.entry, dim.key) ?? 0,
+      }));
+      const max = Math.max(...values.map((v) => v.value));
+      const min = Math.min(...values.map((v) => v.value));
+      if (max === min) {
+        rows.push({
+          label: dim.label,
+          spread: 0,
+          high: { name: "all builds", value: String(max) },
+          low: { name: "all builds", value: String(max) },
+        });
+        continue;
+      }
+      rows.push({
+        label: dim.label,
+        spread: max - min,
+        high: {
+          name: values.filter((v) => v.value === max).map((v) => v.name).join(" + "),
+          value: String(max),
+        },
+        low: {
+          name: values.filter((v) => v.value === min).map((v) => v.name).join(" + "),
+          value: String(min),
+        },
+      });
+    }
+
+    const failing = audited.map((p) => ({
+      name: p.model.name,
+      value: severityBreakdown(p.entry).high,
+    }));
+    const failMax = Math.max(...failing.map((f) => f.value));
+    const failMin = Math.min(...failing.map((f) => f.value));
+    rows.push({
+      label: "Verified failures",
+      spread: failMax - failMin,
+      high: {
+        name: failing.filter((f) => f.value === failMin).map((f) => f.name).join(" + "),
+        value: String(failMin),
+      },
+      low: {
+        name: failing.filter((f) => f.value === failMax).map((f) => f.name).join(" + "),
+        value: String(failMax),
+      },
+    });
+
+    return rows.sort((a, b) => b.spread - a.spread);
+  }, [profiles]);
+
+  const measuredPrices = models.filter(
+    (m) => m.prices.inputPer1M !== null && m.prices.outputPer1M !== null,
+  ).length;
+  const measuredSpeed = models.filter(
+    (m) => m.speed !== undefined && Number.isFinite(m.speed.tps),
+  ).length;
 
   if (models.length < 2) return null;
 
-  const names = models.map(displayName).join(", ");
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-sm font-semibold">Visual comparison</h2>
-        <span className="flex-1" />
-        <p className="text-[11px] text-muted-foreground">
-          Same data as the tables below. Measured comparison:{" "}
-          <code className="font-mono text-[11px]">
-            /api/compare?models={REAL_SLUGS.join(",")}
-          </code>
-        </p>
+      <div className="flex flex-wrap items-baseline gap-2">
+        <h2 className="text-[13px] font-semibold text-[var(--text)]">
+          Dimension profile
+        </h2>
+        <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
+          {AUDIT_DIMENSIONS.length} dimensions × {DIMENSION_MAX} pts · bars fill
+          once
+        </span>
       </div>
-      <Legend models={models} />
-      <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Measured snapshot: {REAL_MODEL_SPARK.name} {REAL_MODEL_SPARK.raw} vs {REAL_MODEL_FLASH.name}{" "}
-        {REAL_MODEL_FLASH.raw} on {REAL_BENCHMARK_SLUG} ({REAL_PROVENANCE_NOTE}). Other models and
-        dimensions are {NOT_EVALUATED}.
-      </p>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <ChartShell
-          title="Radar — capability profile"
-          subtitle={`Evaluated dimensions only (${REAL_BENCHMARK_LABEL}). All other dimensions are ${NOT_EVALUATED}.`}
-          height={340}
-          table={radarTable}
-          tableId="compare-table-radar"
-          footer={<span>{REAL_PROVENANCE_NOTE}.</span>}
+
+      <StaggerGroup gap={0.045}>
+        <div
+          role="group"
+          aria-label="Per-model audit dimension profiles"
+          className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
         >
-          <RadarChart
-            data={REAL_RADAR}
-            axes={REAL_RADAR_AXES}
-            height={340}
-            ariaLabel={`Capability radar for ${names}, showdown dimension only`}
-          />
-          <p className="bdx-chart-foot">
-            Single measured dimension ({REAL_BENCHMARK_LABEL}, {REAL_EVAL_DATE}). A polygon needs
-            three or more measured axes; until then the table below is the source of truth.
+          {profiles.map((p) => (
+            <StaggerItem key={p.model.slug} y={6} className="min-w-0 h-full">
+              <ProfileCard profile={p} />
+            </StaggerItem>
+          ))}
+        </div>
+      </StaggerGroup>
+
+      {differences.length > 0 ? (
+        <section
+          aria-labelledby="compare-differences-heading"
+          className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-3"
+        >
+          <h3
+            id="compare-differences-heading"
+            className="text-[12px] font-semibold text-[var(--text)]"
+          >
+            Measured differences
+          </h3>
+          <p className="mt-0.5 text-[11px] leading-[16px] text-[var(--text-secondary)]">
+            Widest gaps first. These are point differences on the audited scale,
+            not a ranking.
           </p>
-        </ChartShell>
-
-        <ChartShell
-          title="Grouped bars — showdown scores"
-          subtitle={`${REAL_MODEL_SPARK.name} ${REAL_MODEL_SPARK.raw} vs ${REAL_MODEL_FLASH.name} ${REAL_MODEL_FLASH.raw} (0–100).`}
-          height={340}
-          table={barsTable}
-          tableId="compare-table-bars"
-          footer={<span>{REAL_PROVENANCE_NOTE}.</span>}
-        >
-          <BarGroup
-            categories={[...REAL_BAR_CATEGORIES]}
-            series={REAL_BAR_SERIES}
-            height={340}
-            ariaLabel={`Showdown bars for ${names}`}
-          />
-        </ChartShell>
-
-        <ChartShell
-          title="Price — blended $/1M"
-          subtitle="Lower is better. No prices measured yet."
-          height={260}
-          table={priceTable}
-          tableId="compare-table-price"
-          isEmpty
-          emptyMessage={
-            <NotEnoughData tableId="compare-table-price" what="price" />
-          }
-        >
-          <PriceBars entries={priceEntries} height={260} />
-        </ChartShell>
-
-        <ChartShell
-          title="Speed — tok/s"
-          subtitle="Higher tok/s is better. No speeds measured yet."
-          height={260}
-          table={speedTable}
-          tableId="compare-table-speed"
-          isEmpty
-          emptyMessage={
-            <NotEnoughData tableId="compare-table-speed" what="speed" />
-          }
-        >
-          <SpeedBars entries={speedEntries} height={260} />
-        </ChartShell>
-
-        <ChartShell
-          title="Quality vs price"
-          subtitle="Needs measured price plus score for at least two models."
-          height={280}
-          table={priceTable}
-          tableId="compare-table-qp"
-          isEmpty
-          emptyMessage={
-            <NotEnoughData tableId="compare-table-qp" what="price for a quality-vs-price plot" />
-          }
-        >
-          <p className="bdx-chart-foot">
-            No Pareto frontier can be drawn from one benchmark with no measured prices. See the data
-            table for the two measured scores ({REAL_MODEL_SPARK.raw}, {REAL_MODEL_FLASH.raw}).
+          <dl className="mt-2 divide-y divide-[var(--border)]">
+            {differences.map((d) => (
+              <div
+                key={d.label}
+                className="grid grid-cols-1 gap-0.5 py-1.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline sm:gap-3"
+              >
+                <dt className="min-w-0 text-[12px] text-[var(--text)]">
+                  {d.label}
+                </dt>
+                <dd className="tnum font-mono text-[11px] text-[var(--text-secondary)]">
+                  {d.spread === 0 ? (
+                    <span>no spread · {d.high.value} across the selection</span>
+                  ) : (
+                    <span>
+                      {d.spread}-pt spread · {d.high.name} {d.high.value} ·{" "}
+                      {d.low.name} {d.low.value}
+                    </span>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-2 text-[11px] leading-[16px] text-[var(--text-tertiary)]">
+            No overall winner is declared and none is implied: the five
+            dimensions do not move together, so a build that leads on one axis
+            routinely trails on another. Read the row you care about, then play
+            the build.
           </p>
-        </ChartShell>
-
-        <ChartShell
-          title="Quality vs speed"
-          subtitle="Needs measured speed plus score for at least two models."
-          height={280}
-          table={speedTable}
-          tableId="compare-table-qs"
-          isEmpty
-          emptyMessage={
-            <NotEnoughData tableId="compare-table-qs" what="speed for a quality-vs-speed plot" />
-          }
-        >
-          <p className="bdx-chart-foot">
-            No speed measurements yet (match {REAL_MATCH_ID} recorded scores only). See the data
-            table for the two measured scores.
-          </p>
-        </ChartShell>
-      </div>
-      {extraSlugs.length > 0 ? (
-        <p className="text-[11px] text-muted-foreground" role="note">
-          {extraSlugs.join(", ")}: {NOT_EVALUATED} on {REAL_BENCHMARK_SLUG} — no measured run yet.
-        </p>
+        </section>
       ) : null}
+
+      <details className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
+        <summary className="cursor-pointer px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-secondary)]">
+          Plots that need measurements this round
+        </summary>
+        <div className="border-t border-[var(--border)] px-3 py-2 text-[11px] leading-[16px] text-[var(--text-secondary)]">
+          <p>
+            Price bars, speed bars, quality-vs-price and quality-vs-speed plots
+            need verified price and throughput numbers. In this selection{" "}
+            <span className="tnum text-[var(--text)]">{measuredPrices}</span> of{" "}
+            <span className="tnum text-[var(--text)]">{models.length}</span>{" "}
+            models have a verified price and{" "}
+            <span className="tnum text-[var(--text)]">{measuredSpeed}</span> of{" "}
+            <span className="tnum text-[var(--text)]">{models.length}</span>{" "}
+            have a measured tok/s, so those plots stay empty rather than
+            estimated. The dimension matrix above is the source of truth for
+            this round.
+          </p>
+        </div>
+      </details>
     </div>
   );
 }

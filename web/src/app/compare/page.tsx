@@ -5,9 +5,9 @@ import { CompareView } from "@/components/compare/CompareView";
 import { CompareSkeleton } from "@/components/compare/CompareSkeleton";
 
 export const metadata: Metadata = {
-  title: "Compare Models",
+  title: "Compare Builds",
   description:
-    "Side-by-side view of verified models on Zombie Flamethrower Showdown with shareable links.",
+    "Per-dimension Showdown Score matrix for verified game builds: five audited dimensions, verified findings, and the playable artifact behind every number. No overall winner is declared.",
 };
 
 export const dynamic = "force-dynamic";
@@ -27,7 +27,7 @@ export default async function ComparePage({
   const initialModels = parseModelsParam(sp[COMPARE_URL_PARAM]);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8">
+    <main className="mx-auto w-full max-w-7xl px-4 py-8">
       <Suspense fallback={<CompareSkeleton />}>
         <CompareView initialModels={initialModels} />
       </Suspense>

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Play } from "lucide-react";
 import { MODELS } from "@/lib/data";
 import type { Model } from "@/lib/types";
 import {
@@ -16,7 +16,7 @@ import {
   saveTray,
 } from "./compare-data";
 import { CompareTray } from "./CompareTray";
-import { CompareTable } from "./CompareTable";
+import { CompareTable, auditForSlug } from "./CompareTable";
 import { CompareCharts } from "./CompareCharts";
 import { CompareSkeleton } from "./CompareSkeleton";
 import VotePanel from "@/components/interactive/VotePanel";
@@ -37,17 +37,6 @@ function CommunityShowdown() {
 export interface CompareViewProps {
   initialModels: string[];
 }
-
-const PLAY_LINKS: Record<string, string> = {
-  "space-bunny-free": "/play/ember-dead",
-  "deepseek-v4-1-flash": "/play/pyre-burn-horde",
-  "gpt-5-6-luna": "/play/firebreak-night-shift",
-  "gpt-6-sol": "/play/cinderline",
-  "muse-spark-1-3": "/play/pyro-vs-zombies",
-  "gpt-6-luna": "/play/emberfall",
-  "gemini-3-8-flash": "/play/pyroclasm-inferno",
-  "gemini-pro-agent": "/play/zombie-fire-survival"
-};
 
 function selectModels(slugs: readonly string[]): Model[] {
   const wanted = parseModelsParam([...slugs]);
@@ -106,6 +95,16 @@ export function CompareView({ initialModels }: CompareViewProps) {
 
   const shareHref = useMemo(() => buildCompareHref(selected), [selected]);
 
+  // The playable build is part of the comparison, so surface it up front
+  // rather than hiding the artifact behind a score.
+  const builds = useMemo(
+    () =>
+      models
+        .map((m) => ({ model: m, entry: auditForSlug(m) }))
+        .filter((b) => b.entry),
+    [models],
+  );
+
   const copyLink = useCallback(async () => {
     const url =
       typeof window !== "undefined" ? buildShareUrl(selected, window.location.origin) : buildCompareHref(selected);
@@ -140,12 +139,20 @@ export function CompareView({ initialModels }: CompareViewProps) {
   return (
     <div className="space-y-4">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Compare models</h1>
-        <p className="max-w-3xl text-sm text-muted-foreground">
-          Side-by-side metrics for up to {COMPARE_MAX_MODELS} models. URLs are shareable:{" "}
-          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/compare?{COMPARE_URL_PARAM}=a,b</code> —{" "}
-          opening a shared link reproduces the exact selection. Per-metric highlights only; no overall winner is
-          declared.
+        <h1 className="text-2xl font-bold tracking-tight">Compare builds</h1>
+        <p className="max-w-3xl text-[13px] text-muted-foreground">
+          Up to {COMPARE_MAX_MODELS} builds side by side, cell by cell across
+          the five audited Showdown Score dimensions — 20 points each, zero for a
+          feature that is not implemented and reachable. This page is built for
+          trade-offs: the matrix states each cell&apos;s own gap to the strongest
+          value in its row, and nothing here declares an overall winner.
+        </p>
+        <p className="max-w-3xl text-[12px] text-muted-foreground">
+          URLs are shareable:{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
+            /compare?{COMPARE_URL_PARAM}=a,b
+          </code>{" "}
+          — opening a shared link reproduces the exact selection.
         </p>
       </header>
 
@@ -157,29 +164,37 @@ export function CompareView({ initialModels }: CompareViewProps) {
           onClick={copyLink}
           disabled={selected.length === 0}
           aria-live="polite"
-          className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium transition-[background-color,border-color,transform] active:scale-[0.98] hover:bg-[var(--elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-1.5 text-[13px] font-medium transition-[background-color,border-color,transform] active:scale-[0.98] hover:bg-[var(--elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {copied ? <Check className="size-4 text-[var(--accent-ink)]" /> : <Copy className="size-4 text-[var(--text-secondary)]" />}
           <span>{copied ? "Link copied ✓" : "Copy share link"}</span>
         </button>
-        <span className="truncate font-mono text-xs text-muted-foreground">{shareHref}</span>
+        <span className="truncate font-mono text-[11px] text-muted-foreground">{shareHref}</span>
       </div>
 
-      {models.length > 0 ? (
-        <div className="flex flex-wrap gap-3 text-sm">
-          {models.map((m) => {
-            const play = PLAY_LINKS[m.slug];
-            return play ? (
-              <Link key={m.slug} href={play} className="underline underline-offset-4">
-                Play {m.name}
+      {builds.length > 0 ? (
+        <ul className="flex flex-wrap gap-1.5" aria-label="Builds in this comparison">
+          {builds.map(({ model, entry }) => (
+            <li key={model.slug}>
+              <Link
+                href={entry?.playPath ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-[11px] text-[var(--text-secondary)] transition-colors hover:border-[var(--accent-border)] hover:text-[var(--accent-ink)]"
+              >
+                <Play className="size-3" aria-hidden="true" />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
+                  {entry?.buildId}
+                </span>
+                <span className="truncate">{entry?.buildName}</span>
               </Link>
-            ) : null;
-          })}
-        </div>
+            </li>
+          ))}
+        </ul>
       ) : null}
 
       {unknownSlugs.length > 0 && selected.length >= 2 ? (
-        <p role="note" className="rounded-lg border border-border bg-muted p-3 text-sm text-muted-foreground">
+        <p role="note" className="rounded-lg border border-border bg-muted p-3 text-[13px] text-muted-foreground">
           Unknown model slug{unknownSlugs.length === 1 ? "" : "s"} ignored:{" "}
           <code className="font-mono text-xs">{unknownSlugs.join(", ")}</code>
         </p>
@@ -196,17 +211,17 @@ export function CompareView({ initialModels }: CompareViewProps) {
           <h2 id="compare-empty-heading" className="text-base font-semibold">
             Select at least two models
           </h2>
-          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            Add models from the tray above — or start from the current pair. Selections persist in this browser and sync to
-            the URL.
+          <p className="mx-auto mt-1 max-w-md text-[13px] text-muted-foreground">
+            Add models from the tray above — or start from a known pair. Selections
+            persist in this browser and sync to the URL.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <button
               type="button"
               onClick={() => handleChange(["muse-spark-1-3", "gemini-3-8-flash"])}
-              className="rounded-md border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F7A00] dark:focus-visible:outline-[#B8FF5A]"
+              className="rounded-md border border-border px-3 py-1.5 text-[13px] font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F7A00] dark:focus-visible:outline-[#B8FF5A]"
             >
-              Compare Spark vs Flash
+              Add Muse Spark 1.3 and Gemini 3.8 Flash
             </button>
           </div>
         </section>
