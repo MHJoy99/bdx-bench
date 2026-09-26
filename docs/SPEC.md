@@ -1,5 +1,8 @@
 # BDX Bench — Spec
 
+> **Scope: the zero-dependency harness only.** For the public benchmark
+> site (`web/`, the Showdown Score v2 leaderboard) see `docs/WEB.md`.
+
 > Zero-dependency Node.js (built-ins only). Server: `http://127.0.0.1:8765`.
 > Gateway: env `BDX_BASE_URL` (default `https://gpt.bdx.market/v1`) +
 > `BDX_AI_API_KEY` (never print secrets).

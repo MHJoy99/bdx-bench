@@ -1,5 +1,8 @@
 # BDX Bench — Manual Prompt Workflow (v0.1)
 
+> **Scope: the harness manual-prompt workflow only.** The public site's
+> scoring method is `docs/METHODOLOGY.md` Part A (Showdown Score v2).
+
 No live model runs. You bring the prompts, run the models wherever you
 like (Kilo Code, Claude, Codex), and record answers + scores here. The
 leaderboard merges manual scores with the (demo) auto runs.

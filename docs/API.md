@@ -1,5 +1,9 @@
 # API Reference — BDX Bench v0.1
 
+> **Scope: the zero-dependency harness API on `:8765` only.** The public
+> site's API routes live in `web/src/app/api/` and are documented in
+> `docs/WEB.md`.
+
 Base URL: `http://127.0.0.1:8765` (override port with env `BDX_BENCH_PORT`).
 
 All responses are JSON. Errors return a non-2xx status with `{"error":"message"}`.

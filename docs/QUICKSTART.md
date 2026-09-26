@@ -1,5 +1,8 @@
 # QUICKSTART — BDX Bench in 5 Minutes
 
+> **Scope: the zero-dependency harness only.** To run the public site, see
+> `docs/WEB.md` §5.
+
 Zero-deps local benchmark: queue a mock run in the browser, then run one live task from the CLI.
 
 ## 0. Install (nothing)

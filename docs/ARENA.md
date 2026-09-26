@@ -1,5 +1,7 @@
 # BDX Arena — Blind Match Rules + Workflow (v0.1)
 
+> **Scope: the harness arena only.** See `docs/WEB.md` for the public site.
+
 > Chat-driven blind arena on top of BDX Bench. Same server
 > (`http://127.0.0.1:8765`), same fairness terms as `docs/METHODOLOGY.md`,
 > same prompt bank as `docs/PROMPTS.md`. Never print secrets (`BDX_AI_API_KEY`).

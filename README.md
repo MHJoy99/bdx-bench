@@ -169,16 +169,24 @@ CLI equivalent: `node runner/run.js --model <id> --suite <swe-mini|terminal-mini
 
 ## Docs
 
+**The benchmark site (`web/`):**
+
+- [`docs/WEB.md`](docs/WEB.md) — the Next.js site: routes, data flow, the design and motion doctrine, the build registry, deploy.
+- [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) **Part A** — Showdown Score v2: the 5-dimension rubric, why v1 was withdrawn, the implemented-and-reachable rule, fairness rules.
+
+**The zero-dependency harness (`server/`):**
+
 - [`docs/QUICKSTART.md`](docs/QUICKSTART.md) — 5-minute walkthrough (mock run in browser, one live CLI task).
-- [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) — suites, task model, scoring (`avgScore` primary, `passRate` tiebreak), fairness rules, mock vs live.
+- [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) **Part B** — suites, task model, scoring (`avgScore` primary, `passRate` tiebreak), fairness rules, mock vs live.
 - [`docs/ARENA.md`](docs/ARENA.md) — blind-match rules, seeded pairing, judging (majority wins, ties draw), Elo, chat-driven workflow.
 - [`docs/PROMPTS.md`](docs/PROMPTS.md) — manual prompt workflow: add prompt → run models yourself → record scores → read leaderboard.
-- [`docs/API.md`](docs/API.md) — endpoint reference with shapes and examples.
+- [`docs/API.md`](docs/API.md) — harness endpoint reference with shapes and examples.
+- [`docs/SPEC.md`](docs/SPEC.md) — harness file layout, config, schemas, conformance checklist.
 
 ## Contributing
 
 - Contributor guide: [`CONTRIBUTING.md`](CONTRIBUTING.md) — PR rules, task/check conventions, how to add suites without breaking methodology versioning.
-- Agent workflow: [`AGENTS.md`](AGENTS.md) — file ownership, allowed endpoints, secrets hygiene (never print `BDX_AI_API_KEY` or Authorization headers), code-wins-over-docs rule.
+- Agent workflow: [`AGENTS.md`](AGENTS.md) — the two halves of the repo, file ownership, the benchmark golden rules (never patch a build, never fake live data, no decorative animation), secrets hygiene, code-wins-over-docs rule.
 
 ## v0.1 limits (honest)
 
