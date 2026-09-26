@@ -6,20 +6,30 @@ motion doctrine. The `web/` directory is the only place where opt-in devDeps
 (vitest / playwright) may be installed, and only with Lead approval.
 
 Status legend: `[ ]` todo · `[x]` done · `[B]` blocked · `[S]` skipped with reason.
-Automated coverage: `node --test tests/` (scores + API contract) and
-`node tests/a11y-audit.js` (static a11y/perf scan) — note these live in the
-**root** `tests/`, not `web/tests/`. This file is the MANUAL pass.
+Automated coverage lives in the **root** `tests/` dir, not `web/tests/`:
+`npm test` (69 harness assertions) and `npm run a11y` (static a11y/perf scan of
+the harness GUI, currently 25 pass / 0 fail). This file is the MANUAL pass for
+the web app.
+
+> Do not run bare `node --test` from the repo root — it auto-discovers
+> `web/src/lib/*.test.ts`, which are dormant **vitest** tests the root runner
+> cannot load, and reports two spurious failures. Use `npm test`.
 
 Verification gate for the web app is `npm run check` (`tsc --noEmit && next
 build`); ESLint is not configured in this project.
 
 ## 0. Blockers
 
-- [x] **Resolved 2026-09-26.** The old blocker — "harness `public/` UI files are
-  deleted, `GET /` returns JSON 404" — no longer applies. The public product is
-  now the Next.js app in `web/`, served at `https://bench.bdx.market`, and
-  `tests/api-contract.test.js` covers the harness API separately on `:8765`.
-  Do not re-add this blocker; check the harness API on its own port.
+- [x] **Retired 2026-09-26.** The old blocker — "harness `public/` UI files are
+  deleted, only `.gitkeep` remains" — was never accurate: `public/index.html`,
+  `app.js` and `style.css` are all present and served by `server/server.js` on
+  `:8765`. Do not re-add this blocker. Note the live harness is normally
+  *not* running, so `http://127.0.0.1:8765` will refuse connections; that is
+  expected, not a fault. Test on `:18765`.
+- [x] **Fixed 2026-09-26.** The harness GUI had 5 real a11y failures (no skip
+  link, 4 unlabelled chart canvases, no focus ring, no `prefers-reduced-motion`,
+  no light-mode mechanism). All fixed in `public/index.html` + `public/style.css`;
+  `npm run a11y` is now 25 pass / 0 fail / exit 0.
 - [ ] SPEC-vs-code deviations (harness, code wins; docs agent should reconcile
   `docs/SPEC.md`):
   D1 `GET /api/health` → `{ok, version}` (SPEC says `{ok, mode, time}`).

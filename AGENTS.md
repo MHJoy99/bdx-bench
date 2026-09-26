@@ -93,10 +93,18 @@ npm start        # node server/server.js -> http://127.0.0.1:8765 (live; don't s
 npm run mock     # one mock run, writes results/mock.json (no key needed)
 npm run seed     # node scripts/seed-demo.js — demo data for the GUI
 npm run aggregate# node scripts/aggregate.js — rebuild leaderboard from results/
+npm test         # node --test "tests/**/*.test.js" — 69 harness assertions
+npm run a11y     # node tests/a11y-audit.js — static a11y/perf scan of the harness GUI
 npm run verify   # scripts/verify.ps1 — conformance check (uses :18765, never :8765)
 ```
 
-Live CLI run (only when explicitly asked; needs key, never echo it):
+> **Do not run bare `node --test` from the repo root.** It auto-discovers
+> *everything*, including `web/src/lib/*.test.ts`, which are **vitest** tests
+> that the root runner cannot load (extensionless TS imports). They report two
+> spurious failures. `npm test` is scoped to the root `tests/` dir on purpose.
+> The `web/` vitest suite is dormant by design — see `web/vitest.config.ts`.
+
+Live CLI run (only when user explicitly asks; needs key, never echo it):
 `$env:BDX_AI_API_KEY="..."; node runner/run.js --model <id> --suite <swe-mini|terminal-mini> --mode live --out ./out.json`
 
 ## 4. Where Everything Lives
@@ -115,8 +123,9 @@ Live CLI run (only when explicitly asked; needs key, never echo it):
 | `runner/run.js` | Harness CLI runner | runner agent |
 | `scripts/` | `seed-demo.js`, `aggregate.js`, `verify.ps1` | tooling agent |
 | `docs/` | `SPEC.md`, `API.md`, `METHODOLOGY.md`, `WEB.md`, `ARENA.md`, … | docs agent |
-| `data/` | Runtime journal: `prompts/scores/matches/ratings.json`. Gitignored. | server only (never hand-edit) |
+    | `data/` | Runtime journal: `prompts/scores/matches/ratings.json`. Gitignored. | server only (never hand-edit) |
 | `results/` | One JSON per harness run, harness leaderboard source | server/runner only |
+| `public/` | Harness GUI: `index.html`, `app.js`, `style.css` (a11y-gated by `npm run a11y`) | harness UI agent |
 | `deploy/deploy.sh` | VPS deploy + smoke checks | tooling agent |
 
 ## 5. How the Leaderboard Is Built

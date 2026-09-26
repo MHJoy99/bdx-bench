@@ -2,6 +2,12 @@
 
 Local-first: server `http://127.0.0.1:8765`, GUI + API. Never print or commit secrets (`BDX_AI_API_KEY`).
 
+> **This repo has two halves.** Sections 1–5 below are for the zero-dependency
+> harness (`server/`, `tasks/`, `runner/`). The public product is the Next.js
+> site in `web/`, which ranks AI models by an audit of the games they built —
+> see §6 and [`docs/WEB.md`](docs/WEB.md). Read the half you are actually
+> changing.
+
 ## 1. Add a prompt to the bank
 
 GUI: `prompts.html` → "New prompt" form → appears in bank list (`GET /api/prompts`).
@@ -84,6 +90,39 @@ Edit `models/models.json` → `models[]` entry (env-name refs only, no secrets i
 via `defaults.baseUrlEnv`. Shows up in `GET /api/models` + GUI pickers. Set key via env only:
 `$env:BDX_AI_API_KEY = "..."`.
 
+## 6. Contribute to the public site (`web/`)
+
+Full guidance: [`docs/WEB.md`](docs/WEB.md). The short version:
+
+```powershell
+cd web
+npm run lint     # tsc --noEmit — this IS the lint gate (ESLint is not configured)
+npm run build    # must end with the static/SSG route table
+npm run check    # both
+```
+
+Site rules that get PRs rejected:
+
+- **Never patch a build in `web/public/play/`.** Those are model output under
+  benchmark. Document the defect in `web/src/lib/audit-data.ts` instead — the
+  site surfaces findings as credibility content.
+- **A feature counts only if implemented and reachable.** Strings, comments and
+  dead code score zero. See `docs/METHODOLOGY.md` A3.
+- **Never fake live data.** The audit is one static round; do not animate a
+  score "arriving" or use FLIP to simulate a refresh.
+- **Motion comes from the tokens.** Durations/easings live in
+  `web/src/lib/motion-tokens.ts`. No invented values, and no decorative
+  animation (loops, float, parallax, particles, pulse).
+- **One stylesheet.** `web/src/styles/globals.css`, wired via
+  `web/src/app/layout.tsx`. Do not add a second global CSS file.
+- **Adding a multi-file build needs a `redirects()` entry** to the full
+  `index.html` path, plus its asset paths in the `deploy/deploy.sh` smoke list.
+  A `rewrites()` entry leaves the relative `style.css`/`game.js` 404.
+- Dark and light themes must both work; keep body at 13px and all numbers
+  `tabular-nums`.
+
+Harness-only changes still need the root gates: `npm test` and `npm run a11y`.
+
 ## Scoring & fairness recap
 
 - Identical `prompt` per task/match, temp 0, one attempt, no retries/hints.
@@ -101,4 +140,5 @@ via `defaults.baseUrlEnv`. Shows up in `GET /api/models` + GUI pickers. Set key 
 - [ ] Methodology version noted if scoring/fairness touched (`run.methodologyVersion`)?
 - [ ] No keys, tokens, or `Authorization` headers in files, logs, or pastes?
 
-Details: `docs/METHODOLOGY.md`, `docs/ARENA.md`, `docs/PROMPTS.md`, `docs/API.md`.
+Details: `docs/METHODOLOGY.md`, `docs/ARENA.md`, `docs/PROMPTS.md`, `docs/API.md`
+(harness) and `docs/WEB.md` (site).

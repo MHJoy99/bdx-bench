@@ -29,3 +29,41 @@ code{background:#0d1117;padding:1px 5px;border-radius:6px;border:1px solid var(-
 details{background:#0d1117;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:4px 0}
 pre{white-space:pre-wrap;word-break:break-word;color:var(--txt)}
 @media(max-width:700px){.nav{display:none}main{padding:10px}}
+
+/* --- accessibility ---------------------------------------------------- */
+/* Keyboard users must be able to see where they are. */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
+summary:focus-visible,th:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid #fff;outline-offset:2px;border-radius:4px
+}
+
+/* Visible skip link: first tab stop, off-screen until focused. */
+.skip-link{
+  position:absolute;left:-9999px;top:0;z-index:10;
+  background:var(--acc);color:#fff;padding:8px 14px;border-radius:0 0 8px 0;
+  text-decoration:none;font-weight:600
+}
+.skip-link:focus{left:0}
+
+/* Respect users who ask for less motion. */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important
+  }
+}
+
+/* Honour a light-mode OS preference instead of forcing dark. */
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#ffffff;--panel:#f6f8fa;--line:#d0d7de;
+    --txt:#1f2328;--mut:#59636e;--acc:#0969da;--ok:#1a7f37;--warn:#9a6700
+  }
+  .topbar{background:#f6f8fa}
+  .searchrow input,.tbltools input,.tbltools select,.chart,code,details{background:#fff}
+  .tag{background:#eaeef2}
+  button{color:#fff}
+  .logo{color:#fff}
+}

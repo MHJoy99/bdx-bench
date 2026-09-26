@@ -6,6 +6,8 @@
     "mock": "node runner/run.js --model mock-model --suite swe-mini --mode mock --out results/mock.json",
     "aggregate": "node scripts/aggregate.js",
     "seed": "node scripts/seed-demo.js",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "a11y": "node tests/a11y-audit.js",
     "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1"
   }
 }

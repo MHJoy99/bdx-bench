@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to main content</a>
 <header class="topbar">
   <div class="brand"><span class="logo">BDX</span> Bench</div>
   <nav class="nav" id="nav">
@@ -23,7 +24,7 @@
   <div class="health"><span id="healthDot" class="dot">●</span><span id="healthText">checking…</span></div>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
 <section class="hero">
   <h1>Independent analysis of models</h1>
   <p>Zero-dependency local benchmark harness. Auto suites, blind manual prompts, and arena Elo — all on one page. <span id="viewCount"></span></p>
@@ -40,7 +41,7 @@
   <p class="muted">Points-weighted avgScore from <code>results/*.json</code> via <code>GET /api/leaderboard</code>. Higher is better. Mock runs are labelled.</p>
   <div class="tabs" data-tabs="intelligence"></div>
   <div class="tabbody" id="intelligenceBody"></div>
-  <canvas id="chartAuto" class="chart" width="900" height="220" aria-label="Auto scores chart"></canvas>
+  <canvas id="chartAuto" class="chart" role="img" width="900" height="220" aria-label="Auto scores chart"></canvas>
 </section>
 
 <section id="manual" class="panel">
@@ -55,7 +56,7 @@
   <p class="muted">Blind A/B matches. Vote via <code>POST /api/matches/:id/votes {judge, side}</code>. Auto-verdict at 2-vote majority or 3 votes, Elo K=32 from 1000. Models hidden until verdict unless <code>?reveal=1</code>.</p>
   <div class="tabs" data-tabs="arena"></div>
   <div class="tabbody" id="arenaBody"></div>
-  <canvas id="chartArena" class="chart" width="900" height="220" aria-label="Arena Elo chart"></canvas>
+  <canvas id="chartArena" class="chart" role="img" width="900" height="220" aria-label="Arena Elo chart"></canvas>
 </section>
 
 <section id="models" class="panel">
