@@ -33,11 +33,11 @@ export const DEMO_DATA_LABEL = "SHOWDOWN DATA" as const;
 export const METHODOLOGY_VERSION = "v1" as const;
 export const DEMO_RETRIEVED_AT = "2026-09-23" as const;
 export const DEMO_DATASET_REFRESH_LABEL = "2026-09-23" as const;
-export const DEMO_EVAL_AT = "2026-09-23" as const;
+export const DEMO_EVAL_AT = "2026-09-26" as const;
 
 /** Human label for every Showdown Score surfacing. */
 export const SHOWDOWN_SCORE_LABEL =
-  "Showdown Score (manual game-build evaluation)" as const;
+  "Showdown Score v2 (strict code audit)" as const;
 
 /**
  * Static record of the showdown: prompt, builds, answers, and the seeded
@@ -50,7 +50,7 @@ export const SHOWDOWN = {
   matchId: "m-001",
   matchStatus: "open" as const,
   methodology:
-    "Manual game-build showdown: one shared prompt, binary playability check + feature checklist, community vote open",
+    "Showdown Score v2: strict source-code audit, five dimensions x 20 points. Community vote remains open in the interactive store.",
   promptTitle: "Zombie flamethrower survival game",
   promptBody:
     "make me a video game where i am killing zombies with fire and all please? a nice wonderfull game i can play for fun okay?",
@@ -99,7 +99,7 @@ export const BENCHMARK_CATALOGUE: BenchmarkMeta[] = [
     slug: "zombie-flamethrower-showdown",
     name: "Zombie Flamethrower Showdown",
     description:
-      "Manual game-build showdown: one shared prompt, binary playability check + feature checklist, community vote open. Scores are Showdown Score (manual game-build evaluation).",
+      "One shared prompt, eight models, ten audited game builds. Scores are Showdown Score v2, a strict implementation-level source-code audit. A feature counts only when it is genuinely implemented and reachable.",
     category: "coding",
     weight: 1,
     unit: "Showdown Score 0-100",
@@ -1066,7 +1066,7 @@ export const PROVENANCE: ProvenanceItem[] = [
     kind: "manual",
     retrievedAt: "2026-09-26",
     notes:
-      "Showdown Score (manual game-build evaluation). One shared prompt, binary playability check + feature checklist. Playable builds: /play/pyro-vs-zombies, /play/pyroclasm-inferno, /play/pyre-burn-horde, /play/space-bunny, /play/cinderline, /play/firebreak-night-shift, /play/zombie-fire-survival, and /play/emberfall. DeepSeek V4.1 Flash scored 94; Space Bunny Free scored 93.5; Muse Spark 1.3 scored 92; GPT 6 Sol scored 91.5; GPT Luna 5.6 scored 91; Gemini Pro Agent scored 90.5; GPT Luna 6 scored 89.5; Gemini 3.8 Flash scored 88.",
+      "Showdown Score v2 (strict source-code audit). Five dimensions, 20 points each: Controls and Mobility, Combat Physics and Weapon Mechanics, Content and Enemy Variety, Audio and Sound Design, Visual Polish and Game Feel. A build with no audio scores 0 on audio. A feature earns points only when it is genuinely implemented and reachable; on-screen strings, comments, and dead code score zero. Ten builds audited. Scores: Space Bunny Free 91 (EMBER DEAD, /play/ember-dead); DeepSeek V4.1 Flash 80 (PYRE, /play/pyre-burn-horde; second build INFERNO DEAD /play/inferno-dead scored 61); GPT Luna 5.6 62 (/play/firebreak-night-shift); GPT 6 Sol 58 (/play/cinderline); Muse Spark 1.3 52 (/play/pyro-vs-zombies); GPT Luna 6 51 (/play/emberfall); Gemini 3.8 Flash 43 (/play/pyroclasm-inferno); Gemini Pro Agent 24 (/play/zombie-fire-survival, zero audio verified). The previous v1 method credited claimed features that were absent from the code and reported scores up to 40 points too high; v1 has been withdrawn.",
   },
 ];
 
