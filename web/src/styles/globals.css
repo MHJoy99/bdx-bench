@@ -1,8 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@config "../../tailwind.config.ts";
+
+/*
+ * Tailwind v4: `container` no longer supports `center` / `padding` / `screens`
+ * from the JS config. Preserve the v3 contract (centered, 1.5rem padding)
+ * via @utility so existing `container` usages keep their layout.
+ */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
 
 /*
  * THE live stylesheet. `src/app/layout.tsx` imports THIS file.
