@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/zod-jitless";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "next-themes";
 import { useEffect, useState, type ReactNode } from "react";
