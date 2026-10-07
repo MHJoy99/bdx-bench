@@ -12,15 +12,9 @@ export async function GET() {
   });
 }
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
-    let body: { force?: boolean } = {};
-    try {
-      body = await req.json();
-    } catch {
-      // body optional
-    }
-    const state = await startLiveEvaluation(body.force ?? true);
+    const state = await startLiveEvaluation(false);
     return NextResponse.json(state, {
       headers: {
         "Cache-Control": "no-store, max-age=0",

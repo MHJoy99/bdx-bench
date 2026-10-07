@@ -31,6 +31,42 @@ const nextConfig = {
       { source: "/play/ember-dead", destination: "/play/ember-dead/index.html", permanent: false },
     ];
   },
+  async headers() {
+    // NOTE: X-Frame-Options and X-Content-Type-Options are intentionally NOT
+    // set here — the VPS nginx/WordOps layer already sends them, and
+    // duplicates cause misbehaviour. CSP is Report-Only so it cannot break pages.
+    const cspReportOnly = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: blob:",
+      "media-src 'self' data: blob:",
+      "connect-src 'self' https:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'self'",
+    ].join("; ");
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+          },
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value: cspReportOnly,
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

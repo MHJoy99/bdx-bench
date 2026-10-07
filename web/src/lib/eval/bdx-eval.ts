@@ -84,6 +84,10 @@ const subscribers = new Set<StateSubscriber>();
 
 let activeRunPromise: Promise<EvaluationState> | null = null;
 
+export const EVAL_COOLDOWN_MS = 10 * 60 * 1000;
+
+let lastStartedAt: number | null = null;
+
 let globalEvalState: EvaluationState = {
   status: "idle",
   startedAt: null,
@@ -667,9 +671,20 @@ export function subscribeToEvaluation(listener: StateSubscriber): () => void {
  * Starts a live 5-stage benchmark evaluation run
  */
 export async function startLiveEvaluation(forceRestart = false): Promise<EvaluationState> {
-  if (globalEvalState.status === "running" && !forceRestart && activeRunPromise) {
-    return activeRunPromise;
+  void forceRestart;
+  // Never start a second run while one is already running.
+  if (globalEvalState.status === "running") {
+    if (activeRunPromise) {
+      return activeRunPromise;
+    }
+    return getEvaluationState();
   }
+
+  // Cooldown: do not restart within 10 minutes of the last start.
+  if (lastStartedAt !== null && Date.now() - lastStartedAt < EVAL_COOLDOWN_MS) {
+    return getEvaluationState();
+  }
+  lastStartedAt = Date.now();
 
   const runPromise = (async () => {
     globalEvalState.status = "running";
