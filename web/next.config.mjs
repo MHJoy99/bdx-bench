@@ -34,13 +34,13 @@ const nextConfig = {
   async headers() {
     // NOTE: X-Frame-Options and X-Content-Type-Options are intentionally NOT
     // set here — the VPS nginx/WordOps layer already sends them, and
-    // duplicates cause misbehaviour. CSP is Report-Only so it cannot break pages.
-    const cspReportOnly = [
+    // duplicates cause misbehaviour. CSP is enforced (S1).
+    const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://c.clarity.ms https://c.bing.com",
       "media-src 'self' data: blob:",
       "connect-src 'self' https:",
       "object-src 'none'",
@@ -60,8 +60,8 @@ const nextConfig = {
             value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
           },
           {
-            key: "Content-Security-Policy-Report-Only",
-            value: cspReportOnly,
+            key: "Content-Security-Policy",
+            value: csp,
           },
         ],
       },
