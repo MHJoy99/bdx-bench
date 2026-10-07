@@ -1,9 +1,28 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "@/components/providers";
 import { SiteNavWithSearch } from "@/components/search-command-host";
 import { SiteFooter } from "@/components/site-footer";
 import "@/styles/globals.css";
+
+/*
+ * Self-hosted brand typefaces. next/font downloads the files at build time and
+ * serves them from /_next/static (same-origin, no fonts.googleapis request).
+ * display: swap keeps text visible during the swap. The three variables match
+ * the tailwind font tokens (--font-sans / --font-display / --font-mono).
+ */
+const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const fontDisplay = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bench.bdx.market";
 const GA_MEASUREMENT_ID = "G-8P7CD6V133";
@@ -38,7 +57,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${fontSans.variable} ${fontDisplay.variable} ${fontMono.variable}`}
+    >
       <head>
         {/* lazyOnload: analytics load after the window load event, not alongside hydration. */}
         <Script
