@@ -10,7 +10,8 @@ const PLAY_LINKS: Record<string, string> = {
   "muse-spark-1-3": "/play/pyro-vs-zombies",
   "gpt-6-luna": "/play/emberfall",
   "gemini-3-8-flash": "/play/pyroclasm-inferno",
-  "gemini-pro-agent": "/play/zombie-fire-survival"
+  "gemini-pro-agent": "/play/zombie-fire-survival",
+  "claude-haiku-5-5": "/play/claude-haiku-5-5"
 };
 
 export function LatestModels() {

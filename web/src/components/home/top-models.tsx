@@ -35,6 +35,7 @@ const SHOWDOWN_SCORES: Record<string, number> = {
   "gpt-6-luna": 51,
   "gemini-3-8-flash": 43,
   "gemini-pro-agent": 24,
+  "claude-haiku-5-5": 63,
 };
 
 function showdownOf(slug: string, fallbackOverall: number): number | null {

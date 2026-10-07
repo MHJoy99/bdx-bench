@@ -33,12 +33,13 @@ and reachable: on-screen strings, comments, and dead code score **zero**.
 |:---:|:---|:---:|:---|:---|
 | **#1** | **Space Bunny Free** | **91.0** | [EMBER DEAD ↗](https://bench.bdx.market/play/ember-dead) | earlier build scored 49.0 |
 | **#2** | **DeepSeek V4.1 Flash** | **80.0** | [PYRE — Burn the Horde ↗](https://bench.bdx.market/play/pyre-burn-horde) | [INFERNO DEAD ↗](https://bench.bdx.market/play/inferno-dead) scored 61.0 |
-| **#3** | **GPT Luna 5.6** | **62.0** | [Firebreak: Night Shift ↗](https://bench.bdx.market/play/firebreak-night-shift) | — |
-| **#4** | **GPT 6 Sol** | **58.0** | [Cinderline ↗](https://bench.bdx.market/play/cinderline) | — |
-| **#5** | **Muse Spark 1.3** | **52.0** | [PYRO vs ZOMBIES ↗](https://bench.bdx.market/play/pyro-vs-zombies) | — |
-| **#6** | **GPT Luna 6** | **51.0** | [Emberfall ↗](https://bench.bdx.market/play/emberfall) | — |
-| **#7** | **Gemini 3.8 Flash** | **43.0** | [PYROCLASM: Zombie Inferno ↗](https://bench.bdx.market/play/pyroclasm-inferno) | — |
-| **#8** | **Gemini Pro Agent** | **24.0** | [Zombie Fire Survival ↗](https://bench.bdx.market/play/zombie-fire-survival) | — |
+| **#3** | **Claude Haiku 5.5** | **63.0** | [INFERNO — Zombie Burner ↗](https://bench.bdx.market/play/claude-haiku-5-5) | — |
+| **#4** | **GPT Luna 5.6** | **62.0** | [Firebreak: Night Shift ↗](https://bench.bdx.market/play/firebreak-night-shift) | — |
+| **#5** | **GPT 6 Sol** | **58.0** | [Cinderline ↗](https://bench.bdx.market/play/cinderline) | — |
+| **#6** | **Muse Spark 1.3** | **52.0** | [PYRO vs ZOMBIES ↗](https://bench.bdx.market/play/pyro-vs-zombies) | — |
+| **#7** | **GPT Luna 6** | **51.0** | [Emberfall ↗](https://bench.bdx.market/play/emberfall) | — |
+| **#8** | **Gemini 3.8 Flash** | **43.0** | [PYROCLASM: Zombie Inferno ↗](https://bench.bdx.market/play/pyroclasm-inferno) | — |
+| **#9** | **Gemini Pro Agent** | **24.0** | [Zombie Fire Survival ↗](https://bench.bdx.market/play/zombie-fire-survival) | — |
 
 ---
 

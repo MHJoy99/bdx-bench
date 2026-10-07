@@ -89,7 +89,7 @@ export default function MethodologyPage() {
         <h2 id="m-limits" className="text-xl font-semibold">Limitations</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-muted-foreground">
           <li>
-            Eight models, ten audited builds — results do not generalize to
+            Nine models, eleven audited builds — results do not generalize to
             other models or other prompts.
           </li>
           <li>Game-build quality only — no claims about chat, code, or reasoning strength.</li>

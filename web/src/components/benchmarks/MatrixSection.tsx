@@ -3,7 +3,7 @@
 /** MatrixSection — route-support block for /benchmarks (NOT a page).
  *
  *  Data source is the audit trail, not a hand-typed chart fixture. Rows are the
- *  ten audited builds; columns are the five audit dimensions, so the chart is a
+ *  eleven audited builds; columns are the five audit dimensions, so the chart is a
  *  build x dimension coverage map rather than a single-column "benchmark".
  *  Colour is the normalized 0–1 form of points-of-20, which is what the
  *  visualMap expects; the tooltip and the fallback table carry the raw points.

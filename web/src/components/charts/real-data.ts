@@ -86,6 +86,14 @@ export const REAL_MODEL_GEMINI_PRO = {
   raw: 24.0,
 } as const;
 
+export const REAL_MODEL_HAIKU = {
+  slug: "claude-haiku-5-5",
+  name: "Claude Haiku 5.5",
+  id: "claude-relay/claude-haiku-5-5",
+  /** 0–100 showdown score. */
+  raw: 63.0,
+} as const;
+
 export const REAL_SLUGS: readonly string[] = [
   REAL_MODEL_BUNNY.slug,
   REAL_MODEL_PYRE.slug,
@@ -94,7 +102,8 @@ export const REAL_SLUGS: readonly string[] = [
   REAL_MODEL_SPARK.slug,
   REAL_MODEL_LUNA6.slug,
   REAL_MODEL_FLASH.slug,
-  REAL_MODEL_GEMINI_PRO.slug
+  REAL_MODEL_GEMINI_PRO.slug,
+  REAL_MODEL_HAIKU.slug
 ];
 
 export const REAL_MODEL_NAMES: readonly string[] = [
@@ -105,7 +114,8 @@ export const REAL_MODEL_NAMES: readonly string[] = [
   REAL_MODEL_SPARK.name,
   REAL_MODEL_LUNA6.name,
   REAL_MODEL_FLASH.name,
-  REAL_MODEL_GEMINI_PRO.name
+  REAL_MODEL_GEMINI_PRO.name,
+  REAL_MODEL_HAIKU.name
 ];
 
 /** 0–1 normalized showdown scores, aligned to REAL_MODEL_NAMES order. */
@@ -117,7 +127,8 @@ export const REAL_SCORES_01: readonly number[] = [
   REAL_MODEL_SPARK.raw / 100,
   REAL_MODEL_LUNA6.raw / 100,
   REAL_MODEL_FLASH.raw / 100,
-  REAL_MODEL_GEMINI_PRO.raw / 100
+  REAL_MODEL_GEMINI_PRO.raw / 100,
+  REAL_MODEL_HAIKU.raw / 100
 ];
 
 export function isRealModelSlug(slug: string): boolean {
@@ -129,7 +140,8 @@ export function isRealModelSlug(slug: string): boolean {
     slug === REAL_MODEL_LUNA.slug ||
     slug === REAL_MODEL_GEMINI_PRO.slug ||
     slug === REAL_MODEL_LUNA6.slug ||
-    slug === REAL_MODEL_FLASH.slug
+    slug === REAL_MODEL_FLASH.slug ||
+    slug === REAL_MODEL_HAIKU.slug
   );
 }
 
@@ -142,7 +154,8 @@ export function isRealModelName(name: string): boolean {
     name === REAL_MODEL_LUNA.name ||
     name === REAL_MODEL_GEMINI_PRO.name ||
     name === REAL_MODEL_LUNA6.name ||
-    name === REAL_MODEL_FLASH.name
+    name === REAL_MODEL_FLASH.name ||
+    name === REAL_MODEL_HAIKU.name
   );
 }
 
@@ -194,6 +207,11 @@ export const REAL_BAR_SERIES: BarSeries[] = [
     name: REAL_MODEL_GEMINI_PRO.name,
     data: [norm(REAL_MODEL_GEMINI_PRO.raw)],
     runs: [1],
+  },
+  {
+    name: REAL_MODEL_HAIKU.name,
+    data: [norm(REAL_MODEL_HAIKU.raw)],
+    runs: [1],
   }
 ];
 
@@ -240,6 +258,11 @@ export const REAL_RADAR: RadarDatum[] = [
   {
     model: REAL_MODEL_GEMINI_PRO.name,
     values: [norm(REAL_MODEL_GEMINI_PRO.raw)],
+    runs: 1,
+  },
+  {
+    model: REAL_MODEL_HAIKU.name,
+    values: [norm(REAL_MODEL_HAIKU.raw)],
     runs: 1,
   }
 ];
@@ -313,6 +336,14 @@ export const REAL_HEATMAP_CELLS: HeatmapCell[] = [
     normalized: norm(REAL_MODEL_GEMINI_PRO.raw),
     date: "2026-09-26",
     runs: 1,
+  },
+  {
+    model: REAL_MODEL_HAIKU.name,
+    benchmark: REAL_BENCHMARK_SLUG,
+    raw: norm(REAL_MODEL_HAIKU.raw),
+    normalized: norm(REAL_MODEL_HAIKU.raw),
+    date: "2026-09-26",
+    runs: 1,
   }
 ];
 
@@ -350,6 +381,10 @@ export const REAL_TRENDS: TrendSeries[] = [
   {
     model: REAL_MODEL_GEMINI_PRO.name,
     points: [{ date: "2026-09-26", value: norm(REAL_MODEL_GEMINI_PRO.raw), runs: 1 }],
+  },
+  {
+    model: REAL_MODEL_HAIKU.name,
+    points: [{ date: "2026-09-26", value: norm(REAL_MODEL_HAIKU.raw), runs: 1 }],
   }
 ];
 

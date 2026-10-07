@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/models/gpt-6-sol",
     "/models/space-bunny-free",
     "/models/gemini-pro-agent",
+    "/models/claude-haiku-5-5",
     "/models/gpt-6-luna",
     "/models/gemini-3-8-flash",
     "/play/pyro-vs-zombies",
@@ -32,6 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/play/pyroclasm-inferno",
     "/play/ember-dead",
     "/play/inferno-dead",
+    "/play/claude-haiku-5-5",
   ];
 
   return routes.map((route) => ({

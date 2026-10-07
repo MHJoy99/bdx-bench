@@ -69,6 +69,7 @@ export const PROVIDER_LABELS: Record<string, string> = {
   qwen: "Qwen",
   xai: "xAI",
   opencode: "OpenCode",
+  "claude-relay": "Claude Relay",
   other: "BDX AI Gateway",
 };
 
@@ -126,6 +127,7 @@ export function scoreOf(model: Model): number | null {
 const ALT_BUILD_LABEL: Record<string, string> = {
   "space-bunny": "Superseded build",
   "inferno-dead": "Second audited build",
+  "claude-haiku-5-5": "Audited build",
 };
 
 export function altBuildLabel(entry: AuditEntry): string {
@@ -223,6 +225,15 @@ const FINDING_DIMENSION: Record<string, Record<string, AuditDimensionKey>> = {
     "Boss has zero abilities": "combat",
     "No music": "audio",
     "No resize handler": "polish",
+  },
+  "claude-haiku-5-5": {
+    "No touch input": "controls",
+    "Stat-stick enemies": "content",
+    "No weapon knockback": "combat",
+    "No music": "audio",
+    "Own fire bombs damage the player": "combat",
+    "Quadratic zombie separation": "polish",
+    "Resize distorts saved decals": "polish",
   },
   "pyro-vs-zombies": {
     "touchcancel leaves the flamethrower latched": "controls",

@@ -49,7 +49,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Benchmarks — Showdown Score v2 audit matrix",
   description:
-    "One shared prompt, eight models, ten audited game builds. Showdown Score v2 is a strict implementation-level source-code audit across five dimensions. The full matrix, every verified defect, and the playable build behind each score.",
+    "One shared prompt, nine models, eleven audited game builds. Showdown Score v2 is a strict implementation-level source-code audit across five dimensions. The full matrix, every verified defect, and the playable build behind each score.",
 };
 
 const SHOWDOWN_SLUG = SHOWDOWN.benchmarkSlug;

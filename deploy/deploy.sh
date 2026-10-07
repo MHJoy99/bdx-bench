@@ -27,7 +27,8 @@ done
 # Single-file builds: the /play/<id> rewrite serves them directly.
 for p in /play/pyro-vs-zombies /play/pyroclasm-inferno /play/pyre-burn-horde \
          /play/space-bunny /play/zombie-fire-survival /play/emberfall \
-         /play/cinderline /play/firebreak-night-shift /play/inferno-dead; do
+         /play/cinderline /play/firebreak-night-shift /play/inferno-dead \
+         /play/claude-haiku-5-5; do
   curl -sf "https://bench.bdx.market$p" > /dev/null
 done
 # EMBER DEAD is multi-file: it needs the redirect (-L follows it) AND every

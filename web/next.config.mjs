@@ -14,6 +14,7 @@ const nextConfig = {
       { source: "/play/firebreak-night-shift", destination: "/play/firebreak-night-shift/index.html" },
       { source: "/play/pyroclasm-inferno", destination: "/play/pyroclasm-inferno/index.html" },
       { source: "/play/inferno-dead", destination: "/play/inferno-dead/index.html" },
+      { source: "/play/claude-haiku-5-5", destination: "/play/claude-haiku-5-5/index.html" },
       { source: "/favicon.ico", destination: "/icon.svg" },
     ];
   },

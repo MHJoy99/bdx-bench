@@ -97,7 +97,7 @@ work ⇒ 0 for that capability. A stat-stick enemy is not variety.
 
 - **One prompt, one domain.** Results do not generalise to other models,
   prompts, or task types.
-- **Ten builds, eight models.** n is small; a 1-point difference is not a
+- **Eleven builds, nine models.** n is small; a 1-point difference is not a
   finding.
 - **Judged by code inspection**, not by a large human panel or an automated
   test suite. Subjective where it is subjective, and the evidence is published

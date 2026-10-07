@@ -99,7 +99,7 @@ export const BENCHMARK_CATALOGUE: BenchmarkMeta[] = [
     slug: "zombie-flamethrower-showdown",
     name: "Zombie Flamethrower Showdown",
     description:
-      "One shared prompt, eight models, ten audited game builds. Scores are Showdown Score v2, a strict implementation-level source-code audit. A feature counts only when it is genuinely implemented and reachable.",
+      "One shared prompt, nine models, eleven audited game builds. Scores are Showdown Score v2, a strict implementation-level source-code audit. A feature counts only when it is genuinely implemented and reachable.",
     category: "coding",
     weight: 1,
     unit: "Showdown Score 0-100",
@@ -122,6 +122,20 @@ export interface DemoEvaluation extends Evaluation {
   methodologyVersion: string;
 }
 export const EVALUATIONS: DemoEvaluation[] = [
+  {
+    modelSlug: "claude-haiku-5-5",
+    benchmarkSlug: "zombie-flamethrower-showdown",
+    raw: 63,
+    normalized: 63,
+    ciLow: 63,
+    ciHigh: 63,
+    runs: 1,
+    variance: 0,
+    evaluatedAt: "2026-10-08",
+    sourceId: "local-manual-eval",
+    benchmarkVersion: "v2",
+    methodologyVersion: "v2",
+  },
   {
     modelSlug: "space-bunny-free",
     benchmarkSlug: "zombie-flamethrower-showdown",
@@ -518,11 +532,48 @@ export const SOURCES: Source[] = [
     kind: "manual",
     retrievedAt: "2026-09-26",
     notes:
-      "Showdown Score v2 (strict source-code audit, 5 dimensions x 20 pts: Controls and Mobility, Combat Physics, Content and Enemy Variety, Audio and Sound Design, Visual Polish and Game Feel). Every build was re-audited at implementation level; features present only as on-screen strings, comments, or unreachable code earn zero. Scores: Space Bunny Free 91 (EMBER DEAD, /play/ember-dead); DeepSeek V4.1 Flash 80 (PYRE, /play/pyre-burn-horde; second build INFERNO DEAD /play/inferno-dead scored 61); GPT Luna 5.6 62 (/play/firebreak-night-shift); GPT 6 Sol 58 (/play/cinderline); Muse Spark 1.3 52 (/play/pyro-vs-zombies); GPT Luna 6 51 (/play/emberfall); Gemini 3.8 Flash 43 (/play/pyroclasm-inferno); Gemini Pro Agent 24 (/play/zombie-fire-survival, zero audio verified).",
+      "Showdown Score v2 (strict source-code audit, 5 dimensions x 20 pts: Controls and Mobility, Combat Physics, Content and Enemy Variety, Audio and Sound Design, Visual Polish and Game Feel). Every build was re-audited at implementation level; features present only as on-screen strings, comments, or unreachable code earn zero. Scores: Space Bunny Free 91 (EMBER DEAD, /play/ember-dead); DeepSeek V4.1 Flash 80 (PYRE, /play/pyre-burn-horde; second build INFERNO DEAD /play/inferno-dead scored 61); Claude Haiku 5.5 63 (/play/claude-haiku-5-5); GPT Luna 5.6 62 (/play/firebreak-night-shift); GPT 6 Sol 58 (/play/cinderline); Muse Spark 1.3 52 (/play/pyro-vs-zombies); GPT Luna 6 51 (/play/emberfall); Gemini 3.8 Flash 43 (/play/pyroclasm-inferno); Gemini Pro Agent 24 (/play/zombie-fire-survival, zero audio verified).",
   },
 ];
 
 export const MODELS: Model[] = [
+  {
+    id: "claude-relay/claude-haiku-5-5",
+    slug: "claude-haiku-5-5",
+    name: "Claude Haiku 5.5",
+    family: "Claude",
+    provider: "claude-relay",
+    context: null,
+    released: null,
+    openWeights: false,
+    capabilities: {
+      vision: false,
+      tools: false,
+      audio: false,
+      multimodal: false,
+    },
+    prices: {
+      inputPer1M: null,
+      outputPer1M: null,
+      currency: "USD",
+      effectiveDate: "2026-10-08",
+      source: "local-manual-eval",
+    },
+    scores: {
+      overall: 63,
+      reasoning: null,
+      coding: null,
+      math: null,
+      knowledge: null,
+      vision: null,
+      agentic: null,
+      longContext: null,
+      efficiency: null,
+      bdxScore: 63,
+      evaluatedAt: "2026-10-08",
+      benchmark: "zombie-flamethrower-showdown",
+    },
+  },
   {
     id: "bdx-ai/go-muse-spark-1.3-contributor",
     slug: "muse-spark-1-3",
@@ -949,10 +1000,10 @@ export const DEMO_TREND_SERIES: HomeTrendPoint[] = [
 ];
 
 export const DEMO_GLOBAL_STATS: GlobalStats = {
-  modelsTracked: 8,
+  modelsTracked: 9,
   benchmarks: 1,
-  evalRuns: 8,
-  providers: 2,
+  evalRuns: 9,
+  providers: 3,
   datasetRefresh: "2026-09-26",
 };
 
@@ -978,6 +1029,15 @@ export const demoLeaderboard: LeaderboardRow[] = [
   },
   {
     rank: 3,
+    modelSlug: "claude-haiku-5-5",
+    modelName: "Claude Haiku 5.5",
+    provider: "claude-relay",
+    bdxScore: 63,
+    overall: 63,
+    pricePer1MBlended: null,
+  },
+  {
+    rank: 4,
     modelSlug: "gpt-5-6-luna",
     modelName: "GPT Luna 5.6",
     provider: "bdx-ai",
@@ -986,7 +1046,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 4,
+    rank: 5,
     modelSlug: "gpt-6-sol",
     modelName: "GPT 6 Sol",
     provider: "bdx-ai",
@@ -995,7 +1055,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 5,
+    rank: 6,
     modelSlug: "muse-spark-1-3",
     modelName: "Muse Spark 1.3",
     provider: "bdx-ai",
@@ -1004,7 +1064,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 6,
+    rank: 7,
     modelSlug: "gpt-6-luna",
     modelName: "GPT Luna 6",
     provider: "bdx-ai",
@@ -1013,7 +1073,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 7,
+    rank: 8,
     modelSlug: "gemini-3-8-flash",
     modelName: "Gemini 3.8 Flash",
     provider: "bdx-ai",
@@ -1022,7 +1082,7 @@ export const demoLeaderboard: LeaderboardRow[] = [
     pricePer1MBlended: null,
   },
   {
-    rank: 8,
+    rank: 9,
     modelSlug: "gemini-pro-agent",
     modelName: "Gemini Pro Agent",
     provider: "bdx-ai",
@@ -1066,7 +1126,7 @@ export const PROVENANCE: ProvenanceItem[] = [
     kind: "manual",
     retrievedAt: "2026-09-26",
     notes:
-      "Showdown Score v2 (strict source-code audit). Five dimensions, 20 points each: Controls and Mobility, Combat Physics and Weapon Mechanics, Content and Enemy Variety, Audio and Sound Design, Visual Polish and Game Feel. A build with no audio scores 0 on audio. A feature earns points only when it is genuinely implemented and reachable; on-screen strings, comments, and dead code score zero. Ten builds audited. Scores: Space Bunny Free 91 (EMBER DEAD, /play/ember-dead); DeepSeek V4.1 Flash 80 (PYRE, /play/pyre-burn-horde; second build INFERNO DEAD /play/inferno-dead scored 61); GPT Luna 5.6 62 (/play/firebreak-night-shift); GPT 6 Sol 58 (/play/cinderline); Muse Spark 1.3 52 (/play/pyro-vs-zombies); GPT Luna 6 51 (/play/emberfall); Gemini 3.8 Flash 43 (/play/pyroclasm-inferno); Gemini Pro Agent 24 (/play/zombie-fire-survival, zero audio verified). The previous v1 method credited claimed features that were absent from the code and reported scores up to 40 points too high; v1 has been withdrawn.",
+      "Showdown Score v2 (strict source-code audit). Five dimensions, 20 points each: Controls and Mobility, Combat Physics and Weapon Mechanics, Content and Enemy Variety, Audio and Sound Design, Visual Polish and Game Feel. A build with no audio scores 0 on audio. A feature earns points only when it is genuinely implemented and reachable; on-screen strings, comments, and dead code score zero. Eleven builds audited. Scores: Space Bunny Free 91 (EMBER DEAD, /play/ember-dead); DeepSeek V4.1 Flash 80 (PYRE, /play/pyre-burn-horde; second build INFERNO DEAD /play/inferno-dead scored 61); Claude Haiku 5.5 63 (/play/claude-haiku-5-5); GPT Luna 5.6 62 (/play/firebreak-night-shift); GPT 6 Sol 58 (/play/cinderline); Muse Spark 1.3 52 (/play/pyro-vs-zombies); GPT Luna 6 51 (/play/emberfall); Gemini 3.8 Flash 43 (/play/pyroclasm-inferno); Gemini Pro Agent 24 (/play/zombie-fire-survival, zero audio verified). The previous v1 method credited claimed features that were absent from the code and reported scores up to 40 points too high; v1 has been withdrawn.",
   },
 ];
 
@@ -1080,7 +1140,7 @@ export interface UncertaintySummary {
 }
 export const UNCERTAINTY: UncertaintySummary = {
   methodologyVersion: "v2",
-  evalCount: 8,
+  evalCount: 9,
   avgCiHalfWidth: 0,
   minRuns: 1,
   maxRuns: 1,

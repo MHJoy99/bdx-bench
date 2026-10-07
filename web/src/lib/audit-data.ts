@@ -443,6 +443,63 @@ export const AUDIT_TRAIL: AuditEntry[] = [
       },
     ],
   },
+  {
+    buildId: "claude-haiku-5-5",
+    buildName: "INFERNO — Zombie Burner",
+    modelSlug: "claude-haiku-5-5",
+    modelName: "Claude Haiku 5.5",
+    playPath: "/play/claude-haiku-5-5",
+    dims: { controls: 15, combat: 16, content: 7, audio: 12, polish: 13 },
+    total: 63,
+    generated: "2026-10-08",
+    mobileReady: false,
+    implements: [
+      "Flamethrower cone: 175 px range, angled hit test, 42 DPS direct burn",
+      "Burn damage-over-time with contagion: burning zombies ignite neighbours within 22 px",
+      "Fire-bomb pools: 92 px radius for 5.5 s, damaging zombies and the player",
+      "Fuel economy: drains while firing, regenerates after a 0.6 s grace, red fuel cans refill it",
+      "Three fire bombs; one charge returns every 7 s",
+      "Nine synthesized sound effects, all reachable, plus a looped fire-noise bed",
+      "Screen shake, persistent scorch and blood decals, night lighting, live HUD",
+    ],
+    findings: [
+      {
+        title: "No touch input",
+        impact: "The viewport and fullscreen canvas imply mobile play, but the game cannot be controlled on a touch device.",
+        severity: "medium",
+      },
+      {
+        title: "Stat-stick enemies",
+        impact: "Walker, runner and brute share one chase AI. They differ only in speed, HP, damage, size and attack cooldown.",
+        severity: "medium",
+      },
+      {
+        title: "No weapon knockback",
+        impact: "Flames and pools only reduce HP. Zombies are separated by overlap, not pushed by hits.",
+        severity: "medium",
+      },
+      {
+        title: "No music",
+        impact: "Audio is one-shot effects, a looped fire-noise bed and groans, with no scheduled music track.",
+        severity: "low",
+      },
+      {
+        title: "Own fire bombs damage the player",
+        impact: "Lingering pools hurt the thrower at 9 HP per second with no warning ring, which punishes close throws.",
+        severity: "low",
+      },
+      {
+        title: "Quadratic zombie separation",
+        impact: "Every zombie pair is checked each frame with no spatial hash, so late waves of up to 80 zombies cost more per frame.",
+        severity: "low",
+      },
+      {
+        title: "Resize distorts saved decals",
+        impact: "Blood and scorch marks are stretched when the window is resized.",
+        severity: "low",
+      },
+    ],
+  },
 ];
 
 export const AUDIT_BY_BUILD: Record<string, AuditEntry> = Object.fromEntries(

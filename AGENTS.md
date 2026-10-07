@@ -12,7 +12,7 @@ Two distinct halves — know which one you are in:
 
 | Half | What it is | Docs |
 |---|---|---|
-| **The benchmark + site** | `web/` — Next.js 16 site at <https://bench.bdx.market>. Ranks 8 models across 10 audited builds by **Showdown Score v2**. | `docs/METHODOLOGY.md` Part A, **`docs/WEB.md`** |
+| **The benchmark + site** | `web/` — Next.js 16 site at <https://bench.bdx.market>. Ranks 9 models across 11 audited builds by **Showdown Score v2**. | `docs/METHODOLOGY.md` Part A, **`docs/WEB.md`** |
 | **The harness** | `server/server.js` — single-file zero-dep API + static UI on `:8765`, with `swe-mini` / `terminal-mini` suites and a blind chat arena. | `docs/SPEC.md`, `docs/API.md`, `docs/METHODOLOGY.md` Part B |
 
 **Most work in this repo is the first half.** If you are changing anything under
@@ -112,7 +112,7 @@ Live CLI run (only when user explicitly asks; needs key, never echo it):
 | Dir / file | Purpose | Owner |
 |---|---|---|
 | `web/` | The public site — Next.js 16. See `docs/WEB.md`. | per `docs/WEB.md` §3 |
-| `web/src/lib/audit-data.ts` | The 10 audited builds, dimension scores, verified findings | data agent |
+| `web/src/lib/audit-data.ts` | The 11 audited builds, dimension scores, verified findings | data agent |
 | `web/src/lib/demo-data.ts` | Seeded leaderboard / models / snapshots behind the API | data agent |
 | `web/src/lib/motion-tokens.ts` | The motion contract — all durations/easings live here | data agent |
 | `web/public/play/<buildId>/` | Verbatim model output under benchmark. **Never patch.** | benchmarks agent |
@@ -133,23 +133,24 @@ Live CLI run (only when user explicitly asks; needs key, never echo it):
 There are two leaderboards. Do not confuse them.
 
 **The site leaderboard (live, authoritative for the public site).**
-`web/src/lib/audit-data.ts` holds 10 audited builds with per-dimension scores.
+`web/src/lib/audit-data.ts` holds 11 audited builds with per-dimension scores.
 `demo-data.ts` holds the model-level leaderboard. `GET /api/leaderboard` returns
 `{ leaderboard, manual, arena }` where `leaderboard` is derived from the audit
 data and `meta.freshness.methodologyVersion` is `v2`.
 
-Current ranking (Showdown Score v2, 8 models / 10 builds):
+Current ranking (Showdown Score v2, 9 models / 11 builds):
 
 | Rank | Model | Score | Canonical build |
 |:--:|---|---:|---|
 | 1 | Space Bunny Free | 91.0 | `ember-dead` |
 | 2 | DeepSeek V4.1 Flash | 80.0 | `pyre-burn-horde` (`inferno-dead` 61.0) |
-| 3 | GPT Luna 5.6 | 62.0 | `firebreak-night-shift` |
-| 4 | GPT 6 Sol | 58.0 | `cinderline` |
-| 5 | Muse Spark 1.3 | 52.0 | `pyro-vs-zombies` |
-| 6 | GPT Luna 6 | 51.0 | `emberfall` |
-| 7 | Gemini 3.8 Flash | 43.0 | `pyroclasm-inferno` |
-| 8 | Gemini Pro Agent | 24.0 | `zombie-fire-survival` |
+| 3 | Claude Haiku 5.5 | 63.0 | `claude-haiku-5-5` |
+| 4 | GPT Luna 5.6 | 62.0 | `firebreak-night-shift` |
+| 5 | GPT 6 Sol | 58.0 | `cinderline` |
+| 6 | Muse Spark 1.3 | 52.0 | `pyro-vs-zombies` |
+| 7 | GPT Luna 6 | 51.0 | `emberfall` |
+| 8 | Gemini 3.8 Flash | 43.0 | `pyroclasm-inferno` |
+| 9 | Gemini Pro Agent | 24.0 | `zombie-fire-survival` |
 
 **Two models shipped two builds each.** Never look one up by slug alone —
 `AUDIT_BY_SLUG` resolves to the strongest build, `SECONDARY_BUILDS` holds the

@@ -8,10 +8,10 @@ face of the benchmark. The zero-dep harness in `server/` is a separate concern
 
 It renders two things:
 
-1. **The Showdown Score v2 leaderboard** — 8 models ranked by a strict
+1. **The Showdown Score v2 leaderboard** — 9 models ranked by a strict
    implementation-level audit of the playable game builds they generated from one
    shared prompt. See `METHODOLOGY.md`.
-2. **The 10 audited builds themselves** — every build is playable in-browser at
+2. **The 11 audited builds themselves** — every build is playable in-browser at
    `/play/<buildId>`, and is embedded as a *live* canvas preview across the site.
 
 Everything is statically generated. Data is seeded from `src/lib/demo-data.ts`
@@ -66,7 +66,7 @@ These are not optional. They exist because each one was learned the hard way.
 | `src/app/globals.css` | **Do not create.** See rule 1. | — |
 | `src/styles/globals.css` | Tokens, base, reduced-motion | benchmarks/chrome |
 | `src/lib/demo-data.ts` | Seeded leaderboard/models/snapshots for the API | data |
-| `src/lib/audit-data.ts` | 10 audited builds, dimension scores, verified findings | data |
+| `src/lib/audit-data.ts` | 11 audited builds, dimension scores, verified findings | data |
 | `src/lib/motion-tokens.ts` | The motion contract | data |
 | `src/components/motion/` | Motion primitives | data |
 | `src/components/artifact/` | `ArtifactCard`, `ArtifactGrid`, `AuditFindings` | data |
@@ -80,7 +80,7 @@ content.
 
 ## 4. Build registry
 
-Ten audited builds, eight models. Two models shipped two builds each, so **never
+Eleven audited builds, nine models. Two models shipped two builds each, so **never
 look a model up by slug alone** — `AUDIT_BY_SLUG` resolves to the strongest
 audited build and `SECONDARY_BUILDS` holds the alternates by canonical build id.
 
@@ -96,6 +96,7 @@ audited build and `SECONDARY_BUILDS` holds the alternates by canonical build id.
 | `pyroclasm-inferno` | Gemini 3.8 Flash | 43.0 | `/play/pyroclasm-inferno` |
 | `zombie-fire-survival` | Gemini Pro Agent | 24.0 | `/play/zombie-fire-survival` |
 | `space-bunny` | Space Bunny Free (superseded) | 49.0 | `/play/space-bunny` |
+| `claude-haiku-5-5` | Claude Haiku 5.5 | 63.0 | `/play/claude-haiku-5-5` |
 
 ### Multi-file builds need a redirect, not a rewrite
 

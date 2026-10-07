@@ -21,6 +21,7 @@ export const ProviderSchema = z.enum([
   "qwen",
   "xai",
   "opencode",
+  "claude-relay",
   "other",
 ]);
 export type Provider = z.infer<typeof ProviderSchema>;

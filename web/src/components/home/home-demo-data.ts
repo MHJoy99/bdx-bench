@@ -120,6 +120,16 @@ export const DEMO_TOP_MODELS_BY_CATEGORY: Record<string, HomeModel[]> = {
       speedTps: null,
       contextK: null,
     },
+    {
+      id: "claude-haiku-5-5",
+      name: "Claude Haiku 5.5",
+      provider: "claude-relay",
+      score: 63,
+      delta: 0,
+      pricePer1M: null,
+      speedTps: null,
+      contextK: null,
+    },
   ],
 };
 
