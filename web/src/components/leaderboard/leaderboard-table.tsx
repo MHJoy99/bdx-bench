@@ -31,8 +31,11 @@ import {
   FlipList,
   RankChangeEdge,
   ScoreReveal,
+  StaggerGroup,
+  StaggerItem,
 } from "@/components/motion/polish-motion";
 import { AUDIT_DIMENSIONS, type AuditEntry } from "@/lib/audit-data";
+import { MOTION_STAGGER } from "@/lib/motion-tokens";
 import { COMPARE_MAX_MODELS, buildCompareHref } from "@/components/compare/compare-data";
 import {
   AUDIT_ROUND_LABEL,
@@ -387,10 +390,16 @@ export function LeaderboardTable() {
     [visibleColumnIds],
   );
 
-  // Rows render statically on first paint: the table used to wrap every row
-  // in a StaggerItem (opacity 0 until an IntersectionObserver round-trip
-  // after hydration), which Lighthouse measures as LCP render delay. FLIP
-  // movement on user-initiated reorder is kept — it never hides content.
+  // Tight entrance stagger: a long page never feels sluggish because the total
+  // delay is capped at MOTION_STAGGER.maxTotal.
+  const entranceStagger = useMemo(
+    () =>
+      Math.min(
+        MOTION_STAGGER.row,
+        MOTION_STAGGER.maxTotal / Math.max(1, pageRows.length - 1),
+      ),
+    [pageRows.length],
+  );
 
   const rowBySlug = useMemo(() => {
     const m = new Map<string, (typeof pageRows)[number]>();
@@ -652,7 +661,8 @@ export function LeaderboardTable() {
             role="region"
             aria-label="Leaderboard table, scrollable"
           >
-            <div
+            <StaggerGroup gap={entranceStagger}>
+              <div
                 role="table"
                 aria-label="Showdown Score evidence table"
                 aria-rowcount={ranked.length}
@@ -758,6 +768,7 @@ export function LeaderboardTable() {
                       const moved = movedSlugs.has(slug);
                       const visualIndex = flipIndex.get(slug) ?? 0;
                       return (
+                        <StaggerItem y={4} className="w-full">
                           <div
                             role="row"
                             data-testid="leaderboard-row"
@@ -790,11 +801,13 @@ export function LeaderboardTable() {
                               ? renderEvidencePanel(entry, row.slug, score)
                               : null}
                           </div>
+                        </StaggerItem>
                       );
                     }}
                   />
                 </div>
               </div>
+            </StaggerGroup>
           </div>
 
           <LeaderboardMobileList

@@ -1,5 +1,11 @@
 import { Activity, Box, Cpu, Database, Layers } from "lucide-react";
 import { BENCHMARKS, MODELS } from "@/lib/data";
+import {
+  FadeIn,
+  ScoreReveal,
+  StaggerGroup,
+  StaggerItem,
+} from "@/components/motion/polish-motion";
 
 /**
  * Dataset scope strip.
@@ -35,12 +41,7 @@ export function GlobalStats() {
 
   return (
     <section aria-labelledby="home-stats-heading" className="scroll-mt-20">
-      {/*
-       * Static above-fold readout (no FadeIn/Stagger/ScoreReveal): the count-up
-       * repaints every number 0 -> value after hydration, which delays LCP.
-       * Same DOM and classes, final values on first paint.
-       */}
-      <div>
+      <FadeIn>
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-[var(--border)] pb-2">
           <h2
             id="home-stats-heading"
@@ -52,11 +53,11 @@ export function GlobalStats() {
             Dataset scope
           </span>
         </div>
-      </div>
+      </FadeIn>
 
-      <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--border)] md:grid-cols-3 lg:grid-cols-5">
+      <StaggerGroup className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--border)] md:grid-cols-3 lg:grid-cols-5">
         {items.map((item) => (
-          <div key={item.label} className="bg-[var(--surface)] px-3 py-2.5">
+          <StaggerItem key={item.label} className="bg-[var(--surface)] px-3 py-2.5">
             <div className="flex items-center justify-between gap-2">
               <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
                 {item.label}
@@ -64,14 +65,14 @@ export function GlobalStats() {
               <item.icon className="size-3.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
             </div>
             <p className="tnum mt-1 text-[18px] font-semibold leading-[22px] text-[var(--text)]">
-              {item.value === null ? item.text : item.value}
+              {item.value === null ? item.text : <ScoreReveal value={item.value} decimals={0} />}
             </p>
             <p className="mt-0.5 text-[11px] leading-[15px] text-[var(--text-secondary)]">
               {item.hint}
             </p>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerGroup>
 
       <p className="mt-2 text-[11px] leading-[16px] text-[var(--text-tertiary)]">
         Counts reflect the current dataset: {modelsTracked}{" "}

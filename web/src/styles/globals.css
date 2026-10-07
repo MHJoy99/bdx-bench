@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
 @import "tailwindcss";
 
 @config "../../tailwind.config.ts";
@@ -24,11 +26,7 @@
  * undefined invalidates the ENTIRE font-family declaration at computed-value
  * time — it does not fall through to the rest of the stack. Declaring them
  * here is what makes `font-mono` actually render JetBrains Mono.
- * The families themselves are loaded by <link> tags in `src/app/layout.tsx`
- * (preconnect + stylesheet). A CSS `@import` for Google Fonts used to live
- * here, but it serializes behind the compiled stylesheet and blocks first
- * paint; the <link> form loads in parallel instead. Do not re-add an
- * `@import` for remote fonts.
+ * The families themselves are loaded by the @import above.
  */
 :root {
   --font-sans: "Inter";

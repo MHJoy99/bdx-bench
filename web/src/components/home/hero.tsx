@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, Gamepad2, ShieldCheck } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AUDIT_DIMENSIONS, AUDIT_TRAIL, type AuditEntry } from "@/lib/audit-data";
+import { FadeIn, StaggerGroup, StaggerItem } from "@/components/motion/polish-motion";
 
 /**
  * Homepage hero — a data-tool header, not a marketing banner.
@@ -76,13 +77,7 @@ export function Hero() {
       className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-card)]"
     >
       <div className="px-4 py-4 sm:px-5 sm:py-5">
-        {/*
-         * Above-fold LCP content renders statically (no FadeIn/Stagger): those
-         * primitives start at opacity 0 and only reveal after hydration plus
-         * an IntersectionObserver round-trip, which Lighthouse measures as
-         * multi-second render delay. Entrances stay for below-fold sections.
-         */}
-        <div>
+        <FadeIn>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
             BDX Bench
           </p>
@@ -93,21 +88,23 @@ export function Hero() {
             AI coding models tested on one prompt. Real playable builds.
             Transparent scoring.
           </h1>
-        </div>
+        </FadeIn>
 
         {/* Factual scope strip. Divider-only, flat, 1px. */}
-        <div className="mt-3.5 grid grid-cols-2 gap-px overflow-hidden rounded-[8px] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3 lg:grid-cols-5">
+        <StaggerGroup
+          className="mt-3.5 grid grid-cols-2 gap-px overflow-hidden rounded-[8px] border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3 lg:grid-cols-5"
+        >
           {strip.map((s) => (
-            <div key={s.label} className="bg-[var(--surface)] px-3 py-2">
+            <StaggerItem key={s.label} className="bg-[var(--surface)] px-3 py-2">
               <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
                 {s.label}
               </p>
               <p className="tnum mt-0.5 text-[13px] font-medium text-[var(--text)]">
                 {s.value}
               </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Link href="#builds" className={cn(buttonVariants({ size: "default" }))}>

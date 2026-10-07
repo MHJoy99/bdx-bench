@@ -8,7 +8,7 @@ import {
   type AuditDimensionKey,
   type AuditEntry,
 } from "@/lib/audit-data";
-import { DimensionBar } from "@/components/motion/polish-motion";
+import { DimensionBar, ScoreReveal } from "@/components/motion/polish-motion";
 import {
   formatDate,
   formatPrice,
@@ -352,13 +352,11 @@ export function getLeaderboardColumns(
         return (
           <span className="flex flex-col">
             <span className="flex items-baseline gap-1">
-              {/* Static number: ScoreReveal counts 0 -> value after hydration,
-                  which repaints every score cell and delays LCP on this page. */}
-              <span
-                className={`tnum text-[15px] font-semibold leading-none ${scoreTone(v)}`}
-              >
-                {(v ?? 0).toFixed(2)}
-              </span>
+              <ScoreReveal
+                value={v ?? 0}
+                decimals={2}
+                className={`text-[15px] font-semibold leading-none ${scoreTone(v)}`}
+              />
               <span className="tnum font-mono text-[10px] text-[var(--text-tertiary)]">
                 /100
               </span>
