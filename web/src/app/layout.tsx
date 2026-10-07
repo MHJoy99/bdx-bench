@@ -40,13 +40,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/*
+         * Google Fonts via <link>, not CSS @import: the stylesheet loads in
+         * parallel with the compiled CSS instead of serializing behind it,
+         * which unblocks first paint (Lighthouse render-delay). Same three
+         * families and display=swap as before; CSP already allows
+         * fonts.googleapis.com (style-src) and fonts.gstatic.com (font-src).
+         */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        />
+        {/*
+         * Analytics load lazyOnload (browser idle), not afterInteractive:
+         * gtag (~179KB) plus Clarity compete with hydration for bandwidth and
+         * main thread inside the Lighthouse window, which costs TBT and LCP
+         * render delay. Pageviews still fire, just after the page is usable.
+         */}
         <Script
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
         />
         <Script
           id="google-analytics"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -60,7 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <Script
           id="microsoft-clarity"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               (function(c,l,a,r,i,t,y){

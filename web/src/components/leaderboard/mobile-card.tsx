@@ -12,7 +12,6 @@ import {
   DimensionBars,
   FlipList,
   RankChangeEdge,
-  ScoreReveal,
 } from "@/components/motion/polish-motion";
 import { AuditFindings } from "@/components/artifact/artifact-card";
 import { COMPARE_MAX_MODELS } from "@/components/compare/compare-data";
@@ -165,14 +164,15 @@ export function LeaderboardMobileCard({
             Showdown
           </div>
           <div className="flex items-baseline justify-end gap-1">
-            <ScoreReveal
-              value={score ?? 0}
-              decimals={2}
+            {/* Static number (see columns.tsx): no post-hydration recount. */}
+            <span
               className={cn(
-                "text-[18px] font-semibold leading-none",
+                "tnum text-[18px] font-semibold leading-none",
                 score !== null ? "text-[var(--text)]" : "text-[var(--text-tertiary)]",
               )}
-            />
+            >
+              {(score ?? 0).toFixed(2)}
+            </span>
             <span className="tnum font-mono text-[10px] text-[var(--text-tertiary)]">
               /100
             </span>

@@ -4,13 +4,6 @@ import { ArrowUpRight, Gamepad2 } from "lucide-react";
 import { BuildsGallery } from "@/components/home";
 import { MODELS } from "@/lib/data";
 import { AUDIT_DIMENSIONS, AUDIT_TRAIL } from "@/lib/audit-data";
-import {
-  FadeIn,
-  ScoreReveal,
-  StaggerGroup,
-  StaggerItem,
-} from "@/components/motion/polish-motion";
-import { MOTION_STAGGER } from "@/lib/motion-tokens";
 import { AuditBars } from "@/components/model/MetricsGrid";
 import {
   auditEntryFor,
@@ -83,11 +76,10 @@ export default function ModelsIndexPage() {
     };
   });
 
-  // Capped entrance stagger across the whole directory.
-  const gap = Math.min(
-    MOTION_STAGGER.row,
-    MOTION_STAGGER.maxTotal / Math.max(1, rows.length - 1),
-  );
+  // Static rows: the grid renders final values on first paint. Motion
+  // entrance primitives (FadeIn/Stagger/ScoreReveal) start at opacity 0 and
+  // count 0 -> value after hydration, which Lighthouse measures as LCP
+  // render delay. Entrances stay for below-fold sections, not this table.
 
   return (
     <main className="mx-auto w-full max-w-[1120px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -108,8 +100,7 @@ export default function ModelsIndexPage() {
         </p>
       </div>
 
-      <FadeIn>
-        <div className="overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
+      <div className="overflow-x-auto rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
           <div
             role="table"
             aria-label="Model evidence directory: rank, provider, Showdown Score, audit dimension bars, verified findings, playable build"
@@ -146,15 +137,15 @@ export default function ModelsIndexPage() {
               </div>
             </div>
 
-            <StaggerGroup gap={gap}>
+            <div role="rowgroup">
               {rows.map((r) => (
-                <StaggerItem key={r.slug} y={4}>
-                  <div
-                    role="row"
-                    aria-label={`Rank ${r.rank}: ${r.name}`}
-                    className="grid items-center gap-x-2 border-b border-[var(--border)] px-2.5 transition-colors last:border-b-0 hover:bg-[var(--elevated)]"
-                    style={{ gridTemplateColumns: COLUMN_TRACKS }}
-                  >
+                <div
+                  key={r.slug}
+                  role="row"
+                  aria-label={`Rank ${r.rank}: ${r.name}`}
+                  className="grid items-center gap-x-2 border-b border-[var(--border)] px-2.5 transition-colors last:border-b-0 hover:bg-[var(--elevated)]"
+                  style={{ gridTemplateColumns: COLUMN_TRACKS }}
+                >
                     <div
                       role="cell"
                       className="tnum py-2 font-mono text-[12px] text-[var(--text-tertiary)]"
@@ -191,7 +182,7 @@ export default function ModelsIndexPage() {
                           Not evaluated
                         </span>
                       ) : (
-                        <ScoreReveal value={r.score} decimals={2} />
+                        <span className="tnum">{r.score.toFixed(2)}</span>
                       )}
                     </div>
 
@@ -242,12 +233,10 @@ export default function ModelsIndexPage() {
                       ) : null}
                     </div>
                   </div>
-                </StaggerItem>
               ))}
-            </StaggerGroup>
+            </div>
           </div>
         </div>
-      </FadeIn>
 
       <p className="text-[12px] leading-[17px] text-[var(--text-secondary)]">
         Each bar is one audit dimension out of 20.{" "}
