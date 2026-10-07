@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
-
 @import "tailwindcss";
 
 @config "../../tailwind.config.ts";
@@ -25,8 +23,9 @@
  * through these custom properties, and a `var()` with no fallback that is
  * undefined invalidates the ENTIRE font-family declaration at computed-value
  * time — it does not fall through to the rest of the stack. Declaring them
- * here is what makes `font-mono` actually render JetBrains Mono.
- * The families themselves are loaded by the @import above.
+ * here is what makes `font-mono` resolve to JetBrains Mono when that face is
+ * installed. No webfont is loaded for these families: see the note on the
+ * font-family block in `body` below for the measured cost of loading them.
  */
 :root {
   --font-sans: "Inter";
@@ -65,6 +64,12 @@
   body {
     background-color: var(--bg);
     color: var(--text);
+    /*
+     * Inter is named but not loaded (no webfont on the critical path). Loading
+     * Inter, Plus Jakarta Sans or JetBrains Mono via next/font was measured on the
+     * local production build to add 270-960 ms of simulated mobile LCP for the
+     * same FCP; the brand-font decision is open (see the perf report).
+     */
     font-family:
       Inter,
       ui-sans-serif,
