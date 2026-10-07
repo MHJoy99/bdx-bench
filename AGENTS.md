@@ -208,3 +208,38 @@ Remove-Item data\prompts.json, data\scores.json, data\matches.json, data\ratings
 
 The site's leaderboard is **not** reset this way — it is seeded from
 `web/src/lib/*.ts`, not from `data/`. Change the source, not the journal.
+
+## 9. Orchestration Rule (operator rule, 2026-10-07, binding on every agent in this repo)
+
+1. **Coordinator** (the main session) decomposes the task, writes briefs, integrates, verifies with its own commands, and decides. **Workers** (Agent Manager sessions) build, probe and test.
+2. **Default worker model:** `go-muse-spark-1.3-contributor`, provider `bdx-ai`, variant `xhigh`. Confirm with `agent_manager_models` before launch. If unavailable, stop with BLOCKED. Do not substitute another model unless the operator names one in the current task.
+3. **Worktrees:** every worker that edits code uses `mode: "worktree"` and loads skill `worktree-hygiene`. The coordinator closes every worktree it opened (`wt-audit.ps1`, `wt-close.ps1`) and reports `worktrees: opened N, closed N, open M`.
+4. **Acceptance = the 10/10 rubric in section 9.1.** Round loop: worker implements, coordinator verifies with its own commands, each failed criterion goes back as a specific follow-up. Maximum 3 rounds per track. After round 3, report the exact remaining gaps as PARTIAL or BLOCKED. Never report 10/10 without per-criterion evidence.
+5. **Worker reports** end with `COMPLETED` or `BLOCKED` and list files changed, commands run and their exact outcomes.
+6. **Git:** workers never commit to `main` and never touch other worktrees. The coordinator commits to a feature branch only when the current task asks for delivery. No force-push, no history rewrite, no `git stash`.
+7. **Live deploy:** only when the current task asks for it. Must run `deploy/deploy.sh` to `DEPLOY OK` and then the live checks in 9.1.
+8. **Secrets:** never print, paste or commit secret values. Names only.
+
+### 9.1 The 10/10 rubric (security and performance)
+
+Each item must be proven with evidence. A failed item means the track is not 10/10.
+
+**Security**
+- S1 `Content-Security-Policy` is enforced (not report-only) on live `bench.bdx.market`, with zero CSP console violations on `/`, `/models`, `/leaderboard`, `/play/claude-haiku-5-5`.
+- S2 `npm audit` reports 0 vulnerabilities for `web/` and the repo root, and the lockfiles are committed.
+- S3 `POST /api/eval` ignores client-supplied `force`, and the cooldown holds (same `startedAt` on a repeat call).
+- S4 Live headers present: HSTS (`includeSubDomains`), Permissions-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy.
+- S5 nginx rate limits are live and `nginx -t` passes.
+- S6 A scan of tracked files and the diff finds no secret values.
+- S7 Published ports are reviewed. 5050 is closed. Port 3000 has a recorded decision.
+- S8 The repo root has no stray files (`cf-v4.txt`, `cf-v6.txt`, the `.code-workspace` file are resolved).
+
+**Performance** (lab, mobile emulation, Lighthouse CLI or equivalent, measured on the live URL)
+- P1 Lighthouse performance score ≥ 90 on `/`, `/leaderboard`, `/models`, `/play/claude-haiku-5-5`.
+- P2 LCP ≤ 2.5 s, CLS ≤ 0.1, TBT ≤ 300 ms on the same pages.
+- P3 Zero 404s across every `/play/*` build and its assets, including `/play/ember-dead/style.css` and `game.js`.
+- P4 `--font-mono` and `--font-display` are defined in the live stylesheet, and no mono element computes to Inter.
+- P5 Hashed static assets are served with `Cache-Control: public, max-age=31536000, immutable`.
+- P6 `cd web && npm run check` passes.
+
+A track reaches 10/10 only when every item in its section passes. "10/10" is defined by this list, not by an absolute Lighthouse 100.
