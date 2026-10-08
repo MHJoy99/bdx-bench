@@ -32,6 +32,7 @@ export default function LeaderboardPage() {
         <p className="mt-3 font-mono text-[10px] uppercase leading-[16px] tracking-wider text-[var(--text-tertiary)]">
           <Link
             href="/methodology"
+            prefetch={false}
             className="underline-offset-2 hover:text-[var(--text-secondary)] hover:underline"
           >
             {SCORE_SCALE_CAPTION}

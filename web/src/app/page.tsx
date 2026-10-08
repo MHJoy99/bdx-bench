@@ -1,18 +1,46 @@
 import type { Metadata } from "next";
-import {
-  BenchmarkCoverage,
-  BuildsGallery,
-  CapabilityTrend,
-  CategoryLeaders,
-  GlobalStats,
-  Hero,
-  HomeFooter,
-  LatestModels,
-  MethodologyTeaser,
-  PricePerformance,
-  TopModels,
-} from "@/components/home";
-import { AuditCredibility } from "@/components/home/builds-gallery";
+import dynamic from "next/dynamic";
+import { Hero } from "@/components/home";
+
+/*
+ * Below-fold sections hydrate behind their own dynamic boundaries (SSR kept,
+ * so the HTML is identical). This keeps the initial hydration tree to the
+ * shell + Hero, where the LCP text lives, instead of reconciling all eleven
+ * sections — including the motion-heavy artifact grid — before first paint.
+ */
+const BuildsGallery = dynamic(() =>
+  import("@/components/home/builds-gallery").then((m) => m.BuildsGallery),
+);
+const AuditCredibility = dynamic(() =>
+  import("@/components/home/builds-gallery").then((m) => m.AuditCredibility),
+);
+const GlobalStats = dynamic(() =>
+  import("@/components/home/global-stats").then((m) => m.GlobalStats),
+);
+const TopModels = dynamic(() =>
+  import("@/components/home/top-models").then((m) => m.TopModels),
+);
+const PricePerformance = dynamic(() =>
+  import("@/components/home/price-performance").then((m) => m.PricePerformance),
+);
+const CategoryLeaders = dynamic(() =>
+  import("@/components/home/category-leaders").then((m) => m.CategoryLeaders),
+);
+const LatestModels = dynamic(() =>
+  import("@/components/home/latest-models").then((m) => m.LatestModels),
+);
+const CapabilityTrend = dynamic(() =>
+  import("@/components/home/capability-trend").then((m) => m.CapabilityTrend),
+);
+const BenchmarkCoverage = dynamic(() =>
+  import("@/components/home/benchmark-coverage").then((m) => m.BenchmarkCoverage),
+);
+const MethodologyTeaser = dynamic(() =>
+  import("@/components/home/methodology-teaser").then((m) => m.MethodologyTeaser),
+);
+const HomeFooter = dynamic(() =>
+  import("@/components/home/home-footer").then((m) => m.HomeFooter),
+);
 
 export const metadata: Metadata = {
   title: {

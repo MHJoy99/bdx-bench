@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
-
 @import "tailwindcss";
 
 @config "../../tailwind.config.ts";
@@ -21,18 +19,12 @@
  */
 
 /*
- * Font tokens. `tailwind.config.ts` routes font-sans / font-display / font-mono
- * through these custom properties, and a `var()` with no fallback that is
- * undefined invalidates the ENTIRE font-family declaration at computed-value
- * time — it does not fall through to the rest of the stack. Declaring them
- * here is what makes `font-mono` actually render JetBrains Mono.
- * The families themselves are loaded by the @import above.
+ * Font tokens. --font-sans / --font-display / --font-mono are set by next/font
+ * on <html> in src/app/layout.tsx (self-hosted Inter, Plus Jakarta Sans,
+ * JetBrains Mono, display: swap). They are intentionally NOT redeclared here:
+ * a :root rule would compete with the next/font classes. `tailwind.config.ts`
+ * consumes them via var(--font-*) with literal fallback stacks.
  */
-:root {
-  --font-sans: "Inter";
-  --font-display: "Plus Jakarta Sans";
-  --font-mono: "JetBrains Mono";
-}
 
 :root {
   --background: 210 40% 98%;
@@ -66,7 +58,7 @@
     background-color: var(--bg);
     color: var(--text);
     font-family:
-      Inter,
+      var(--font-sans),
       ui-sans-serif,
       system-ui,
       -apple-system,

@@ -83,7 +83,13 @@ export function SiteNav({ onSearch }: { onSearch?: () => void }) {
             {menuOpen ? <X size={16} aria-hidden /> : <Menu size={16} aria-hidden />}
           </button>
 
-          <Link href="/" className="group flex items-center gap-2.5 rounded-[6px]">
+          {/*
+           * prefetch={false}: the eight section links prefetch their route
+           * chunks on load (measured ~360 KB of 100%-unused JS on /models:
+           * echarts/table/compare). That contends with the LCP on slow links.
+           * Navigation still fetches on click.
+           */}
+          <Link href="/" prefetch={false} className="group flex items-center gap-2.5 rounded-[6px]">
             <CompactMark className="size-6" />
             <span className="flex items-center gap-1.5 font-display text-[14px] font-bold tracking-tight text-[var(--text)]">
               <span>BDX</span>
@@ -104,6 +110,7 @@ export function SiteNav({ onSearch }: { onSearch?: () => void }) {
               <Link
                 key={item.href + item.label}
                 href={item.href}
+                prefetch={false}
                 data-testid={item.href === "/leaderboard" ? "nav-leaderboard" : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
@@ -187,6 +194,7 @@ export function SiteNav({ onSearch }: { onSearch?: () => void }) {
                 <Link
                   key={item.href + item.label}
                   href={item.href}
+                  prefetch={false}
                   data-testid={item.href === "/leaderboard" ? "nav-mobile-leaderboard" : undefined}
                   aria-current={active ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
