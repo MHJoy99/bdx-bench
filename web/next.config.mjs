@@ -3,6 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   output: "standalone",
+  // Pin tracing to this app. The repo root also has a package-lock.json, so
+  // without this Next infers the parent as the workspace root and nests the
+  // standalone output one level deeper (web/server.js), breaking the systemd unit.
+  outputFileTracingRoot: import.meta.dirname,
   async rewrites() {
     return [
       { source: "/play/pyro-vs-zombies", destination: "/play/pyro-vs-zombies/index.html" },
