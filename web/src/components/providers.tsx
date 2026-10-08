@@ -1,11 +1,10 @@
 "use client";
 
-import "@/lib/zod-jitless";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "next-themes";
 import { useEffect, useState, type ReactNode } from "react";
 import { CompareTrayProvider } from "@/components/compare-tray-provider";
-import { PolishMotionConfig } from "@/components/motion/polish-motion";
+import { PolishMotionConfig } from "@/components/motion/motion-config";
 
 /** Single source of truth for theme persistence. */
 export const THEME_STORAGE_KEY = "bdx-bench-theme";

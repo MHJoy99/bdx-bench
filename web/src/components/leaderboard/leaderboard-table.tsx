@@ -31,8 +31,6 @@ import {
   FlipList,
   RankChangeEdge,
   ScoreReveal,
-  StaggerGroup,
-  StaggerItem,
 } from "@/components/motion/polish-motion";
 import { AUDIT_DIMENSIONS, type AuditEntry } from "@/lib/audit-data";
 import { MOTION_STAGGER } from "@/lib/motion-tokens";
@@ -661,7 +659,7 @@ export function LeaderboardTable() {
             role="region"
             aria-label="Leaderboard table, scrollable"
           >
-            <StaggerGroup gap={entranceStagger}>
+            <div>
               <div
                 role="table"
                 aria-label="Showdown Score evidence table"
@@ -768,7 +766,7 @@ export function LeaderboardTable() {
                       const moved = movedSlugs.has(slug);
                       const visualIndex = flipIndex.get(slug) ?? 0;
                       return (
-                        <StaggerItem y={4} className="w-full">
+                        <div className="w-full">
                           <div
                             role="row"
                             data-testid="leaderboard-row"
@@ -801,13 +799,13 @@ export function LeaderboardTable() {
                               ? renderEvidencePanel(entry, row.slug, score)
                               : null}
                           </div>
-                        </StaggerItem>
+                        </div>
                       );
                     }}
                   />
                 </div>
               </div>
-            </StaggerGroup>
+            </div>
           </div>
 
           <LeaderboardMobileList

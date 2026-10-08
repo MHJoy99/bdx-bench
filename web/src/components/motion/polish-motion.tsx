@@ -36,9 +36,7 @@ export { usePrefersReducedMotion } from "@/components/charts/theme";
 export { MOTION_DUR, MOTION_EASE, MOTION_SPRING, MOTION_STAGGER } from "@/lib/motion-tokens";
 
 /** Wrap the app so ALL motion respects the OS reduced-motion setting. */
-export function PolishMotionConfig({ children }: { children: React.ReactNode }) {
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
-}
+export { PolishMotionConfig } from "@/components/motion/motion-config";
 
 /* ------------------------------------------------------------------ *
  * Section entrances

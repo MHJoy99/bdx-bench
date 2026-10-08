@@ -1,3 +1,4 @@
+import "@/lib/zod-jitless";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

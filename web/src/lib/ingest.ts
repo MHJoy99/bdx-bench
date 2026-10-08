@@ -1,3 +1,4 @@
+import "@/lib/zod-jitless";
 import { z } from "zod";
 import { BENCHMARK_CATALOGUE, EVALUATIONS, SCORE_SNAPSHOTS } from "@/lib/demo-data";
 import { bdxBenchScore } from "@/lib/scores";

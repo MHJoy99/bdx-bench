@@ -1,4 +1,5 @@
 "use client";
+import "@/lib/zod-jitless";
 
 import { useEffect, useState } from "react";
 import { z } from "zod";

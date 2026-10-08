@@ -1,3 +1,4 @@
+import "@/lib/zod-jitless";
 import { z } from "zod";
 import { MODELS } from "@/lib/data";
 import { ModelSchema, type Model } from "@/lib/types";

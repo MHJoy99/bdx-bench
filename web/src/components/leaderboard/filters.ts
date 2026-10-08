@@ -1,3 +1,4 @@
+import "@/lib/zod-jitless";
 import { z } from "zod";
 import type { Model } from "@/lib/types";
 import type { LeaderboardTableRow } from "./columns";
