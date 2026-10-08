@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowUpRight, Gamepad2 } from "lucide-react";
-import { BuildsGallery } from "@/components/home";
+
+/*
+ * Below-fold gallery hydrates behind its own boundary (SSR kept); the LCP
+ * text and the model directory table stay in the initial hydration pass.
+ */
+const BuildsGallery = dynamic(() =>
+  import("@/components/home/builds-gallery").then((m) => m.BuildsGallery),
+);
 import { MODELS } from "@/lib/data";
 import { AUDIT_DIMENSIONS, AUDIT_TRAIL } from "@/lib/audit-data";
 import {
@@ -258,6 +266,7 @@ export default function ModelsIndexPage() {
         and every verified failure. Full board in the{" "}
         <Link
           href="/leaderboard"
+          prefetch={false}
           className="underline underline-offset-2 hover:text-[var(--text)]"
         >
           leaderboard
@@ -266,8 +275,14 @@ export default function ModelsIndexPage() {
       </p>
 
       <div className="flex flex-wrap items-center gap-2 pt-2">
+        {/*
+         * prefetch={false}: these supplementary links would otherwise pull the
+         * benchmarks (echarts) and leaderboard (table) route chunks on load —
+         * measured ~360 KB of 100%-unused JS on this page. Fetched on click.
+         */}
         <Link
           href="/benchmarks"
+          prefetch={false}
           className="inline-flex items-center gap-1 rounded-[8px] border border-[var(--border)] px-2.5 py-2 text-[12px] text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text)]"
         >
           The shared prompt
@@ -275,6 +290,7 @@ export default function ModelsIndexPage() {
         </Link>
         <Link
           href="/methodology"
+          prefetch={false}
           className="inline-flex items-center gap-1 rounded-[8px] border border-[var(--border)] px-2.5 py-2 text-[12px] text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text)]"
         >
           Scoring methodology
